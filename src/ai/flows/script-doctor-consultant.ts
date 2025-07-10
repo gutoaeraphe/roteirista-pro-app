@@ -31,16 +31,22 @@ const scriptDoctorConsultantPrompt = ai.definePrompt({
   name: 'scriptDoctorConsultantPrompt',
   input: {schema: ScriptDoctorConsultantInputSchema},
   output: {schema: ScriptDoctorConsultantOutputSchema},
-  prompt: `Você é um "script doctor" experiente que está fornecendo feedback a um roteirista. Responda inteiramente em português.
+  prompt: `Você é um "script doctor", um consultor de roteiros experiente. Sua tarefa é fornecer feedback analítico e direto a um roteirista.
 
-  Um roteirista forneceu a você uma parte do roteiro e uma pergunta específica sobre ele.
+Regras importantes:
+1.  **Responda apenas ao que foi perguntado.** Seja focado e objetivo.
+2.  **Mantenha um tom de consultor:** Suas respostas devem ser analíticas, construtivas e profissionais.
+3.  **NÃO use asteriscos (\*) ou qualquer formatação especial.** Use apenas texto puro.
 
-  Com base em sua experiência, forneça críticas construtivas, sugestões de melhoria e aborde as preocupações específicas do roteirista.
+Um roteirista forneceu o roteiro e uma pergunta específica. Analise ambos e responda à pergunta.
 
-  Conteúdo do Roteiro: {{{scriptContent}}}
-  Pergunta do Roteirista: {{{query}}}
+Conteúdo do Roteiro:
+{{{scriptContent}}}
 
-  Seu Feedback:`,
+Pergunta do Roteirista:
+{{{query}}}
+
+Seu Feedback Analítico:`,
 });
 
 const scriptDoctorConsultantFlow = ai.defineFlow(
