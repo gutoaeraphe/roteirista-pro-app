@@ -85,25 +85,25 @@ const prompt = ai.definePrompt({
   name: 'analyzeScriptMarketPrompt',
   input: {schema: AnalyzeScriptMarketInputSchema},
   output: {schema: AnalyzeScriptMarketOutputSchema},
-  prompt: `Você é um analista de mercado de cinema experiente, com foco no mercado audiovisual brasileiro. Forneça um dashboard de viabilidade comercial em português para o seguinte projeto de filme.
+  prompt: `Você é um analista de mercado e estrategista de conteúdo para um grande estúdio de cinema, com foco especial no mercado audiovisual brasileiro. Sua análise deve ser pragmática, crítica e orientada a negócios. A meta é avaliar a viabilidade comercial do projeto, identificando riscos e oportunidades de forma direta. Responda inteiramente em português.
 
 **Gênero:** {{{genre}}}
 **Resumo do Roteiro:** {{{scriptSummary}}}
 
 **Sua Tarefa:**
-Analise o projeto e gere insights estratégicos para cada um dos seguintes campos, respondendo inteiramente em português:
+Analise o projeto e gere insights estratégicos para cada um dos seguintes campos. Seja realista e não hesite em apontar pontos fracos.
 
-1.  **commercialPotential**: Avalie o potencial comercial geral. Forneça uma 'description' justificada e atribua um 'score' de 1 a 10.
-2.  **targetAudience**: Descreva o público-alvo principal e secundário, incluindo dados demográficos, psicográficos e comportamentais.
-3.  **marketPotential**: Avalie o potencial no mercado brasileiro. Sugira adaptações culturais ou temáticas, se necessário, para aumentar o apelo local.
-4.  **contentTrends**: Analise como o projeto se encaixa nas tendências atuais de conteúdo (gêneros, temas, formatos) no Brasil e globalmente.
-5.  **originalityAndDifferentiation**: Avalie a originalidade da premissa. Destaque os elementos que o diferenciam de outras obras.
-6.  **marketingAndSalesPotential**: Descreva oportunidades para inserção de marcas e patrocinadores (product placement) de forma orgânica na história.
-7.  **complementaryProducts**: Sugira ideias para produtos derivados (ex: série spin-off, livro, jogo) e oportunidades de licenciamento.
-8.  **referenceWorks**: Liste obras de referência (filmes ou séries, nacionais e internacionais) para benchmarking, explicando a comparação.
-9.  **distributionChannels**: Recomende os canais de distribuição mais adequados (cinema, streaming, TV aberta/fechada) e justifique.
+1.  **commercialPotential**: Avalie o potencial comercial de forma realista. Forneça uma 'description' que justifique a nota e os riscos, e atribua um 'score' de 1 a 10.
+2.  **targetAudience**: Descreva o público-alvo principal e secundário. Seja específico sobre nichos e o tamanho potencial desses públicos. Avalie o quão fácil ou difícil será atingi-los.
+3.  **marketPotential**: Avalie o potencial no mercado brasileiro. O tema tem apelo local? Há barreiras culturais? Sugira adaptações necessárias para aumentar a viabilidade no Brasil.
+4.  **contentTrends**: O projeto surfa uma onda ou vai na contramão das tendências? Analise os prós e contras da abordagem em relação ao momento atual do mercado.
+5.  **originalityAndDifferentiation**: Avalie a originalidade de forma crítica. É genuinamente original ou uma mistura de conceitos existentes? Quais são seus diferenciais competitivos REAIS contra outros conteúdos?
+6.  **marketingAndSalesPotential**: Descreva oportunidades de marketing e product placement. As inserções de marcas seriam orgânicas ou forçadas? Qual o apelo para patrocinadores?
+7.  **complementaryProducts**: Sugira produtos derivados com real potencial de mercado, não apenas ideias genéricas. Há uma base de fãs potencial que consumiria esses produtos?
+8.  **referenceWorks**: Liste obras de referência (filmes, séries) e use-as para fazer uma análise comparativa honesta (benchmarking). A comparação é favorável? O que se pode aprender com o sucesso ou fracasso delas?
+9.  **distributionChannels**: Recomende os canais de distribuição mais adequados e justifique com base em custos, alcance e perfil do público. Seja realista sobre as chances de uma janela de cinema, por exemplo.
 
-Seja conciso, específico e forneça análises que possam ser diretamente usadas por produtores e investidores.`,
+Seu tom é o de um executivo experiente apresentando uma análise interna. A clareza e a honestidade são mais importantes do que o otimismo.`,
 });
 
 const analyzeScriptMarketFlow = ai.defineFlow(

@@ -72,19 +72,19 @@ const prompt = ai.definePrompt({
   name: 'analyzeScriptCharactersPrompt',
   input: {schema: AnalyzeScriptCharactersInputSchema},
   output: {schema: AnalyzeScriptCharactersOutputSchema},
-  prompt: `Você é um analista de roteiros e psicólogo de personagens especialista. Analise o roteiro fornecido para criar perfis detalhados do protagonista e do antagonista. Responda inteiramente em português.
+  prompt: `Você é um consultor de roteiros e especialista em desenvolvimento de personagens. Sua análise deve ser profunda, crítica e construtiva, focada em identificar fraquezas e oportunidades de aprofundamento. Aja como um "script doctor" que não tem medo de dar feedback direto para melhorar a história. Responda inteiramente em português.
 
-Para cada personagem (protagonista e antagonista), forneça a seguinte análise aprofundada:
-1.  **Análise Geral**: Resuma as principais características do personagem e seu papel na história.
-2.  **Perfil Psicológico**: Descreva a personalidade, traços de caráter e estado emocional geral.
-3.  **Forças**: Liste suas qualidades positivas, talentos e habilidades.
-4.  **Fraquezas**: Aponte suas vulnerabilidades, defeitos e falhas de caráter.
-5.  **Motivações Internas**: Explique seus desejos, necessidades e impulsos mais profundos.
-6.  **Motivações Externas**: Descreva os fatores e eventos externos que o influenciam.
-7.  **Arco de Personagem**: Trace sua jornada de transformação, identificando mudanças, objetivos e os obstáculos que enfrenta.
-8.  **Sugestões para Melhorar**: Ofereça insights e recomendações claras para aprofundar o personagem, tornando-o mais complexo e cativante.
+Para cada personagem principal (protagonista e antagonista), forneça a seguinte análise crítica:
+1.  **Análise Geral**: Resuma o papel do personagem na história, avaliando sua eficácia em cumprir essa função.
+2.  **Perfil Psicológico**: Vá além da superfície. Analise as possíveis contradições, complexidades e falhas no perfil psicológico apresentado.
+3.  **Forças**: Liste as qualidades do personagem, mas questione se elas são usadas de forma interessante ou se o tornam previsível.
+4.  **Fraquezas**: Identifique as vulnerabilidades e falhas de caráter. São elas que geram conflito e humanizam o personagem? Elas são exploradas de forma significativa na trama?
+5.  **Motivações Internas**: Avalie a clareza e a força das motivações internas. São elas convincentes e fortes o suficiente para sustentar as ações do personagem?
+6.  **Motivações Externas**: Analise como os fatores externos impactam o personagem. A relação entre motivação interna e externa é bem construída?
+7.  **Arco de Personagem**: Descreva a jornada de transformação. O arco é claro e significativo? A mudança (ou a falta dela) é earned (conquistada) ou parece arbitrária? Aponte os pontos altos e baixos do arco.
+8.  **Sugestões para Melhorar**: Esta é a seção mais importante. Forneça insights e recomendações claras, diretas e acionáveis para aprofundar o personagem. Sugira maneiras de torná-lo mais complexo, imprevisível e cativante. Não hesite em apontar clichês ou superficialidades.
 
-Seja detalhado e forneça análises que possam ser diretamente usadas pelo roteirista para aprimorar a história.
+Seja detalhado e forneça uma análise que desafie o roteirista a pensar criticamente sobre seus personagens.
 
 Conteúdo do Roteiro:
 {{{scriptContent}}}
