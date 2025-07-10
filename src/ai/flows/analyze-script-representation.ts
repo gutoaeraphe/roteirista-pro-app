@@ -22,29 +22,26 @@ export type AnalyzeScriptRepresentationInput = z.infer<
   typeof AnalyzeScriptRepresentationInputSchema
 >;
 
+const CriterionResultSchema = z.object({
+  criterion: z.string().describe('A descrição do critério avaliado.'),
+  passed: z.boolean().describe('Se o critério foi atendido.'),
+  reasoning: z
+    .string()
+    .describe(
+      'A justificativa da IA, explicando por que o critério foi ou não atendido, com exemplos do roteiro.'
+    ),
+});
+
+const TestResultSchema = z.object({
+  testName: z.string().describe('O nome do teste (ex: "Teste de Bechdel").'),
+  summary: z.string().describe('Um resumo da análise geral para este teste.'),
+  criteria: z.array(CriterionResultSchema).describe('A lista de critérios avaliados para o teste.'),
+});
+
 const AnalyzeScriptRepresentationOutputSchema = z.object({
-  bechdelTest: z.object({
-    passed: z.boolean().describe('Se o roteiro passa no teste de Bechdel.'),
-    reason: z
-      .string()
-      .describe('A razão em português para passar ou falhar no teste de Bechdel.'),
-  }),
-  vitoRussoTest: z.object({
-    passed: z
-      .boolean()
-      .describe('Se o roteiro passa no teste de Vito Russo.'),
-    reason: z
-      .string()
-      .describe('A razão em português para passar ou falhar no teste de Vito Russo.'),
-  }),
-  duVernayTest: z.object({
-    passed: z
-      .boolean()
-      .describe('Se o roteiro passa no teste de DuVernay.'),
-    reason: z
-      .string()
-      .describe('A razão em português para passar ou falhar no teste de DuVernay.'),
-  }),
+  bechdelTest: TestResultSchema,
+  vitoRussoTest: TestResultSchema,
+  duVernayTest: TestResultSchema,
 });
 export type AnalyzeScriptRepresentationOutput = z.infer<
   typeof AnalyzeScriptRepresentationOutputSchema
@@ -60,15 +57,35 @@ const analyzeScriptRepresentationPrompt = ai.definePrompt({
   name: 'analyzeScriptRepresentationPrompt',
   input: {schema: AnalyzeScriptRepresentationInputSchema},
   output: {schema: AnalyzeScriptRepresentationOutputSchema},
-  prompt: `Você é uma IA assistente que analisa roteiros de cinema em busca de diversidade e representatividade, utilizando os testes de Bechdel, Vito Russo e DuVernay.
+  prompt: `Você é uma IA especialista em análise de roteiros com foco em diversidade e representatividade. Analise o roteiro fornecido com base nos testes de Bechdel, Vito Russo e DuVernay. Responda inteiramente em português.
 
-Teste de Bechdel: Um roteiro é aprovado se inclui pelo menos duas personagens femininas nomeadas que têm pelo menos uma conversa entre si sobre algo que não seja um homem.
-Teste de Vito Russo: Um roteiro é aprovado se contém pelo menos um personagem que seja identificavelmente lésbica, gay, bissexual e/ou transgênero, o personagem não é única ou predominantemente definido por sua orientação sexual ou identidade de gênero, e o personagem é essencial para a trama, de modo que sua remoção teria um efeito significativo.
-Teste de DuVernay: Um roteiro é aprovado se os personagens principais são pessoas não-brancas e se suas histórias subvertem os estereótipos clássicos do cinema.
+**Sua Tarefa:**
+Para cada um dos três testes (Bechdel, Vito Russo, DuVernay), você deve:
+1.  Avaliar cada um de seus critérios individualmente.
+2.  Para cada critério, preencher os campos 'criterion', 'passed' (true/false) e 'reasoning'. A justificativa deve ser clara, concisa e baseada em evidências do roteiro.
+3.  Escrever um 'summary' geral para cada teste, consolidando os resultados.
 
-Analise o roteiro a seguir e determine se ele passa em cada um dos testes. Explique o porquê, em português, no campo "reason".
+**Definições dos Testes e Critérios:**
 
-Roteiro: {{{scriptContent}}}`,
+*   **Teste de Bechdel (Representatividade Feminina):**
+    *   **Critério 1:** A obra tem pelo menos duas mulheres com nomes?
+    *   **Critério 2:** Elas conversam uma com a outra?
+    *   **Critério 3:** O assunto dessa conversa não é sobre um homem?
+
+*   **Teste de Vito Russo (Representatividade LGBTQIA+):**
+    *   **Critério 1:** Contém um personagem identificável como LGBTQIA+?
+    *   **Critério 2:** Este personagem não é definido apenas por sua identidade, possuindo outras dimensões?
+    *   **Critério 3:** Sua remoção impactaria a trama significativamente?
+
+*   **Teste de DuVernay (Representatividade Racial):**
+    *   **Critério 1:** A obra tem pelo menos dois personagens não-brancos com nome?
+    *   **Critério 2:** Esses personagens têm arcos próprios que não servem apenas à história de um personagem branco?
+    *   **Critério 3:** Eles conversam entre si sobre algo não relacionado a um personagem branco?
+
+Analise o roteiro a seguir e preencha a estrutura de saída de forma completa e detalhada.
+
+Roteiro:
+{{{scriptContent}}}`,
 });
 
 const analyzeScriptRepresentationFlow = ai.defineFlow(
