@@ -19,8 +19,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        headline: ["var(--font-belleza)", ...fontFamily.sans],
-        body: ["var(--font-body)", ...fontFamily.serif],
+        headline: ["var(--font-headline)", ...fontFamily.sans],
+        body: ["var(--font-body)", ...fontFamily.sans],
       },
       colors: {
         border: "hsl(var(--border))",

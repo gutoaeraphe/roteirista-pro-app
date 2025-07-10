@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { Belleza, Alegreya } from "next/font/google";
+import { Belleza, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import { ScriptProvider } from "@/context/script-context";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/context/auth-context";
 
-const fontBelleza = Belleza({
+const fontHeadline = Belleza({
   subsets: ["latin"],
   weight: "400",
-  variable: "--font-belleza",
+  variable: "--font-headline",
 });
 
-const fontBody = Alegreya({
+const fontBody = Inter({
   subsets: ["latin"],
   variable: "--font-body",
 });
@@ -32,7 +32,7 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-body antialiased",
-          fontBelleza.variable,
+          fontHeadline.variable,
           fontBody.variable
         )}
       >
