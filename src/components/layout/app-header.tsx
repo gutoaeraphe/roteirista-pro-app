@@ -10,7 +10,7 @@ import Image from "next/image";
 
 export function AppHeader() {
   return (
-    <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6 fixed top-0 w-full z-30 md:hidden">
+    <header className="flex h-20 items-center gap-4 border-b bg-background px-4 lg:h-[80px] lg:px-6 fixed top-0 w-full z-30 md:hidden">
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="shrink-0">
@@ -28,7 +28,7 @@ export function AppHeader() {
       </Sheet>
       <div className="w-full flex-1">
         <Link href="/painel-de-roteiros" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Roteirista Pro" width={150} height={38} />
+            <Image src="/logo.png" alt="Roteirista Pro" width={150} height={65} />
         </Link>
       </div>
     </header>

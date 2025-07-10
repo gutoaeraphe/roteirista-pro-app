@@ -44,7 +44,7 @@ export default function MainLayout({
       <AppSidebar />
       <div className="flex flex-col md:pl-64">
         <AppHeader />
-        <main className="flex-1 p-4 lg:p-8 pt-16 md:pt-4">
+        <main className="flex-1 p-4 lg:p-8 pt-24 md:pt-8">
           <div className="max-w-7xl mx-auto w-full">
             {children}
           </div>

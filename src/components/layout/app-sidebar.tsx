@@ -1,4 +1,4 @@
-// src/components/layout/app-sidebar.tsx
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -163,9 +163,9 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
 
   const navContent = (
     <div className="flex h-full max-h-screen flex-col gap-2">
-      <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+      <div className="flex h-20 items-center border-b px-4 lg:h-[80px] lg:px-6">
         <Link href="/painel-de-roteiros" className="flex items-center gap-2 font-semibold">
-          <Image src="/logo.png" alt="Roteirista Pro" width={150} height={38} className="h-auto" />
+          <Image src="/logo.png" alt="Roteirista Pro" width={150} height={65} className="h-auto" />
         </Link>
       </div>
       <div className="flex-1 overflow-auto py-2">
@@ -282,7 +282,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
   }
 
   return (
-    <div className="hidden border-r bg-card md:block fixed top-0 left-0 h-full">
+    <div className="hidden border-r bg-card md:block fixed top-0 left-0 h-full w-64">
         {navContent}
     </div>
   );
