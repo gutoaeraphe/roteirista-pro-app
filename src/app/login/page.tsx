@@ -1,17 +1,40 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithPopup } from 'firebase/auth';
+import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Clapperboard } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Clapperboard, Mail, KeyRound, UserPlus } from 'lucide-react';
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+
+const loginSchema = z.object({
+  email: z.string().email("Por favor, insira um e-mail válido."),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
+});
+type LoginFormData = z.infer<typeof loginSchema>;
+
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
+  const [authLoading, setAuthLoading] = useState(false);
+
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
 
   useEffect(() => {
     if (!loading && user) {
@@ -19,13 +42,50 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
 
-  const handleSignIn = async () => {
+  const handleGoogleSignIn = async () => {
+    setAuthLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
+      toast({ title: "Login bem-sucedido!" });
+    } catch (error: any) {
       console.error("Erro ao fazer login com Google:", error);
+      toast({ title: "Erro no Login", description: "Não foi possível entrar com o Google.", variant: "destructive" });
+    } finally {
+        setAuthLoading(false);
     }
   };
+
+  const handleEmailSignIn = async (data: LoginFormData) => {
+    setAuthLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      toast({ title: "Login bem-sucedido!" });
+    } catch (error: any) {
+      console.error("Erro ao fazer login com e-mail:", error);
+      toast({ title: "Erro no Login", description: "Credenciais inválidas. Verifique seu e-mail e senha.", variant: "destructive" });
+    } finally {
+        setAuthLoading(false);
+    }
+  };
+  
+  const handleEmailSignUp = async (data: LoginFormData) => {
+    setAuthLoading(true);
+    try {
+      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      toast({ title: "Conta criada com sucesso!", description: "Você já pode fazer o login." });
+      form.reset();
+    } catch (error: any) {
+      console.error("Erro ao criar conta com e-mail:", error);
+      if (error.code === 'auth/email-already-in-use') {
+        toast({ title: "Erro ao criar conta", description: "Este e-mail já está em uso.", variant: "destructive" });
+      } else {
+        toast({ title: "Erro ao criar conta", description: "Não foi possível criar sua conta.", variant: "destructive" });
+      }
+    } finally {
+        setAuthLoading(false);
+    }
+  };
+
 
   const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg viewBox="0 0 48 48" {...props}>
@@ -38,7 +98,7 @@ export default function LoginPage() {
   );
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="text-center">
             <div className="flex justify-center items-center gap-2 mb-4">
@@ -48,13 +108,95 @@ export default function LoginPage() {
                 </h1>
             </div>
           <CardTitle>Bem-vindo!</CardTitle>
-          <CardDescription>Faça login para continuar e gerenciar seus roteiros.</CardDescription>
+          <CardDescription>Faça login ou crie uma conta para continuar.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button className="w-full" onClick={handleSignIn} disabled={loading}>
+        <CardContent className="space-y-4">
+          <Button className="w-full" onClick={handleGoogleSignIn} disabled={loading || authLoading}>
             <GoogleIcon className="mr-2 h-5 w-5" />
             Entrar com o Google
           </Button>
+          
+          <div className="flex items-center space-x-2">
+            <Separator className="flex-1" />
+            <span className="text-xs text-muted-foreground">OU</span>
+            <Separator className="flex-1" />
+          </div>
+
+        <Tabs defaultValue="login" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Entrar</TabsTrigger>
+                <TabsTrigger value="signup">Criar Conta</TabsTrigger>
+            </TabsList>
+            <Form {...form}>
+            <TabsContent value="login">
+                <form onSubmit={form.handleSubmit(handleEmailSignIn)} className="space-y-4 mt-4">
+                     <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="sr-only">Email</FormLabel>
+                            <FormControl>
+                                <Input placeholder="seu@email.com" {...field} icon={Mail} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                     <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                        <FormItem>
+                             <FormLabel className="sr-only">Senha</FormLabel>
+                            <FormControl>
+                                <Input type="password" placeholder="Sua senha" {...field} icon={KeyRound}/>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <Button type="submit" className="w-full" disabled={loading || authLoading}>
+                        <Mail className="mr-2"/> Entrar com E-mail
+                    </Button>
+                </form>
+            </TabsContent>
+            <TabsContent value="signup">
+                 <form onSubmit={form.handleSubmit(handleEmailSignUp)} className="space-y-4 mt-4">
+                     <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="sr-only">Email</FormLabel>
+                            <FormControl>
+                                <Input placeholder="seu@email.com" {...field} icon={Mail} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                     <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                        <FormItem>
+                             <FormLabel className="sr-only">Senha</FormLabel>
+                            <FormControl>
+                                <Input type="password" placeholder="Crie uma senha" {...field} icon={KeyRound}/>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <Button type="submit" className="w-full" disabled={loading || authLoading}>
+                        <UserPlus className="mr-2"/> Criar Conta com E-mail
+                    </Button>
+                </form>
+            </TabsContent>
+             </Form>
+        </Tabs>
+
         </CardContent>
       </Card>
     </div>
