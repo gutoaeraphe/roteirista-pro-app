@@ -242,7 +242,7 @@ const SectionCard = ({ title, description, children, ...props }: { title: string
     </Card>
 );
 
-const LabeledTextarea = ({ name, label, placeholder, control, form }: { name: keyof ArgumentFormData, label: string, placeholder: string, control: any, form: any}) => (
+const LabeledTextarea = ({ name, label, placeholder, control }: { name: keyof ArgumentFormData, label: string, placeholder: string, control: any}) => (
     <FormField
         control={control}
         name={name}
@@ -251,9 +251,10 @@ const LabeledTextarea = ({ name, label, placeholder, control, form }: { name: ke
                 <FormLabel>{label}</FormLabel>
                 <FormControl>
                     <TextareaAutosize
+                        minRows={2}
                         placeholder={placeholder}
                         {...field}
-                        className="w-full bg-muted/50"
+                        className="w-full bg-muted/50 p-2 rounded"
                     />
                 </FormControl>
                 <FormMessage />
@@ -502,7 +503,7 @@ export default function GeradorDeArgumentoPage() {
                                 <FormItem>
                                     <FormLabel>Ideia para o tema</FormLabel>
                                     <FormControl>
-                                        <TextareaAutosize placeholder="Ex: Uma história sobre perdão e as consequências de não perdoar." {...field} className="w-full bg-muted/50" />
+                                        <TextareaAutosize minRows={3} placeholder="Ex: Uma história sobre perdão e as consequências de não perdoar." {...field} className="w-full bg-muted/50 p-2 rounded" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -510,7 +511,7 @@ export default function GeradorDeArgumentoPage() {
                             <Button type="button" onClick={handleRefineTheme} disabled={loading.theme || !watch('initialTheme')} className="mt-4">
                                 {loading.theme ? 'Aprimorando...' : 'Aprimorar com IA'} <Sparkles className="ml-2"/>
                             </Button>
-                            {watch('refinedTheme') && <TextareaAutosize readOnly value={watch('refinedTheme')} className="w-full mt-4 bg-muted" />}
+                            {watch('refinedTheme') && <TextareaAutosize readOnly value={watch('refinedTheme')} minRows={3} className="w-full mt-4 bg-muted p-2 rounded" />}
                         </SectionCard>
 
                          <SectionCard title="2. Explorar Facetas" description="Gere ideias relacionadas ao seu tema principal para enriquecer a história.">
@@ -560,33 +561,33 @@ export default function GeradorDeArgumentoPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                          <SectionCard title="Protagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado.">
                             <div className="space-y-4">
-                                <LabeledTextarea name="protagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Nome, profissão, idade, etnia, sexualidade, etc." control={control} form={form} />
-                                <LabeledTextarea name="protagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Otimista mas ingênuo, ansioso..." control={control} form={form} />
-                                <LabeledTextarea name="protagonistStrengths" label="Forças" placeholder="Ex: Corajoso sob pressão, mestre da dedução..." control={control} form={form} />
-                                <LabeledTextarea name="protagonistWeaknesses" label="Fraquezas" placeholder="Ex: Teimosia, medo de altura..." control={control} form={form} />
-                                <LabeledTextarea name="protagonistInternalMotivations" label="Motivações Internas" placeholder="Ex: Provar seu valor para si mesmo..." control={control} form={form} />
-                                <LabeledTextarea name="protagonistExternalMotivations" label="Motivações Externas" placeholder="Ex: Uma dívida a ser paga..." control={control} form={form} />
-                                <LabeledTextarea name="protagonistSocialMotivations" label="Motivações Sociais" placeholder="Ex: Proteger sua comunidade..." control={control} form={form} />
+                                <LabeledTextarea name="protagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Nome, profissão, idade, etnia, sexualidade, etc." control={control} />
+                                <LabeledTextarea name="protagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Otimista mas ingênuo, ansioso..." control={control} />
+                                <LabeledTextarea name="protagonistStrengths" label="Forças" placeholder="Ex: Corajoso sob pressão, mestre da dedução..." control={control} />
+                                <LabeledTextarea name="protagonistWeaknesses" label="Fraquezas" placeholder="Ex: Teimosia, medo de altura..." control={control} />
+                                <LabeledTextarea name="protagonistInternalMotivations" label="Motivações Internas" placeholder="Ex: Provar seu valor para si mesmo..." control={control} />
+                                <LabeledTextarea name="protagonistExternalMotivations" label="Motivações Externas" placeholder="Ex: Uma dívida a ser paga..." control={control} />
+                                <LabeledTextarea name="protagonistSocialMotivations" label="Motivações Sociais" placeholder="Ex: Proteger sua comunidade..." control={control} />
                             </div>
                             <Button type="button" onClick={() => handleRefineCharacter('protagonist')} disabled={loading.protagonist} className="mt-4">
                                 {loading.protagonist ? 'Gerando...' : 'Gerar Perfil com IA'} <Sparkles className="ml-2"/>
                             </Button>
-                             {watch('protagonistProfile') && <TextareaAutosize readOnly value={watch('protagonistProfile')} minRows={5} className="w-full mt-4 bg-muted" />}
+                             {watch('protagonistProfile') && <TextareaAutosize readOnly value={watch('protagonistProfile')} minRows={5} className="w-full mt-4 bg-muted p-2 rounded" />}
                          </SectionCard>
                         <SectionCard title="Antagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado.">
                            <div className="space-y-4">
-                                <LabeledTextarea name="antagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Um CEO carismático e manipulador..." control={control} form={form} />
-                                <LabeledTextarea name="antagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Narcisista, acredita que os fins justificam os meios..." control={control} form={form} />
-                                <LabeledTextarea name="antagonistStrengths" label="Forças" placeholder="Ex: Inteligência estratégica, grande fortuna..." control={control} form={form} />
-                                <LabeledTextarea name="antagonistWeaknesses" label="Fraquezas" placeholder="Ex: Arrogância, subestima os outros..." control={control} form={form} />
-                                <LabeledTextarea name="antagonistInternalMotivations" label="Motivações Internas" placeholder="Ex: Medo de ser irrelevante..." control={control} form={form} />
-                                <LabeledTextarea name="antagonistExternalMotivations" label="Motivações Externas" placeholder="Ex: Pressão de acionistas..." control={control} form={form} />
-                                <LabeledTextarea name="antagonistSocialMotivations" label="Motivações Sociais" placeholder="Ex: Manter o status e a imagem pública..." control={control} form={form} />
+                                <LabeledTextarea name="antagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Um CEO carismático e manipulador..." control={control} />
+                                <LabeledTextarea name="antagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Narcisista, acredita que os fins justificam os meios..." control={control} />
+                                <LabeledTextarea name="antagonistStrengths" label="Forças" placeholder="Ex: Inteligência estratégica, grande fortuna..." control={control} />
+                                <LabeledTextarea name="antagonistWeaknesses" label="Fraquezas" placeholder="Ex: Arrogância, subestima os outros..." control={control} />
+                                <LabeledTextarea name="antagonistInternalMotivations" label="Motivações Internas" placeholder="Ex: Medo de ser irrelevante..." control={control} />
+                                <LabeledTextarea name="antagonistExternalMotivations" label="Motivações Externas" placeholder="Ex: Pressão de acionistas..." control={control} />
+                                <LabeledTextarea name="antagonistSocialMotivations" label="Motivações Sociais" placeholder="Ex: Manter o status e a imagem pública..." control={control} />
                             </div>
                             <Button type="button" onClick={() => handleRefineCharacter('antagonist')} disabled={loading.antagonist} className="mt-4">
                                 {loading.antagonist ? 'Gerando...' : 'Gerar Perfil com IA'} <Sparkles className="ml-2"/>
                             </Button>
-                            {watch('antagonistProfile') && <TextareaAutosize readOnly value={watch('antagonistProfile')} minRows={5} className="w-full mt-4 bg-muted" />}
+                            {watch('antagonistProfile') && <TextareaAutosize readOnly value={watch('antagonistProfile')} minRows={5} className="w-full mt-4 bg-muted p-2 rounded" />}
                         </SectionCard>
                     </div>
                 </TabsContent>
@@ -594,18 +595,18 @@ export default function GeradorDeArgumentoPage() {
                 <TabsContent value="narrative">
                      <SectionCard title="Detalhes da Narrativa" description="Forneça os conceitos e a IA irá expandi-los em uma descrição coesa.">
                          <div className="space-y-4">
-                            <LabeledTextarea name="narrativeFundamentalConcept" label="Conceito Fundamental" placeholder="Ex: Uma cidade onde a chuva nunca para." control={control} form={form} />
-                            <LabeledTextarea name="narrativePlotObjective" label="Objetivo da Trama" placeholder="Ex: Descobrir a origem da chuva eterna." control={control} form={form} />
-                            <LabeledTextarea name="narrativeCharacterObjective" label="Objetivo do Personagem" placeholder="Ex: Encontrar sua filha desaparecida." control={control} form={form} />
-                            <LabeledTextarea name="narrativePlotTwist" label="Plot Twist" placeholder="Ex: A filha é quem controla a chuva." control={control} form={form} />
-                            <LabeledTextarea name="narrativeKeyObjects" label="Objetos Chave" placeholder="Ex: Um guarda-chuva que repele a água de forma anormal." control={control} form={form} />
-                            <LabeledTextarea name="narrativeImportantPlaces" label="Lugares Importantes" placeholder="Ex: Uma torre de relógio parada." control={control} form={form} />
-                            <LabeledTextarea name="narrativePredominantFeelings" label="Sentimentos Predominantes" placeholder="Ex: Melancolia e esperança." control={control} form={form} />
+                            <LabeledTextarea name="narrativeFundamentalConcept" label="Conceito Fundamental" placeholder="Ex: Uma cidade onde a chuva nunca para." control={control} />
+                            <LabeledTextarea name="narrativePlotObjective" label="Objetivo da Trama" placeholder="Ex: Descobrir a origem da chuva eterna." control={control} />
+                            <LabeledTextarea name="narrativeCharacterObjective" label="Objetivo do Personagem" placeholder="Ex: Encontrar sua filha desaparecida." control={control} />
+                            <LabeledTextarea name="narrativePlotTwist" label="Plot Twist" placeholder="Ex: A filha é quem controla a chuva." control={control} />
+                            <LabeledTextarea name="narrativeKeyObjects" label="Objetos Chave" placeholder="Ex: Um guarda-chuva que repele a água de forma anormal." control={control} />
+                            <LabeledTextarea name="narrativeImportantPlaces" label="Lugares Importantes" placeholder="Ex: Uma torre de relógio parada." control={control} />
+                            <LabeledTextarea name="narrativePredominantFeelings" label="Sentimentos Predominantes" placeholder="Ex: Melancolia e esperança." control={control} />
                          </div>
                         <Button type="button" onClick={handleGenerateNarrative} disabled={loading.narrative} className="mt-4">
                             {loading.narrative ? 'Gerando...' : 'Gerar Detalhes com IA'} <Sparkles className="ml-2"/>
                         </Button>
-                        {watch('narrativeDetails') && <TextareaAutosize readOnly value={watch('narrativeDetails')} minRows={8} className="w-full mt-4 bg-muted" />}
+                        {watch('narrativeDetails') && <TextareaAutosize readOnly value={watch('narrativeDetails')} minRows={8} className="w-full mt-4 bg-muted p-2 rounded" />}
                      </SectionCard>
                 </TabsContent>
 
@@ -641,5 +642,3 @@ export default function GeradorDeArgumentoPage() {
     </div>
   );
 }
-
-    
