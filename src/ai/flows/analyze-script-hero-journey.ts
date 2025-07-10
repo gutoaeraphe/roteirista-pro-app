@@ -61,15 +61,7 @@ const prompt = ai.definePrompt({
 **Instruções Importantes:**
 1.  **Não force a estrutura:** Identifique **APENAS** os passos da Jornada do Herói que estão claramente presentes no roteiro. Se um passo não existir, não o inclua na análise.
 2.  **Ordem de Aparição:** Liste os passos identificados na ordem em que eles aparecem na narrativa, não na ordem teórica tradicional.
-3.  **Análise Detalhada:**
-    *   **Análise Geral:** Escreva um resumo da análise dramatúrgica geral sobre como a Jornada do Herói é (ou não é) utilizada. Atribua uma nota geral de 1 a 10. Se a nota for 7 ou menos, forneça sugestões para melhorar a estrutura geral da jornada.
-    *   **Passos Identificados:** Para cada passo que você identificar, forneça:
-        - `stepName`: O nome do passo (ex: "O Chamado à Aventura").
-        - `analysis`: Uma análise de como o passo se manifesta no roteiro.
-        - `score`: Uma nota de 1 a 10 para a eficácia e clareza da execução do passo.
-        - `suggestions`: Sugestões de melhoria **apenas se a nota for 7 ou inferior**.
-        - `intensity`: Um número de 0 a 100 representando a intensidade dramática daquele momento.
-    *   **Estrutura de 3 Atos:** Forneça uma análise concisa de cada um dos três atos (Apresentação, Confronto, Resolução), com comentários ou sugestões.
+3.  **Análise Detalhada:** Para a **Análise Geral**, escreva um resumo da análise dramatúrgica geral sobre como a Jornada do Herói é (ou não é) utilizada. Atribua uma nota geral de 1 a 10. Se a nota for 7 ou menos, forneça sugestões para melhorar a estrutura geral da jornada. Para os **Passos Identificados**, para cada passo que você identificar, forneça: o \`stepName\` (nome do passo), a \`analysis\` (análise de como se manifesta), a \`score\` (nota de 1 a 10), \`suggestions\` (sugestões se a nota for <= 7), e \`intensity\` (0-100 para a intensidade dramática). Para a **Estrutura de 3 Atos**, forneça uma análise concisa de cada um dos três atos (Apresentação, Confronto, Resolução).
 
 **Roteiro para Análise:**
 {{{script}}}
