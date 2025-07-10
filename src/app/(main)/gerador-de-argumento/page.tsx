@@ -129,9 +129,7 @@ const universes = [
     { name: "Zona de Guerra ou Grande Conflito", description: "Um cenário dominado pela batalha, tensão e suas consequências." }
 ];
 
-// Zod schema defines the shape of the form data
 const argumentSchema = z.object({
-  // Step 1: Concepts
   tones: z.array(z.string()).optional(),
   customTone: z.string().optional(),
   genres: z.array(z.string()).optional(),
@@ -142,12 +140,10 @@ const argumentSchema = z.object({
   customNarrativeStyle: z.string().optional(),
   universes: z.array(z.string()).optional(),
   customUniverse: z.string().optional(),
-  // Step 2: Theme
   initialTheme: z.string().optional(),
   refinedTheme: z.string().optional(),
   themeSuggestions: z.array(z.string()).optional(),
   selectedSuggestions: z.array(z.string()).optional(),
-  // Step 3: Characters
   protagonistInitialConcept: z.string().optional(),
   protagonistPsychologicalProfile: z.string().optional(),
   protagonistStrengths: z.string().optional(),
@@ -164,7 +160,6 @@ const argumentSchema = z.object({
   antagonistExternalMotivations: z.string().optional(),
   antagonistSocialMotivations: z.string().optional(),
   antagonistProfile: z.string().optional(),
-  // Step 4: Narrative
   narrativeFundamentalConcept: z.string().optional(),
   narrativePlotObjective: z.string().optional(),
   narrativeCharacterObjective: z.string().optional(),
@@ -180,7 +175,7 @@ const OptionsSelector = ({ name, options, label, control }: { name: keyof Argume
     <FormField
         control={control}
         name={name}
-        render={({ field }) => (
+        render={() => (
             <FormItem>
                 <div className="mb-4">
                     <FormLabel className="text-base font-semibold">{label}</FormLabel>
@@ -202,10 +197,11 @@ const OptionsSelector = ({ name, options, label, control }: { name: keyof Argume
                                             <Checkbox
                                             checked={field.value?.includes(item.name)}
                                             onCheckedChange={(checked) => {
+                                                const currentValues = Array.isArray(field.value) ? field.value : [];
                                                 return checked
-                                                ? field.onChange([...(field.value || []), item.name])
+                                                ? field.onChange([...currentValues, item.name])
                                                 : field.onChange(
-                                                    field.value?.filter(
+                                                    currentValues?.filter(
                                                         (value: string) => value !== item.name
                                                     )
                                                     );
@@ -285,14 +281,52 @@ export default function GeradorDeArgumentoPage() {
     },
   });
 
-  const { watch, setValue, control } = form;
+  const { watch, setValue, getValues, control } = form;
+
+  const getStoryContext = (upTo: 'concepts' | 'theme' | 'characters' | 'all') => {
+      const allData = getValues();
+      const context: any = {};
+      
+      const concepts = {
+          tones: allData.tones,
+          customTone: allData.customTone,
+          genres: allData.genres,
+          customGenre: allData.customGenre,
+          conflicts: allData.conflicts,
+          customConflict: allData.customConflict,
+          narrativeStyles: allData.narrativeStyles,
+          customNarrativeStyle: allData.customNarrativeStyle,
+          universes: allData.universes,
+          customUniverse: allData.customUniverse,
+      };
+
+      if (upTo === 'concepts' || upTo === 'theme' || upTo === 'characters' || upTo === 'all') {
+          context.concepts = concepts;
+      }
+      if (upTo === 'theme' || upTo === 'characters' || upTo === 'all') {
+          context.theme = {
+              initialTheme: allData.initialTheme,
+              refinedTheme: allData.refinedTheme,
+              selectedSuggestions: allData.selectedSuggestions,
+          }
+      }
+      if (upTo === 'characters' || upTo === 'all') {
+         context.characters = {
+            protagonistProfile: allData.protagonistProfile,
+            antagonistProfile: allData.antagonistProfile,
+        }
+      }
+
+      return context;
+  }
 
   const handleRefineTheme = async () => {
     const initialTheme = watch('initialTheme');
     if (!initialTheme) return;
     setLoading(prev => ({ ...prev, theme: true }));
     try {
-        const result = await refineTheme({ idea: initialTheme });
+        const storyContext = getStoryContext('concepts');
+        const result = await refineTheme({ idea: initialTheme, storyContext });
         setValue('refinedTheme', result.refinedTheme);
     } catch (e) {
         toast({ title: "Erro", description: "Não foi possível aprimorar o tema."});
@@ -306,7 +340,8 @@ export default function GeradorDeArgumentoPage() {
     if (!mainTheme) return;
     setLoading(prev => ({ ...prev, suggestions: true }));
     try {
-        const result = await generateThemeSuggestions({ mainTheme, count: 4 });
+        const storyContext = getStoryContext('concepts');
+        const result = await generateThemeSuggestions({ mainTheme, count: 4, storyContext });
         setValue('themeSuggestions', result.suggestions);
     } catch (e) {
         toast({ title: "Erro", description: "Não foi possível gerar sugestões."});
@@ -320,7 +355,8 @@ export default function GeradorDeArgumentoPage() {
     if (!mainTheme) return;
     setLoading(prev => ({ ...prev, [`suggestion_${index}`]: true }));
     try {
-        const result = await generateThemeSuggestions({ mainTheme, count: 1 });
+        const storyContext = getStoryContext('concepts');
+        const result = await generateThemeSuggestions({ mainTheme, count: 1, storyContext });
         const currentSuggestions = watch('themeSuggestions') || [];
         currentSuggestions[index] = result.suggestions[0];
         setValue('themeSuggestions', [...currentSuggestions]);
@@ -356,7 +392,7 @@ export default function GeradorDeArgumentoPage() {
     };
     
     const fields = fieldMapping[type];
-    const concept = `
+    const characterConcept = `
         Conceito: ${watch(fields.concept as keyof ArgumentFormData)}
         Perfil Psicológico: ${watch(fields.psychological as keyof ArgumentFormData)}
         Forças: ${watch(fields.strengths as keyof ArgumentFormData)}
@@ -366,13 +402,14 @@ export default function GeradorDeArgumentoPage() {
         Motivações Sociais: ${watch(fields.social as keyof ArgumentFormData)}
     `.trim();
 
-    if (concept.replace(/\s/g, '').length < 10) { 
+    if (characterConcept.replace(/\s/g, '').length < 10) { 
         toast({ title: "Aviso", description: "Forneça mais detalhes sobre o personagem para gerar um perfil." });
         return;
     }
     setLoading(prev => ({ ...prev, [type]: true }));
     try {
-        const result = await refineCharacterProfile({ concept });
+        const storyContext = getStoryContext('theme');
+        const result = await refineCharacterProfile({ concept: characterConcept, storyContext });
         setValue(fields.profile as keyof ArgumentFormData, result.detailedProfile);
     } catch (e) {
         toast({ title: "Erro", description: `Não foi possível aprimorar o ${type}.`});
@@ -382,7 +419,7 @@ export default function GeradorDeArgumentoPage() {
   }
   
   const handleGenerateNarrative = async () => {
-    const concept = `
+    const narrativeConcept = `
         Conceito Fundamental: ${watch('narrativeFundamentalConcept')}
         Objetivo da Trama: ${watch('narrativePlotObjective')}
         Objetivo do Personagem: ${watch('narrativeCharacterObjective')}
@@ -392,14 +429,15 @@ export default function GeradorDeArgumentoPage() {
         Sentimentos Predominantes: ${watch('narrativePredominantFeelings')}
     `.trim();
 
-    if (concept.replace(/\s/g, '').length < 10) { 
+    if (narrativeConcept.replace(/\s/g, '').length < 10) { 
         toast({ title: "Aviso", description: "Forneça mais detalhes sobre a narrativa para gerar uma descrição." });
         return;
     }
     
     setLoading(prev => ({ ...prev, narrative: true }));
     try {
-        const result = await generateNarrativeDetails({ concept });
+        const storyContext = getStoryContext('characters');
+        const result = await generateNarrativeDetails({ concept: narrativeConcept, storyContext });
         setValue('narrativeDetails', result.narrativeDetails);
     } catch (e) {
         toast({ title: "Erro", description: "Não foi possível gerar os detalhes da narrativa."});
@@ -499,7 +537,7 @@ export default function GeradorDeArgumentoPage() {
 
                 <TabsContent value="theme">
                     <div className="space-y-6">
-                        <SectionCard title="1. Tema Principal" description="Insira sua ideia inicial e use a IA para aprimorá-la.">
+                        <SectionCard title="1. Tema Principal" description="Insira sua ideia inicial e use a IA para aprimorá-la, com base nas suas seleções anteriores.">
                              <FormField control={form.control} name="initialTheme" render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Ideia para o tema</FormLabel>
@@ -560,7 +598,7 @@ export default function GeradorDeArgumentoPage() {
 
                 <TabsContent value="characters">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                         <SectionCard title="Protagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado.">
+                         <SectionCard title="Protagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado, considerando todo o contexto da história.">
                             <div className="space-y-4">
                                 <LabeledTextarea name="protagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Nome, profissão, idade, etnia, sexualidade, etc." control={control} minRows={5}/>
                                 <LabeledTextarea name="protagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Otimista mas ingênuo, ansioso..." control={control} minRows={5}/>
@@ -575,7 +613,7 @@ export default function GeradorDeArgumentoPage() {
                             </Button>
                              {watch('protagonistProfile') && <TextareaAutosize readOnly value={watch('protagonistProfile') || ''} minRows={5} className="w-full mt-4 bg-muted p-2 rounded" />}
                          </SectionCard>
-                        <SectionCard title="Antagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado.">
+                        <SectionCard title="Antagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado, considerando todo o contexto da história.">
                            <div className="space-y-4">
                                 <LabeledTextarea name="antagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Um CEO carismático e manipulador..." control={control} minRows={5}/>
                                 <LabeledTextarea name="antagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Narcisista, acredita que os fins justificam os meios..." control={control} minRows={5}/>
@@ -594,7 +632,7 @@ export default function GeradorDeArgumentoPage() {
                 </TabsContent>
 
                 <TabsContent value="narrative">
-                     <SectionCard title="Detalhes da Narrativa" description="Forneça os conceitos e a IA irá expandi-los em uma descrição coesa.">
+                     <SectionCard title="Detalhes da Narrativa" description="Forneça os conceitos e a IA irá expandi-los em uma descrição coesa, usando todo o contexto da história.">
                          <div className="space-y-4">
                             <LabeledTextarea name="narrativeFundamentalConcept" label="Conceito Fundamental" placeholder="Ex: Uma cidade onde a chuva nunca para." control={control} minRows={5}/>
                             <LabeledTextarea name="narrativePlotObjective" label="Objetivo da Trama" placeholder="Ex: Descobrir a origem da chuva eterna." control={control} minRows={5}/>

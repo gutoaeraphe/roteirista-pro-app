@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview Gera sugestões de temas relacionados a um tema principal.
+ * @fileOverview Gera sugestões de temas relacionados a um tema principal, considerando o contexto da história.
  *
  * - generateThemeSuggestions - Uma função que gera sugestões de tema.
  * - GenerateThemeSuggestionsInput - O tipo de entrada para a função.
@@ -12,16 +12,17 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const GenerateThemeSuggestionsInputSchema = z.object({
+export const GenerateThemeSuggestionsInputSchema = z.object({
   mainTheme: z.string().describe('O tema principal a partir do qual as sugestões serão geradas.'),
   count: z.number().optional().default(4).describe('O número de sugestões a serem geradas.'),
+  storyContext: z.any().optional().describe('Um objeto contendo todas as seleções do usuário até o momento (tons, gêneros, conflitos, etc.).'),
 });
-type GenerateThemeSuggestionsInput = z.infer<typeof GenerateThemeSuggestionsInputSchema>;
+export type GenerateThemeSuggestionsInput = z.infer<typeof GenerateThemeSuggestionsInputSchema>;
 
-const GenerateThemeSuggestionsOutputSchema = z.object({
+export const GenerateThemeSuggestionsOutputSchema = z.object({
   suggestions: z.array(z.string()).describe('Uma lista de sugestões de temas relacionados.'),
 });
-type GenerateThemeSuggestionsOutput = z.infer<typeof GenerateThemeSuggestionsOutputSchema>;
+export type GenerateThemeSuggestionsOutput = z.infer<typeof GenerateThemeSuggestionsOutputSchema>;
 
 export async function generateThemeSuggestions(input: GenerateThemeSuggestionsInput): Promise<GenerateThemeSuggestionsOutput> {
   return generateThemeSuggestionsFlow(input);
@@ -31,13 +32,24 @@ const prompt = ai.definePrompt({
   name: 'generateThemeSuggestionsPrompt',
   input: {schema: GenerateThemeSuggestionsInputSchema},
   output: {schema: GenerateThemeSuggestionsOutputSchema},
-  prompt: `Você é um roteirista e filósofo. Com base no tema principal fornecido, gere exatamente {{count}} sugestões. Cada sugestão deve ser uma frase concisa que introduza um tema secundário e explique brevemente como ele pode enriquecer a história principal. Responda inteiramente em português.
+  prompt: `Você é um roteirista e filósofo. Com base no tema principal e no contexto da história fornecidos, gere exatamente {{count}} sugestões.
+
+**Instruções:**
+1.  Considere o **Tema Principal**.
+2.  Analise o **Contexto da História** (tons, gêneros, etc.), se fornecido.
+3.  Cada sugestão deve ser uma frase concisa que introduza um tema secundário e explique brevemente como ele pode enriquecer a história principal, sendo coerente com o contexto.
+4.  Responda inteiramente em português.
 
 **Exemplo de Formato:**
 "Explorar o luto como um catalisador para a mudança, mostrando como a perda força o protagonista a confrontar suas falhas."
 
 **Tema Principal:**
 {{{mainTheme}}}
+
+**Contexto da História (se fornecido):**
+\`\`\`json
+{{{json storyContext}}}
+\`\`\`
 
 Gere as sugestões na lista 'suggestions'.`,
 });
