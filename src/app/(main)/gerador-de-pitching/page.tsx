@@ -9,12 +9,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { generatePitchingDocument } from "@/ai/flows/generate-pitching-document";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, Copy, FileText, Target, Milestone, Users, Palette, BarChart3, TrendingUp, Handshake } from "lucide-react";
+import { Sparkles, Copy, FileText, Target, Milestone, Users, Palette, BarChart3, TrendingUp, Handshake, Rocket } from "lucide-react";
 import type { GeneratePitchingDocumentOutput } from "@/ai/flows/generate-pitching-document";
 import ReactMarkdown from 'react-markdown';
 
-const InfoCard = ({ title, content, icon: Icon }: { title: string; content: string; icon: React.ElementType }) => (
-    <Card>
+const InfoCard = ({ title, content, icon: Icon, className }: { title: string; content: string; icon: React.ElementType; className?: string }) => (
+    <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg"><Icon className="w-5 h-5 text-primary"/> {title}</CardTitle>
       </CardHeader>
@@ -66,38 +66,42 @@ export default function GeradorDePitchingPage() {
   };
 
   const createPlainTextDocument = (doc: GeneratePitchingDocumentOutput): string => {
+    const docData = doc.pitchingDocument;
     return `
 # Documento de Pitching: ${activeScript?.name || 'Projeto'}
 
+## Elevator Pitch
+${docData.elevatorPitch}
+
 ## Logline
-${doc.pitchingDocument.logline}
+${docData.logline}
 
 ## Sinopse
-${doc.pitchingDocument.synopsis}
+${docData.synopsis}
 
 ## Tema
-${doc.pitchingDocument.theme}
+${docData.theme}
 
 ## Público-Alvo
-${doc.pitchingDocument.targetAudience}
+${docData.targetAudience}
 
 ## Justificativa
-${doc.pitchingDocument.justification}
+${docData.justification}
 
 ## Personagens Principais
-${doc.pitchingDocument.mainCharacters}
+${docData.mainCharacters}
 
 ## Tom e Estilo
-${doc.pitchingDocument.toneAndStyle}
+${docData.toneAndStyle}
 
 ## Arco da História
-${doc.pitchingDocument.storyArc}
+${docData.storyArc}
 
 ## Argumento Detalhado
-${doc.pitchingDocument.detailedArgument}
+${docData.detailedArgument}
 
 ## Potencial de Marketing
-${doc.pitchingDocument.marketingPotential}
+${docData.marketingPotential}
     `.trim();
   }
 
@@ -138,12 +142,14 @@ ${doc.pitchingDocument.marketingPotential}
       
       {loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Skeleton className="h-32 w-full md:col-span-2" />
             {[...Array(10)].map((_, i) => <InfoCardSkeleton key={i} />)}
           </div>
       )}
 
       {currentDocument && !loading && (
         <div className="space-y-6">
+            <InfoCard title="Elevator Pitch" content={currentDocument.pitchingDocument.elevatorPitch} icon={Rocket} className="bg-primary/5 border-primary/20" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <InfoCard title="Logline" content={currentDocument.pitchingDocument.logline} icon={Milestone} />
                 <InfoCard title="Sinopse" content={currentDocument.pitchingDocument.synopsis} icon={FileText} />
