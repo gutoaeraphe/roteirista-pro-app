@@ -174,7 +174,7 @@ export default function EstruturaDeRoteiroPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2"><Award /> Análise da Estrutura</CardTitle>
-                            <CardDescription>Avaliação quantitativa e qualitativa dos critérios estruturais do roteiro.</CardDescription>
+                            <CardDescription>Avaliação quantitativa e qualitativa dos critérios estruturais do roteiro. A IA gera sugestões apenas para notas iguais ou inferiores a 7.</CardDescription>
                         </CardHeader>
                         <CardContent>
                              <Accordion type="single" collapsible className="w-full">
