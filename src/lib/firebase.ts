@@ -10,7 +10,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyA4s7PUNkQTJLT4e_ARP3G2sYgzjSj79k0",
   authDomain: "app-roteiro-cmk.firebaseapp.com",
   projectId: "app-roteiro-cmk",
-  storageBucket: "app-roteiro-cmk.firebasestorage.app",
+  storageBucket: "app-roteiro-cmk.appspot.com",
   messagingSenderId: "18498990847",
   appId: "1:18498990847:web:6de1e846697bb0a5f112ca"
 };

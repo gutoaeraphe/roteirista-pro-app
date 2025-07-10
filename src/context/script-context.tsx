@@ -1,8 +1,11 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { Script } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from './auth-context';
+import { db } from '@/lib/firebase';
+import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, where, getDocs } from "firebase/firestore";
 
 type ScriptContextType = {
   scripts: Script[];
@@ -21,87 +24,121 @@ export const ScriptProvider = ({ children }: { children: ReactNode }) => {
   const [activeScript, setActiveScriptState] = useState<Script | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
+
+  const getActiveScriptIdFromLocalStorage = () => {
+    if (typeof window !== 'undefined') {
+        return localStorage.getItem('activeScriptId');
+    }
+    return null;
+  }
+  
+  const setActiveScriptIdInLocalStorage = (scriptId: string | null) => {
+    if (typeof window !== 'undefined') {
+        if (scriptId) {
+            localStorage.setItem('activeScriptId', scriptId);
+        } else {
+            localStorage.removeItem('activeScriptId');
+        }
+    }
+  }
+
 
   useEffect(() => {
-    try {
-      const storedScripts = localStorage.getItem('scripts');
-      const storedActiveScriptId = localStorage.getItem('activeScriptId');
-      
-      if (storedScripts) {
-        const parsedScripts: Script[] = JSON.parse(storedScripts);
-        setScripts(parsedScripts);
-
-        if (storedActiveScriptId) {
-          const foundActiveScript = parsedScripts.find(s => s.id === storedActiveScriptId) || null;
-          setActiveScriptState(foundActiveScript);
+    if (authLoading || !user) {
+        setLoading(authLoading);
+        if (!authLoading) {
+            setScripts([]);
+            setActiveScriptState(null);
         }
-      }
-    } catch (error) {
-      console.error("Failed to load scripts from localStorage", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar os roteiros salvos.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+        return;
     }
-  }, [toast]);
 
-  const saveScripts = (newScripts: Script[], activeScriptId: string | null) => {
-    try {
-      localStorage.setItem('scripts', JSON.stringify(newScripts));
+    setLoading(true);
+    const q = query(collection(db, "users", user.uid, "scripts"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const scriptsData: Script[] = [];
+      querySnapshot.forEach((doc) => {
+        scriptsData.push({ id: doc.id, ...doc.data() } as Script);
+      });
+      setScripts(scriptsData);
+      
+      const activeScriptId = getActiveScriptIdFromLocalStorage();
       if (activeScriptId) {
-        localStorage.setItem('activeScriptId', activeScriptId);
+          const foundActive = scriptsData.find(s => s.id === activeScriptId) || null;
+          setActiveScriptState(foundActive);
+      } else if (scriptsData.length > 0) {
+          setActiveScriptState(scriptsData[0]);
+          setActiveScriptIdInLocalStorage(scriptsData[0].id)
       } else {
-        localStorage.removeItem('activeScriptId');
+          setActiveScriptState(null);
+          setActiveScriptIdInLocalStorage(null)
       }
-    } catch (error) {
-      console.error("Failed to save scripts to localStorage", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível salvar o estado atual.",
-        variant: "destructive",
-      });
-    }
-  };
+
+      setLoading(false);
+    }, (error) => {
+        console.error("Failed to fetch scripts from Firestore", error);
+        toast({ title: "Erro", description: "Não foi possível carregar os roteiros.", variant: "destructive" });
+        setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user, authLoading, toast]);
   
-  const addScript = (scriptData: Omit<Script, 'id' | 'analysis'>) => {
-    const newScript: Script = {
-      ...scriptData,
-      id: new Date().toISOString(),
-      analysis: {},
-    };
-    const newScripts = [...scripts, newScript];
-    setScripts(newScripts);
-    setActiveScriptState(newScript);
-    saveScripts(newScripts, newScript.id);
-  };
-
-  const updateScript = (updatedScript: Script) => {
-    const newScripts = scripts.map(s => (s.id === updatedScript.id ? updatedScript : s));
-    setScripts(newScripts);
-    if(activeScript?.id === updatedScript.id) {
-        setActiveScriptState(updatedScript);
+  const addScript = useCallback(async (scriptData: Omit<Script, 'id' | 'analysis'>) => {
+    if (!user) {
+        toast({ title: "Erro", description: "Você precisa estar logado para adicionar um roteiro.", variant: "destructive"});
+        return;
     }
-    saveScripts(newScripts, activeScript?.id || null);
-  };
+    try {
+        const newDocRef = await addDoc(collection(db, "users", user.uid, "scripts"), {
+            ...scriptData,
+            analysis: {},
+        });
+        const newScript = { ...scriptData, id: newDocRef.id, analysis: {} };
+        setActiveScriptState(newScript);
+        setActiveScriptIdInLocalStorage(newScript.id);
 
-  const deleteScript = (scriptId: string) => {
-    const newScripts = scripts.filter(s => s.id !== scriptId);
-    setScripts(newScripts);
-    if (activeScript?.id === scriptId) {
-      const newActive = newScripts.length > 0 ? newScripts[0] : null;
-      setActiveScriptState(newActive);
-      saveScripts(newScripts, newActive?.id || null);
-    } else {
-      saveScripts(newScripts, activeScript?.id || null);
+    } catch(error) {
+        console.error("Error adding script to Firestore", error);
+        toast({ title: "Erro", description: "Não foi possível adicionar o roteiro.", variant: "destructive" });
     }
-  };
+  }, [user, toast]);
+
+  const updateScript = useCallback(async (updatedScript: Script) => {
+    if (!user) return;
+    const { id, ...dataToUpdate } = updatedScript;
+    try {
+        const scriptRef = doc(db, "users", user.uid, "scripts", id);
+        await updateDoc(scriptRef, dataToUpdate);
+        if (activeScript?.id === id) {
+            setActiveScriptState(updatedScript);
+        }
+    } catch(error) {
+        console.error("Error updating script in Firestore", error);
+        toast({ title: "Erro", description: "Não foi possível salvar as alterações.", variant: "destructive" });
+    }
+  }, [user, activeScript?.id, toast]);
+
+  const deleteScript = useCallback(async (scriptId: string) => {
+    if (!user) return;
+    try {
+        await deleteDoc(doc(db, "users", user.uid, "scripts", scriptId));
+        if (activeScript?.id === scriptId) {
+            const remainingScripts = scripts.filter(s => s.id !== scriptId);
+            const newActive = remainingScripts.length > 0 ? remainingScripts[0] : null;
+            setActiveScriptState(newActive);
+            setActiveScriptIdInLocalStorage(newActive?.id || null);
+        }
+    } catch(error) {
+        console.error("Error deleting script from Firestore", error);
+        toast({ title: "Erro", description: "Não foi possível excluir o roteiro.", variant: "destructive" });
+    }
+  }, [user, activeScript?.id, scripts, toast]);
 
   const setActiveScript = (script: Script | null) => {
     setActiveScriptState(script);
-    localStorage.setItem('activeScriptId', script?.id || '');
+    setActiveScriptIdInLocalStorage(script?.id || null);
   };
 
   return (
