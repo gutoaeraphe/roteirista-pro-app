@@ -22,7 +22,7 @@ const FinalArgumentSchema = z.object({
   synopsis: z.string().describe('Um resumo da trama principal, apresentando os personagens, o conflito e o que está em jogo.'),
   protagonistPresentation: z.string().describe('A apresentação final do protagonista, baseada em seu perfil.'),
   antagonistPresentation: z.string().describe('A apresentação final do antagonista, baseada em seu perfil.'),
-  detailedArgument: z.string().describe('Um argumento detalhado em prosa, conectando todos os elementos da história.'),
+  detailedArgument: z.string().describe('Um argumento detalhado em prosa, conectando todos os elementos da história em uma dramaturgia com início, meio e fim.'),
 });
 
 const CompileStoryArgumentOutputSchema = z.object({
@@ -38,14 +38,17 @@ const prompt = ai.definePrompt({
   name: 'compileStoryArgumentPrompt',
   input: {schema: CompileStoryArgumentInputSchema},
   output: {schema: CompileStoryArgumentOutputSchema},
-  prompt: `Você é um roteirista e produtor experiente. Sua tarefa é compilar todas as informações fornecidas em um único documento de argumento coeso e profissional. Responda inteiramente em português e NÃO use asteriscos (*) ou qualquer formatação especial. A saída deve ser em texto puro para cada campo.
+  prompt: `Você é um roteirista e dramaturgo experiente. Sua tarefa é transformar as informações fornecidas em um documento de argumento coeso e profissional. Responda inteiramente em português e NÃO use asteriscos (*) ou qualquer formatação especial.
 
 **Instruções:**
-1.  Analise o objeto JSON fornecido, que contém todas as seleções e entradas do usuário.
-2.  **Crie uma Logline:** Uma frase concisa e impactante que resuma a história.
+1.  **Analise o objeto JSON** fornecido, que contém todas as seleções e entradas do usuário.
+2.  **Crie uma Logline:** Uma única frase que capture a essência da história.
 3.  **Crie uma Sinopse:** Um resumo da trama, apresentando os personagens, o conflito e o que está em jogo.
-4.  **Crie Apresentações de Personagens:** Use os campos 'protagonistProfile' e 'antagonistProfile' para escrever breves apresentações dos personagens principais.
-5.  **Escreva o Argumento Detalhado:** Com base em TODOS os dados fornecidos (tons, gêneros, conflitos, estilo, universo, tema, personagens, narrativa), escreva um argumento detalhado em prosa. O texto deve fluir como uma história, não como uma lista. Integre organicamente os conceitos em uma narrativa coesa.
+4.  **Crie Apresentações de Personagens:** Use os perfis de protagonista e antagonista para escrever breves apresentações.
+5.  **Escreva o Argumento Detalhado:** Esta é a parte mais importante. Não apenas junte as informações. Em vez disso, **crie uma história de verdade**, uma dramaturgia com início, meio e fim, tecendo todos os elementos (tons, gêneros, conflitos, tema, personagens e detalhes narrativos) em uma narrativa fluida. A estrutura deve ser clara:
+    *   **Ato 1 (Início):** Apresente o protagonista em seu mundo normal. Introduza o conflito principal e o incidente que o força a agir, estabelecendo seu objetivo.
+    *   **Ato 2 (Meio):** Desenvolva a jornada. Mostre os obstáculos aumentando, os riscos se tornando maiores e o protagonista sendo forçado a confrontar suas fraquezas. O antagonista deve atuar ativamente.
+    *   **Ato 3 (Fim):** Leve a história ao clímax, onde o protagonista enfrenta o conflito final. Forneça uma resolução que seja consequência dos eventos e que reflita o tema da história.
 
 ---
 **Dados da História (JSON):**
