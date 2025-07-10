@@ -58,6 +58,11 @@ const prompt = ai.definePrompt({
   output: {schema: AnalyzeScriptHeroJourneyOutputSchema},
   prompt: `Você é um analista de roteiros especialista em dramaturgia e na Jornada do Herói. Analise o roteiro fornecido e responda inteiramente em português, seguindo estritamente o formato de saída JSON.
 
+**Princípios da Análise:**
+
+1.  **Busque Manifestações:** Procure por manifestações dos passos da Jornada do Herói, mesmo que sejam simbólicas, implícitas ou não sigam a estrutura tradicional à risca. Seja perspicaz na sua interpretação, mas não force a identificação de um passo que claramente não existe de forma alguma. O objetivo é encontrar um equilíbrio, evitando uma análise excessivamente severa.
+2.  **Ordem de Aparição:** Liste os passos identificados na ordem em que eles aparecem na narrativa, não na ordem teórica.
+
 **Tarefas de Análise:**
 
 1.  **Análise Geral (overallAnalysis):**
@@ -66,8 +71,7 @@ const prompt = ai.definePrompt({
     *   'suggestions': Se a nota for 7 ou menos, forneça sugestões para melhorar a estrutura geral.
 
 2.  **Passos Identificados (identifiedSteps):**
-    *   **IMPORTANTE**: Identifique APENAS os passos da Jornada do Herói que estão claramente presentes. Não force a estrutura.
-    *   Liste os passos na ordem em que eles aparecem na narrativa.
+    *   Liste os passos que você identificou, na ordem em que aparecem.
     *   Para cada passo, forneça: 'stepName', 'analysis' (concisa), 'score' (1-10), 'intensity' (0-100), e 'suggestions' (apenas se a nota for <= 7).
 
 3.  **Estrutura de 3 Atos (threeActAnalysis):**
