@@ -100,6 +100,15 @@ export default function EstruturaDeRoteiroPage() {
     ]
   : [];
 
+  const criteriaKeyMap: { [key: string]: keyof typeof analysisResult.structureCriteria } = {
+    "Equilíbrio": "balance",
+    "Tensão": "tension",
+    "Unidade": "unity",
+    "Contraste": "contrast",
+    "Direcionalidade": "directionality",
+  };
+
+
   if (!activeScript) {
     return <PagePlaceholder title="Estrutura de Roteiro" description="Para analisar a estrutura do seu roteiro, primeiro selecione um roteiro ativo." />;
   }
@@ -169,8 +178,11 @@ export default function EstruturaDeRoteiroPage() {
                         <CardContent>
                              <Accordion type="single" collapsible className="w-full">
                                 {chartData.map((item) => {
-                                    const key = item.criteria.toLowerCase() as keyof typeof analysisResult.structureCriteria;
-                                    const metricData = analysisResult.structureCriteria[key];
+                                    const key = criteriaKeyMap[item.criteria];
+                                    const metricData = key ? analysisResult.structureCriteria[key] : undefined;
+                                    
+                                    if (!metricData) return null;
+
                                     return (
                                         <AccordionItem value={item.criteria} key={item.criteria}>
                                             <AccordionTrigger>
