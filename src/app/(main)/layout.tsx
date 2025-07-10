@@ -2,10 +2,14 @@
 "use client";
 
 import { AppSidebar } from "@/components/layout/app-sidebar";
+import { AppHeader } from "@/components/layout/app-header"; // Importando o novo cabeçalho
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
 
 export default function MainLayout({
   children,
@@ -36,15 +40,16 @@ export default function MainLayout({
   }
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen w-full flex-col">
       <AppSidebar />
-      <main className="flex-1 ml-0 md:ml-64 p-4 lg:p-8">
-        <div className="max-w-7xl mx-auto w-full">
-          {children}
-        </div>
-      </main>
+      <div className="flex flex-col md:pl-64">
+        <AppHeader />
+        <main className="flex-1 p-4 lg:p-8 pt-16 md:pt-4">
+          <div className="max-w-7xl mx-auto w-full">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
-
-    

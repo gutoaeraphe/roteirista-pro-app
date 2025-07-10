@@ -1,19 +1,10 @@
+
 // src/components/layout/app-sidebar.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarMain,
-  SidebarNav,
-  SidebarNavHeader,
-  SidebarNavHeaderTitle,
-  SidebarNavLink,
-  SidebarFooter,
-} from "@/components/layout/sidebar-layout";
 import {
   FileUp,
   BarChart3,
@@ -27,7 +18,6 @@ import {
   Youtube,
   HelpCircle,
   Film,
-  Clapperboard,
   LogOut,
   UserCircle,
   FileText
@@ -47,6 +37,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 
 const navItems = [
@@ -120,7 +111,20 @@ const learnMoreItems = [
     },
 ];
 
-export function AppSidebar() {
+const NavLink = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
+  <Link
+    href={href}
+    className={cn(
+      "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+      active && "bg-muted text-primary"
+    )}
+  >
+    {children}
+  </Link>
+);
+
+
+export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const { activeScript, loading: scriptLoading } = useScript();
@@ -158,78 +162,74 @@ export function AppSidebar() {
     return "?";
   }
 
-  return (
-    <Sidebar className="hidden md:flex">
-      <SidebarHeader>
-        <Link href="/painel-de-roteiros" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Roteirista Pro" width={180} height={45} />
+  const navContent = (
+    <div className="flex h-full max-h-screen flex-col gap-2">
+      <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+        <Link href="/painel-de-roteiros" className="flex items-center gap-2 font-semibold">
+          <Image src="/logo.png" alt="Roteirista Pro" width={180} height={45} />
         </Link>
-      </SidebarHeader>
-      <SidebarMain className="flex flex-col flex-grow">
-        <SidebarNav>
+      </div>
+      <div className="flex-1 overflow-auto py-2">
+        <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
           {navItems.map((section, sectionIndex) => (
-            <div key={sectionIndex}>
+            <div key={sectionIndex} className="mb-2">
               {section.items ? (
                 <>
-                  <SidebarNavHeader>
-                    <SidebarNavHeaderTitle>{section.title}</SidebarNavHeaderTitle>
-                  </SidebarNavHeader>
+                  <h3 className="mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase">{section.title}</h3>
                   {section.items.map((item) => (
-                    <SidebarNavLink
+                    <NavLink
                       key={item.href}
                       href={item.href}
                       active={pathname === item.href}
                     >
-                      <item.icon className="w-4 h-4" />
+                      <item.icon className="h-4 w-4" />
                       {item.title}
-                    </SidebarNavLink>
+                    </NavLink>
                   ))}
                   {hasGeneratedArgument && section.title === "Ferramentas" && (
-                     <SidebarNavLink
+                     <NavLink
                         href="/argumento-gerado"
                         active={pathname === "/argumento-gerado"}
                       >
-                        <FileText className="w-4 h-4" />
+                        <FileText className="h-4 w-4" />
                         Argumento Gerado
-                      </SidebarNavLink>
+                      </NavLink>
                   )}
                 </>
               ) : (
-                <SidebarNavLink
+                <NavLink
                   href={section.href}
                   active={pathname === section.href}
                 >
-                  <section.icon className="w-4 h-4" />
+                  <section.icon className="h-4 w-4" />
                   {section.title}
-                </SidebarNavLink>
+                </NavLink>
               )}
             </div>
           ))}
           <div>
-            <SidebarNavHeader>
-                <SidebarNavHeaderTitle>Aprenda Mais</SidebarNavHeaderTitle>
-            </SidebarNavHeader>
+             <h3 className="mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase">Aprenda Mais</h3>
             {learnMoreItems.map((item) => (
-                 <SidebarNavLink
+                 <NavLink
                     key={item.href}
                     href={item.href}
                     active={pathname === item.href}
                     >
-                    <item.icon className="w-4 h-4" />
+                    <item.icon className="h-4 w-4" />
                     {item.title}
-                </SidebarNavLink>
+                </NavLink>
             ))}
           </div>
-        </SidebarNav>
-      </SidebarMain>
-      <SidebarFooter>
-        <div className="border-t border-border -mx-4 mb-2"></div>
+        </nav>
+      </div>
+
+      <div className="mt-auto p-4 border-t">
          {scriptLoading || authLoading ? (
-          <div className="p-4">Carregando...</div>
+          <div className="p-4 text-center text-sm text-muted-foreground">Carregando...</div>
         ) : activeScript ? (
-          <div className="px-4 mb-2">
+          <div className="p-3 rounded-lg bg-muted">
             <p className="text-xs text-muted-foreground mb-1">Roteiro Ativo</p>
-            <div className="p-3 rounded-lg bg-muted flex items-center gap-3">
+            <div className="flex items-center gap-3">
               <Film className="w-5 h-5 text-primary flex-shrink-0" />
               <div className="flex-grow overflow-hidden">
                 <p className="font-semibold truncate text-sm">{activeScript.name}</p>
@@ -238,20 +238,17 @@ export function AppSidebar() {
             </div>
           </div>
         ) : (
-          <div className="px-4 mb-2">
             <Link href="/painel-de-roteiros" passHref>
               <Button variant="outline" size="sm" className="w-full">
                 <FileUp className="w-4 h-4 mr-2" />
                 Gerenciar Roteiros
               </Button>
             </Link>
-          </div>
         )}
-        <div className="border-t border-border -mx-4 my-2"></div>
         {user && (
            <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="w-full justify-start items-center gap-2 px-2 h-auto">
+                  <Button variant="ghost" className="w-full justify-start items-center gap-2 px-2 h-auto mt-4">
                     <Avatar className="h-8 w-8">
                        {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || user.email || ''} />}
                        <AvatarFallback>{getInitials(user.displayName, user.email)}</AvatarFallback>
@@ -277,7 +274,17 @@ export function AppSidebar() {
               </DropdownMenuContent>
             </DropdownMenu>
         )}
-      </SidebarFooter>
-    </Sidebar>
+      </div>
+    </div>
+  );
+
+  if (isMobile) {
+      return navContent;
+  }
+
+  return (
+    <div className="hidden border-r bg-card md:block fixed top-0 left-0 h-full">
+        {navContent}
+    </div>
   );
 }

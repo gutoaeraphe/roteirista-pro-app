@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState } from "react";
@@ -482,9 +483,11 @@ export default function GeradorDeArgumentoPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <Tabs defaultValue="tone" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-8">
-                {tabsWithContent.map(tab => <TabsTrigger key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>)}
-              </TabsList>
+              <div className="overflow-x-auto pb-2">
+                <TabsList className="grid w-full grid-cols-4 sm:grid-cols-4 md:flex md:w-auto">
+                  {tabsWithContent.map(tab => <TabsTrigger key={tab.value} value={tab.value} className="text-xs sm:text-sm">{tab.label}</TabsTrigger>)}
+                </TabsList>
+              </div>
               
               <div className="w-full mt-6">
                 <TabsContent value="tone">

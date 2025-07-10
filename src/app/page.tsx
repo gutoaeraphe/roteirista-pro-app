@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -150,7 +151,7 @@ export default function LandingPage() {
       <section className="py-20 md:py-32">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <Image src="/logo.png" alt="Roteirista Pro" width={400} height={100} />
+            <Image src="/logo.png" alt="Roteirista Pro" width={400} height={100} className="w-64 md:w-96 h-auto" />
             <p className="text-xl md:text-2xl text-muted-foreground font-body">Sua sala de roteiristas com inteligência artificial.</p>
             <p className="font-body">Transforme suas ideias em roteiros profissionais com a ajuda de uma IA especialista em dramaturgia, análise de mercado e estrutura narrativa. Otimize seu processo criativo, supere o bloqueio de página em branco e prepare seu projeto para o sucesso.</p>
           </div>
@@ -222,7 +223,7 @@ export default function LandingPage() {
       {/* Advantages Section */}
       <section id="vantagens" className="py-20 bg-primary/5">
         <div className="container mx-auto px-4 text-center">
-            <h2 className="text-4xl font-headline mb-4">Um Ecossistema Completo para Sua História</h2>
+            <h2 className="text-3xl md:text-4xl font-headline mb-4">Um Ecossistema Completo para Sua História</h2>
             <p className="text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">Do conceito à análise de mercado, o Roteirista Pro oferece todas as ferramentas para desenvolver e validar seus projetos audiovisuais.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {advantages.map((advantage) => (
@@ -244,11 +245,11 @@ export default function LandingPage() {
       <section id="criador" className="py-20">
         <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-12 items-center">
-                <div className="relative aspect-square md:aspect-auto md:h-full w-full rounded-lg overflow-hidden shadow-lg min-h-[400px] md:min-h-[600px]">
+                <div className="relative aspect-[4/5] md:aspect-auto md:h-full w-full rounded-lg overflow-hidden shadow-lg min-h-[400px]">
                     <Image src="/guto.png" alt="Foto de Guto Aeraphe" layout="fill" objectFit="cover" />
                 </div>
                 <div className="space-y-6">
-                    <h2 className="text-4xl font-headline">Criado por Quem Vive o Cinema na Prática</h2>
+                    <h2 className="text-3xl md:text-4xl font-headline">Criado por Quem Vive o Cinema na Prática</h2>
                     <p className="text-muted-foreground">Guto Aeraphe não é apenas um teórico. Com mais de 25 anos de experiência como cineasta, roteirista e produtor audiovisual, ele coleciona prêmios em festivais internacionais como os de Los Angeles e Marseille, e é membro da prestigiada Academia Brasileira de Cinema e Artes Visuais. Fundador da CMK Filmes, Guto também dedicou anos à formação de novos talentos como professor universitário. O método Lean Film Design é fruto dessa trajetória: uma solução prática e inovadora que nasceu da necessidade de unir a paixão pela arte de contar histórias com a inteligência estratégica que o mercado audiovisual moderno exige. Ele é o autor que vai te guiar nesta jornada, transformando sua visão em um projeto de sucesso.</p>
                     <blockquote className="border-l-4 border-primary pl-6 italic text-muted-foreground">
                     “Eu passei anos no set dirigindo, escrevendo roteiros e na sala de aula, e vi de perto o potencial incrível de tantos criadores ser desperdiçado pela falta de um método. O Lean Film Design nasceu do meu desejo de criar uma ponte entre a alma de uma história e a lógica do mercado. Este aplicativo não substitui o seu talento; ele o potencializa. É o seu assistente criativo 24 horas por dia, uma bússola para organizar o caos da criação e transformar suas ideias mais ousadas em realidade.”
@@ -264,7 +265,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
              <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="order-2 md:order-1 space-y-6">
-                    <h2 className="text-4xl font-headline">Inspirado em um Manual de Sucesso, Agora na Palma da Sua Mão</h2>
+                    <h2 className="text-3xl md:text-4xl font-headline">Inspirado em um Manual de Sucesso, Agora na Palma da Sua Mão</h2>
                     <p className="text-muted-foreground">Este aplicativo é a evolução digital e interativa do conhecimento consolidado no livro "Manual Prático de Criação para Diretores, Roteiristas e Produtores Modernos: Ou como desenvolver projetos e roteiros audiovisuais com ajuda de I.A. e Design Thinking para qualquer tela", de Guto Aeraphe. Enquanto o livro oferece a base teórica e a profundidade conceitual, nosso aplicativo coloca o método Lean Film Design em ação. Transformamos as planilhas, os cards e as técnicas de gamificação em uma ferramenta intuitiva para que você possa:</p>
                     <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                         <li>Prototipar histórias em minutos.</li>
@@ -278,7 +279,7 @@ export default function LandingPage() {
                         <Button asChild size="lg" variant="secondary"><a href="https://loja.uiclap.com/titulo/ua97438/" target="_blank" rel="noopener noreferrer">Comprar Livro Físico</a></Button>
                     </div>
                 </div>
-                 <div className="order-1 md:order-2 relative aspect-[3/4] w-full max-w-sm mx-auto rounded-lg overflow-hidden shadow-lg">
+                 <div className="order-1 md:order-2 relative aspect-[3/4] w-full max-w-xs mx-auto rounded-lg overflow-hidden shadow-lg">
                     <Image src="/livro.png" alt="Capa do livro Manual Prático de Criação" layout="fill" objectFit="cover" />
                 </div>
             </div>
@@ -289,7 +290,7 @@ export default function LandingPage() {
       <section id="faq" className="py-20">
         <div className="container mx-auto px-4 max-w-4xl">
              <div className="text-center">
-                <h2 className="text-4xl font-headline mb-4">Perguntas Frequentes</h2>
+                <h2 className="text-3xl md:text-4xl font-headline mb-4">Perguntas Frequentes</h2>
                 <p className="text-lg text-muted-foreground mb-12">Tudo o que você precisa saber sobre o Roteirista Pro.</p>
             </div>
             <Accordion type="single" collapsible className="w-full">
