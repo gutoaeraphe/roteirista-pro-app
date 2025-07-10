@@ -1,5 +1,4 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { HelpCircle, Mail } from "lucide-react";
 
@@ -76,11 +75,12 @@ export default function AjudaPage() {
               <CardDescription>Se não encontrou o que procurava, entre em contato com nossa equipe de suporte.</CardDescription>
           </CardHeader>
           <CardContent>
-              <a href="mailto:atendimento@cmkfilmes.com">
-                  <Button className="w-full md:w-auto">
-                      <Mail className="mr-2 h-4 w-4"/> Enviar E-mail para Suporte
-                  </Button>
-              </a>
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-muted-foreground"/>
+                <a href="mailto:atendimento@cmkfilmes.com" className="text-primary hover:underline">
+                  atendimento@cmkfilmes.com
+                </a>
+              </div>
           </CardContent>
       </Card>
     </div>
