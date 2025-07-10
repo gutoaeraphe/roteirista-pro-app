@@ -26,6 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="dark">
+      <head>
+        <link rel="icon" href="/favicon.png" sizes="any" />
+      </head>
       <body
         className={cn(
           "min-h-screen bg-background font-body antialiased",
