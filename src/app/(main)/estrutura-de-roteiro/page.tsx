@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -21,7 +22,7 @@ const MetricCard = ({ title, metric, icon: Icon }: { title: string; metric: Metr
                     <Icon className="w-5 h-5 text-primary"/> {title}
                 </div>
                 <span className={`text-2xl font-bold ${metric.score <= 7 ? 'text-amber-500' : 'text-green-500'}`}>
-                    {metric.score}
+                    {metric.score}/10
                 </span>
             </CardTitle>
         </CardHeader>
@@ -189,7 +190,7 @@ export default function EstruturaDeRoteiroPage() {
                                                 <div className="flex items-center justify-between w-full pr-4">
                                                     <span>{item.criteria}</span>
                                                     <span className={`font-bold text-lg ${metricData.score <= 7 ? 'text-amber-500' : 'text-green-500'}`}>
-                                                        {metricData.score}
+                                                        {metricData.score}/10
                                                     </span>
                                                 </div>
                                             </AccordionTrigger>

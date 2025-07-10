@@ -1,29 +1,30 @@
+
 'use server';
 
 /**
- * @fileOverview Generates a story argument including theme, characters, and narrative structure.
+ * @fileOverview Gera um argumento de história incluindo tema, personagens e estrutura narrativa.
  *
- * - generateStoryArgument - A function that generates the story argument.
- * - GenerateStoryArgumentInput - The input type for the generateStoryArgument function.
- * - GenerateStoryArgumentOutput - The return type for the generateStoryArgument function.
+ * - generateStoryArgument - Uma função que gera o argumento da história.
+ * - GenerateStoryArgumentInput - O tipo de entrada para a função generateStoryArgument.
+ * - GenerateStoryArgumentOutput - O tipo de retorno para a função generateStoryArgument.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateStoryArgumentInputSchema = z.object({
-  genre: z.string().describe('The genre of the story.'),
-  title: z.string().describe('The title of the story.'),
-  numberOfActs: z.number().describe('The desired number of acts in the story.'),
+  genre: z.string().describe('O gênero da história.'),
+  title: z.string().describe('O título da história.'),
+  numberOfActs: z.number().describe('O número desejado de atos na história.'),
 });
 export type GenerateStoryArgumentInput = z.infer<typeof GenerateStoryArgumentInputSchema>;
 
 const GenerateStoryArgumentOutputSchema = z.object({
-  theme: z.string().describe('The central theme of the story.'),
-  protagonistProfile: z.string().describe('A detailed profile of the protagonist.'),
-  antagonistProfile: z.string().describe('A detailed profile of the antagonist.'),
-  narrativeStructure: z.string().describe('A structured narrative outline of the story.'),
-  argument: z.string().describe('A cohesive argument summarizing the story.'),
+  theme: z.string().describe('O tema central da história.'),
+  protagonistProfile: z.string().describe('Um perfil detalhado do protagonista.'),
+  antagonistProfile: z.string().describe('Um perfil detalhado do antagonista.'),
+  narrativeStructure: z.string().describe('Um esboço narrativo estruturado da história.'),
+  argument: z.string().describe('Um argumento coeso resumindo a história.'),
 });
 export type GenerateStoryArgumentOutput = z.infer<typeof GenerateStoryArgumentOutputSchema>;
 
@@ -35,25 +36,19 @@ const generateStoryArgumentPrompt = ai.definePrompt({
   name: 'generateStoryArgumentPrompt',
   input: {schema: GenerateStoryArgumentInputSchema},
   output: {schema: GenerateStoryArgumentOutputSchema},
-  prompt: `You are an experienced screenwriter and producer. Generate a comprehensive story argument based on the provided information.
+  prompt: `Você é um roteirista e produtor experiente. Gere um argumento de história abrangente com base nas informações fornecidas. Responda inteiramente em português.
 
-Genre: {{{genre}}}
-Title: {{{title}}}
-Number of Acts: {{{numberOfActs}}}
+Gênero: {{{genre}}}
+Título: {{{title}}}
+Número de Atos: {{{numberOfActs}}}
 
-Instructions:
-1.  Define a compelling theme that resonates with the story's genre and title.
-2.  Develop detailed profiles for both the protagonist and antagonist, including their motivations, backstories, and arcs.
-3.  Structure the narrative into {{{numberOfActs}}} acts, outlining key plot points, conflicts, and resolutions.
-4.  Compile all the above elements into a cohesive and persuasive argument that encapsulates the essence of the story, highlighting its potential for audience engagement and commercial success.
+Instruções:
+1.  Defina um tema convincente que ressoe com o gênero e o título da história.
+2.  Desenvolva perfis detalhados para o protagonista e o antagonista, incluindo suas motivações, histórias de fundo e arcos.
+3.  Estruture a narrativa em {{{numberOfActs}}} atos, delineando os principais pontos da trama, conflitos e resoluções.
+4.  Compile todos os elementos acima em um argumento coeso e persuasivo que encapsule a essência da história, destacando seu potencial de engajamento do público e sucesso comercial.
 
-Output should be a complete argument ready to be used in a pitch deck.
-
-Theme: {{theme}}
-Protagonist Profile: {{protagonistProfile}}
-Antagonist Profile: {{antagonistProfile}}
-Narrative Structure: {{narrativeStructure}}
-Argument: {{argument}}`,
+A saída deve ser um argumento completo pronto para ser usado em uma apresentação.`,
 });
 
 const generateStoryArgumentFlow = ai.defineFlow(

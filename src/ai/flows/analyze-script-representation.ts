@@ -1,12 +1,13 @@
+
 'use server';
 
 /**
- * @fileOverview This file defines a Genkit flow for analyzing a script's representation of diversity
- *  using the Bechdel, Vito Russo, and DuVernay tests.
+ * @fileOverview Este arquivo define um fluxo Genkit para analisar a representação da diversidade em um roteiro
+ * usando os testes de Bechdel, Vito Russo e DuVernay.
  *
- * - analyzeScriptRepresentation - A function that initiates the script representation analysis flow.
- * - AnalyzeScriptRepresentationInput - The input type for the analyzeScriptRepresentation function.
- * - AnalyzeScriptRepresentationOutput - The return type for the analyzeScriptRepresentation function.
+ * - analyzeScriptRepresentation - Uma função que inicia o fluxo de análise de representação do roteiro.
+ * - AnalyzeScriptRepresentationInput - O tipo de entrada para a função analyzeScriptRepresentation.
+ * - AnalyzeScriptRepresentationOutput - O tipo de retorno para a função analyzeScriptRepresentation.
  */
 
 import {ai} from '@/ai/genkit';
@@ -15,7 +16,7 @@ import {z} from 'genkit';
 const AnalyzeScriptRepresentationInputSchema = z.object({
   scriptContent: z
     .string()
-    .describe('The content of the script to be analyzed.'),
+    .describe('O conteúdo do roteiro a ser analisado.'),
 });
 export type AnalyzeScriptRepresentationInput = z.infer<
   typeof AnalyzeScriptRepresentationInputSchema
@@ -23,26 +24,26 @@ export type AnalyzeScriptRepresentationInput = z.infer<
 
 const AnalyzeScriptRepresentationOutputSchema = z.object({
   bechdelTest: z.object({
-    passed: z.boolean().describe('Whether the script passes the Bechdel test.'),
+    passed: z.boolean().describe('Se o roteiro passa no teste de Bechdel.'),
     reason: z
       .string()
-      .describe('The reason for passing or failing the Bechdel test.'),
+      .describe('A razão em português para passar ou falhar no teste de Bechdel.'),
   }),
   vitoRussoTest: z.object({
     passed: z
       .boolean()
-      .describe('Whether the script passes the Vito Russo test.'),
+      .describe('Se o roteiro passa no teste de Vito Russo.'),
     reason: z
       .string()
-      .describe('The reason for passing or failing the Vito Russo test.'),
+      .describe('A razão em português para passar ou falhar no teste de Vito Russo.'),
   }),
   duVernayTest: z.object({
     passed: z
       .boolean()
-      .describe('Whether the script passes the DuVernay test.'),
+      .describe('Se o roteiro passa no teste de DuVernay.'),
     reason: z
       .string()
-      .describe('The reason for passing or failing the DuVernay test.'),
+      .describe('A razão em português para passar ou falhar no teste de DuVernay.'),
   }),
 });
 export type AnalyzeScriptRepresentationOutput = z.infer<
@@ -59,15 +60,15 @@ const analyzeScriptRepresentationPrompt = ai.definePrompt({
   name: 'analyzeScriptRepresentationPrompt',
   input: {schema: AnalyzeScriptRepresentationInputSchema},
   output: {schema: AnalyzeScriptRepresentationOutputSchema},
-  prompt: `You are an AI assistant that analyzes movie scripts for diversity and representation using the Bechdel, Vito Russo, and DuVernay tests.
+  prompt: `Você é uma IA assistente que analisa roteiros de cinema em busca de diversidade e representatividade, utilizando os testes de Bechdel, Vito Russo e DuVernay.
 
-Bechdel Test: A script passes if it includes at least two named female characters who have at least one conversation with each other about something other than a man.
-Vito Russo Test: A script passes if it contains at least one character that is identifiably lesbian, gay, bisexual, and/or transgender, the character is not solely or predominantly defined by their sexual orientation or gender identity, and the character is integral to the plot, such that their removal would have a significant effect.
-DuVernay Test: A script passes if the cast and crew include women and people of color and if the story subverts classic film stereotypes.
+Teste de Bechdel: Um roteiro é aprovado se inclui pelo menos duas personagens femininas nomeadas que têm pelo menos uma conversa entre si sobre algo que não seja um homem.
+Teste de Vito Russo: Um roteiro é aprovado se contém pelo menos um personagem que seja identificavelmente lésbica, gay, bissexual e/ou transgênero, o personagem não é única ou predominantemente definido por sua orientação sexual ou identidade de gênero, e o personagem é essencial para a trama, de modo que sua remoção teria um efeito significativo.
+Teste de DuVernay: Um roteiro é aprovado se os personagens principais são pessoas não-brancas e se suas histórias subvertem os estereótipos clássicos do cinema.
 
-Analyze the following script and determine whether it passes each of the tests. Explain why or why not in the "reason" field.
+Analise o roteiro a seguir e determine se ele passa em cada um dos testes. Explique o porquê, em português, no campo "reason".
 
-Script: {{{scriptContent}}}`,
+Roteiro: {{{scriptContent}}}`,
 });
 
 const analyzeScriptRepresentationFlow = ai.defineFlow(

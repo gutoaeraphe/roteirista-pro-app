@@ -1,12 +1,13 @@
+
 'use server';
 
 /**
- * @fileOverview Provides market insights for a script, including target audience, market trends,
- * originality, reference works, and distribution channels.
+ * @fileOverview Fornece insights de mercado para um roteiro, incluindo público-alvo, tendências de mercado,
+ * originalidade, obras de referência e canais de distribuição.
  *
- * - analyzeScriptMarket - A function that handles the script market analysis process.
- * - AnalyzeScriptMarketInput - The input type for the analyzeScriptMarket function.
- * - AnalyzeScriptMarketOutput - The return type for the analyzeScriptMarket function.
+ * - analyzeScriptMarket - Uma função que lida com o processo de análise de mercado do roteiro.
+ * - AnalyzeScriptMarketInput - O tipo de entrada para a função analyzeScriptMarket.
+ * - AnalyzeScriptMarketOutput - O tipo de retorno para a função analyzeScriptMarket.
  */
 
 import {ai} from '@/ai/genkit';
@@ -15,22 +16,22 @@ import {z} from 'genkit';
 const AnalyzeScriptMarketInputSchema = z.object({
   scriptSummary: z
     .string()
-    .describe('A summary of the script to analyze for market insights.'),
-  genre: z.string().describe('The genre of the script.'),
+    .describe('Um resumo do roteiro a ser analisado para insights de mercado.'),
+  genre: z.string().describe('O gênero do roteiro.'),
 });
 export type AnalyzeScriptMarketInput = z.infer<typeof AnalyzeScriptMarketInputSchema>;
 
 const AnalyzeScriptMarketOutputSchema = z.object({
-  targetAudience: z.string().describe('The target audience for the script.'),
-  marketTrends: z.string().describe('Current market trends relevant to the script.'),
-  originality: z.string().describe('An assessment of the script’s originality.'),
+  targetAudience: z.string().describe('O público-alvo para o roteiro.'),
+  marketTrends: z.string().describe('Tendências de mercado atuais relevantes para o roteiro.'),
+  originality: z.string().describe('Uma avaliação da originalidade do roteiro.'),
   referenceWorks: z
     .string()
-    .describe('Comparable works that serve as references for the script.'),
+    .describe('Obras comparáveis que servem como referência para o roteiro.'),
   distributionChannels: z
     .string()
-    .describe('Potential distribution channels for the script.'),
-  commercialViability: z.string().describe('Overall commercial viability assessment.'),
+    .describe('Canais de distribuição potenciais para o roteiro.'),
+  commercialViability: z.string().describe('Avaliação geral da viabilidade comercial.'),
 });
 export type AnalyzeScriptMarketOutput = z.infer<typeof AnalyzeScriptMarketOutputSchema>;
 
@@ -42,15 +43,15 @@ const prompt = ai.definePrompt({
   name: 'analyzeScriptMarketPrompt',
   input: {schema: AnalyzeScriptMarketInputSchema},
   output: {schema: AnalyzeScriptMarketOutputSchema},
-  prompt: `You are an experienced film market analyst. Provide market insights for the following script summary:
+  prompt: `Você é um analista de mercado de cinema experiente. Forneça insights de mercado em português para o seguinte resumo de roteiro:
 
-Genre: {{{genre}}}
+Gênero: {{{genre}}}
 
-Script Summary: {{{scriptSummary}}}
+Resumo do Roteiro: {{{scriptSummary}}}
 
-Analyze the script to determine the target audience, relevant market trends, its originality, comparable reference works, potential distribution channels, and an overall commercial viability assessment.  Format your response as a JSON object.
+Analise o roteiro para determinar o público-alvo, tendências de mercado relevantes, sua originalidade, obras de referência comparáveis, canais de distribuição potenciais e uma avaliação geral da viabilidade comercial.
 
-Be concise and specific.`,
+Seja conciso, específico e responda inteiramente em português.`,
 });
 
 const analyzeScriptMarketFlow = ai.defineFlow(

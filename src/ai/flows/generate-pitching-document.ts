@@ -1,30 +1,30 @@
-// src/ai/flows/generate-pitching-document.ts
+
 'use server';
 
 /**
- * @fileOverview A flow that compiles all project information (script, analyses) into a professional and editable Film Design Document.
+ * @fileOverview Um fluxo que compila todas as informações do projeto (roteiro, análises) em um Documento de Design de Filme profissional e editável.
  *
- * - generatePitchingDocument - A function that handles the generation of the Film Design Document.
- * - GeneratePitchingDocumentInput - The input type for the generatePitchingDocument function.
- * - GeneratePitchingDocumentOutput - The return type for the generatePitchingDocument function.
+ * - generatePitchingDocument - Uma função que lida com a geração do Documento de Design de Filme.
+ * - GeneratePitchingDocumentInput - O tipo de entrada para a função generatePitchingDocument.
+ * - GeneratePitchingDocumentOutput - O tipo de retorno para a função generatePitchingDocument.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GeneratePitchingDocumentInputSchema = z.object({
-  script: z.string().describe('The script of the film.'),
-  analysisSummary: z.string().describe('A summary of the script analysis.'),
-  marketAnalysis: z.string().describe('The market analysis for the film.'),
-  characterAnalysis: z.string().describe('The character analysis for the film.'),
-  heroJourneyAnalysis: z.string().describe('The hero journey analysis for the film.'),
-  representativityAnalysis: z.string().describe('The representativity analysis for the film.'),
+  script: z.string().describe('O roteiro do filme.'),
+  analysisSummary: z.string().describe('Um resumo da análise do roteiro.'),
+  marketAnalysis: z.string().describe('A análise de mercado para o filme.'),
+  characterAnalysis: z.string().describe('A análise de personagens para o filme.'),
+  heroJourneyAnalysis: z.string().describe('A análise da jornada do herói para o filme.'),
+  representativityAnalysis: z.string().describe('A análise de representatividade para o filme.'),
 });
 
 export type GeneratePitchingDocumentInput = z.infer<typeof GeneratePitchingDocumentInputSchema>;
 
 const GeneratePitchingDocumentOutputSchema = z.object({
-  filmDesignDocument: z.string().describe('The compiled Film Design Document.'),
+  filmDesignDocument: z.string().describe('O Documento de Design de Filme compilado.'),
 });
 
 export type GeneratePitchingDocumentOutput = z.infer<typeof GeneratePitchingDocumentOutputSchema>;
@@ -37,18 +37,18 @@ const generatePitchingDocumentPrompt = ai.definePrompt({
   name: 'generatePitchingDocumentPrompt',
   input: {schema: GeneratePitchingDocumentInputSchema},
   output: {schema: GeneratePitchingDocumentOutputSchema},
-  prompt: `You are an expert film producer. You will receive the script, a script analysis summary, a market analysis, a character analysis, a hero journey analysis and a representativity analysis for a film.
+  prompt: `Você é um produtor de cinema especialista. Você receberá o roteiro, um resumo da análise do roteiro, uma análise de mercado, uma análise de personagens, uma análise da jornada do herói e uma análise de representatividade para um filme.
 
-  You will compile all this information into a professional and editable Film Design Document, ready to be presented to studios.
+  Compile todas essas informações em um Documento de Design de Filme profissional e editável em português, pronto para ser apresentado a estúdios.
 
-  Script: {{{script}}}
-  Analysis Summary: {{{analysisSummary}}}
-  Market Analysis: {{{marketAnalysis}}}
-  Character Analysis: {{{characterAnalysis}}}
-  Hero Journey Analysis: {{{heroJourneyAnalysis}}}
-  Representativity Analysis: {{{representativityAnalysis}}}
+  Roteiro: {{{script}}}
+  Resumo da Análise: {{{analysisSummary}}}
+  Análise de Mercado: {{{marketAnalysis}}}
+  Análise de Personagens: {{{characterAnalysis}}}
+  Análise da Jornada do Herói: {{{heroJourneyAnalysis}}}
+  Análise de Representatividade: {{{representativityAnalysis}}}
 
-  Film Design Document:`,
+  Documento de Design de Filme:`,
 });
 
 const generatePitchingDocumentFlow = ai.defineFlow(

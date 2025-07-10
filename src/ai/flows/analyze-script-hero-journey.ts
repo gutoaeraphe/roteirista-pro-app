@@ -1,18 +1,18 @@
-// use server'
+
 'use server';
 /**
- * @fileOverview Analyzes a script to identify the 12 steps of the Hero's Journey and visualize the dramatic intensity.
+ * @fileOverview Analisa um roteiro para identificar os 12 passos da Jornada do Herói e visualizar a intensidade dramática.
  *
- * - analyzeScriptHeroJourney - A function that handles the script analysis process.
- * - AnalyzeScriptHeroJourneyInput - The input type for the analyzeScriptHeroJourney function.
- * - AnalyzeScriptHeroJourneyOutput - The return type for the analyzeScriptHeroJourney function.
+ * - analyzeScriptHeroJourney - Uma função que lida com o processo de análise de roteiro.
+ * - AnalyzeScriptHeroJourneyInput - O tipo de entrada para a função analyzeScriptHeroJourney.
+ * - AnalyzeScriptHeroJourneyOutput - O tipo de retorno para a função analyzeScriptHeroJourney.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const AnalyzeScriptHeroJourneyInputSchema = z.object({
-  script: z.string().describe('The screenplay script to analyze.'),
+  script: z.string().describe('O roteiro do filme a ser analisado.'),
 });
 export type AnalyzeScriptHeroJourneyInput = z.infer<
   typeof AnalyzeScriptHeroJourneyInputSchema
@@ -21,10 +21,10 @@ export type AnalyzeScriptHeroJourneyInput = z.infer<
 const AnalyzeScriptHeroJourneyOutputSchema = z.object({
   heroJourneySteps: z
     .array(z.string())
-    .describe('The 12 steps of the hero\'s journey identified in the script.'),
+    .describe('Os 12 passos da jornada do herói identificados no roteiro, com descrições em português.'),
   dramaticIntensity: z
     .array(z.number())
-    .describe('A list of numbers representing the dramatic intensity throughout the script.'),
+    .describe('Uma lista de números representando a intensidade dramática ao longo do roteiro.'),
 });
 export type AnalyzeScriptHeroJourneyOutput = z.infer<
   typeof AnalyzeScriptHeroJourneyOutputSchema
@@ -40,12 +40,14 @@ const prompt = ai.definePrompt({
   name: 'analyzeScriptHeroJourneyPrompt',
   input: {schema: AnalyzeScriptHeroJourneyInputSchema},
   output: {schema: AnalyzeScriptHeroJourneyOutputSchema},
-  prompt: `You are an expert story analyst. Analyze the provided script and identify the 12 steps of the Hero's Journey within it. Also, determine the dramatic intensity throughout the script.
+  prompt: `Você é um analista de histórias especialista. Analise o roteiro fornecido e identifique os 12 passos da Jornada do Herói dentro dele. Além disso, determine a intensidade dramática ao longo do roteiro.
 
-Script:
+Roteiro:
 {{{script}}}
 
-Output the heroJourneySteps as a list of strings, and dramaticIntensity as a corresponding list of numbers (0-100) for each step in the journey.  The higher the number, the more intense the drama at that point in the story.  Make sure the lists are the same length.
+Responda inteiramente em português. Para cada um dos 12 passos, forneça o nome do passo seguido por uma breve descrição de como ele se manifesta no roteiro.
+
+Produza heroJourneySteps como uma lista de strings (cada string contendo o nome do passo e a descrição), e dramaticIntensity como uma lista correspondente de números (0-100) para cada passo da jornada. Quanto maior o número, mais intensa a dramaticidade naquele ponto da história. Certifique-se de que as listas tenham o mesmo comprimento.
 
 {{outputFormatInstructions}}`,
 });
