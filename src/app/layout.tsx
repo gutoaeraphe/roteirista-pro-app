@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { Belleza, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import { ScriptProvider } from "@/context/script-context";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/context/auth-context";
-
-const fontHeadline = Belleza({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-headline",
-});
 
 const fontBody = Inter({
   subsets: ["latin"],
@@ -20,6 +14,9 @@ const fontBody = Inter({
 export const metadata: Metadata = {
   title: "Roteirista Pro",
   description: "Desenvolva seus projetos audiovisuais com IA",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -32,7 +29,6 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-body antialiased",
-          fontHeadline.variable,
           fontBody.variable
         )}
       >
