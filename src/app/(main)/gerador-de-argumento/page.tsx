@@ -8,10 +8,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, RefreshCcw, ThumbsUp, FileText } from "lucide-react";
+import { Sparkles, RefreshCcw, ThumbsUp, FileText, Info } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import TextareaAutosize from 'react-textarea-autosize';
@@ -132,28 +132,46 @@ const universes = [
 const argumentSchema = z.object({
   // Step 1: Concepts
   tones: z.array(z.string()),
-  customTone: z.string(),
+  customTone: z.string().optional(),
   genres: z.array(z.string()),
-  customGenre: z.string(),
+  customGenre: z.string().optional(),
   conflicts: z.array(z.string()),
-  customConflict: z.string(),
+  customConflict: z.string().optional(),
   narrativeStyles: z.array(z.string()),
-  customNarrativeStyle: z.string(),
+  customNarrativeStyle: z.string().optional(),
   universes: z.array(z.string()),
-  customUniverse: z.string(),
+  customUniverse: z.string().optional(),
   // Step 2: Theme
-  initialTheme: z.string(),
-  refinedTheme: z.string(),
+  initialTheme: z.string().optional(),
+  refinedTheme: z.string().optional(),
   themeSuggestions: z.array(z.string()),
   selectedSuggestions: z.array(z.string()),
   // Step 3: Characters
-  protagonistInitialConcept: z.string(),
-  protagonistProfile: z.string(),
-  antagonistInitialConcept: z.string(),
-  antagonistProfile: z.string(),
+  protagonistInitialConcept: z.string().optional(),
+  protagonistPsychologicalProfile: z.string().optional(),
+  protagonistStrengths: z.string().optional(),
+  protagonistWeaknesses: z.string().optional(),
+  protagonistInternalMotivations: z.string().optional(),
+  protagonistExternalMotivations: z.string().optional(),
+  protagonistSocialMotivations: z.string().optional(),
+  protagonistProfile: z.string().optional(),
+  antagonistInitialConcept: z.string().optional(),
+  antagonistPsychologicalProfile: z.string().optional(),
+  antagonistStrengths: z.string().optional(),
+  antagonistWeaknesses: z.string().optional(),
+  antagonistInternalMotivations: z.string().optional(),
+  antagonistExternalMotivations: z.string().optional(),
+  antagonistSocialMotivations: z.string().optional(),
+  antagonistProfile: z.string().optional(),
   // Step 4: Narrative
-  narrativeInitialConcept: z.string(),
-  narrativeDetails: z.string(),
+  narrativeFundamentalConcept: z.string().optional(),
+  narrativePlotObjective: z.string().optional(),
+  narrativeCharacterObjective: z.string().optional(),
+  narrativePlotTwist: z.string().optional(),
+  narrativeKeyObjects: z.string().optional(),
+  narrativeImportantPlaces: z.string().optional(),
+  narrativePredominantFeelings: z.string().optional(),
+  narrativeDetails: z.string().optional(),
 });
 type ArgumentFormData = z.infer<typeof argumentSchema>;
 
@@ -176,7 +194,7 @@ const OptionsSelector = ({ name, options, label, control }: { name: string, opti
                                 return (
                                 <FormItem
                                     key={item.name}
-                                    className="flex flex-col p-4 border rounded-lg space-y-2"
+                                    className="flex flex-col p-4 border rounded-lg space-y-2 bg-muted/20"
                                 >
                                     <div className="flex flex-row items-center space-x-3">
                                         <FormControl>
@@ -193,13 +211,13 @@ const OptionsSelector = ({ name, options, label, control }: { name: string, opti
                                             }}
                                             />
                                         </FormControl>
-                                        <FormLabel className="font-semibold text-sm">
+                                        <FormLabel className="font-semibold text-sm cursor-pointer">
                                             {item.name}
                                         </FormLabel>
                                     </div>
-                                    <FormDescription className="text-xs ml-7">
+                                    <p className="text-xs text-muted-foreground ml-7">
                                         {item.description}
-                                    </FormDescription>
+                                    </p>
                                 </FormItem>
                                 );
                             }}
@@ -224,6 +242,26 @@ const SectionCard = ({ title, description, children, ...props }: { title: string
     </Card>
 );
 
+const LabeledTextarea = ({ name, label, placeholder, control, form }: { name: keyof ArgumentFormData, label: string, placeholder: string, control: any, form: any}) => (
+    <FormField
+        control={control}
+        name={name}
+        render={({ field }) => (
+            <FormItem>
+                <FormLabel>{label}</FormLabel>
+                <FormControl>
+                    <TextareaAutosize
+                        placeholder={placeholder}
+                        {...field}
+                        className="w-full bg-muted/50"
+                    />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+        )}
+    />
+);
+
 export default function GeradorDeArgumentoPage() {
     const [loading, setLoading] = useState<{[key:string]: boolean}>({});
     const [finalArgument, setFinalArgument] = useState("");
@@ -239,13 +277,13 @@ export default function GeradorDeArgumentoPage() {
       narrativeStyles: [], customNarrativeStyle: '',
       universes: [], customUniverse: '',
       initialTheme: '', refinedTheme: '', themeSuggestions: ['', '', '', ''], selectedSuggestions: [],
-      protagonistInitialConcept: '', protagonistProfile: '',
-      antagonistInitialConcept: '', antagonistProfile: '',
-      narrativeInitialConcept: '', narrativeDetails: '',
+      protagonistInitialConcept: '', protagonistPsychologicalProfile: '', protagonistStrengths: '', protagonistWeaknesses: '', protagonistInternalMotivations: '', protagonistExternalMotivations: '', protagonistSocialMotivations: '', protagonistProfile: '',
+      antagonistInitialConcept: '', antagonistPsychologicalProfile: '', antagonistStrengths: '', antagonistWeaknesses: '', antagonistInternalMotivations: '', antagonistExternalMotivations: '', antagonistSocialMotivations: '', antagonistProfile: '',
+      narrativeFundamentalConcept: '', narrativePlotObjective: '', narrativeCharacterObjective: '', narrativePlotTwist: '', narrativeKeyObjects: '', narrativeImportantPlaces: '', narrativePredominantFeelings: '', narrativeDetails: '',
     },
   });
 
-  const { watch, setValue } = form;
+  const { watch, setValue, control } = form;
 
   const handleRefineTheme = async () => {
     const initialTheme = watch('initialTheme');
@@ -292,22 +330,71 @@ export default function GeradorDeArgumentoPage() {
   }
 
   const handleRefineCharacter = async (type: 'protagonist' | 'antagonist') => {
-    const concept = watch(type === 'protagonist' ? 'protagonistInitialConcept' : 'antagonistInitialConcept');
-    if (!concept) return;
+      const fieldMapping = {
+        protagonist: {
+            concept: 'protagonistInitialConcept',
+            profile: 'protagonistProfile',
+            psychological: 'protagonistPsychologicalProfile',
+            strengths: 'protagonistStrengths',
+            weaknesses: 'protagonistWeaknesses',
+            internal: 'protagonistInternalMotivations',
+            external: 'protagonistExternalMotivations',
+            social: 'protagonistSocialMotivations',
+        },
+        antagonist: {
+            concept: 'antagonistInitialConcept',
+            profile: 'antagonistProfile',
+            psychological: 'antagonistPsychologicalProfile',
+            strengths: 'antagonistStrengths',
+            weaknesses: 'antagonistWeaknesses',
+            internal: 'antagonistInternalMotivations',
+            external: 'antagonistExternalMotivations',
+            social: 'antagonistSocialMotivations',
+        }
+    };
+    
+    const fields = fieldMapping[type];
+    const concept = `
+        Conceito: ${watch(fields.concept as keyof ArgumentFormData)}
+        Perfil Psicológico: ${watch(fields.psychological as keyof ArgumentFormData)}
+        Forças: ${watch(fields.strengths as keyof ArgumentFormData)}
+        Fraquezas: ${watch(fields.weaknesses as keyof ArgumentFormData)}
+        Motivações Internas: ${watch(fields.internal as keyof ArgumentFormData)}
+        Motivações Externas: ${watch(fields.external as keyof ArgumentFormData)}
+        Motivações Sociais: ${watch(fields.social as keyof ArgumentFormData)}
+    `.trim();
+
+    if (concept.length < 50) { // Check if there's enough content
+        toast({ title: "Aviso", description: "Forneça mais detalhes sobre o personagem para gerar um perfil." });
+        return;
+    }
     setLoading(prev => ({ ...prev, [type]: true }));
     try {
         const result = await refineCharacterProfile({ concept });
-        setValue(type === 'protagonist' ? 'protagonistProfile' : 'antagonistProfile', result.detailedProfile);
+        setValue(fields.profile as keyof ArgumentFormData, result.detailedProfile);
     } catch (e) {
-        toast({ title: "Erro", description: `Não foi possível aprimorar o ${type === 'protagonist' ? 'protagonista' : 'antagonista'}.`});
+        toast({ title: "Erro", description: `Não foi possível aprimorar o ${type}.`});
     } finally {
         setLoading(prev => ({ ...prev, [type]: false }));
     }
   }
   
   const handleGenerateNarrative = async () => {
-    const concept = watch('narrativeInitialConcept');
-    if (!concept) return;
+    const concept = `
+        Conceito Fundamental: ${watch('narrativeFundamentalConcept')}
+        Objetivo da Trama: ${watch('narrativePlotObjective')}
+        Objetivo do Personagem: ${watch('narrativeCharacterObjective')}
+        Plot Twist: ${watch('narrativePlotTwist')}
+        Objetos Chave: ${watch('narrativeKeyObjects')}
+        Lugares Importantes: ${watch('narrativeImportantPlaces')}
+        Sentimentos Predominantes: ${watch('narrativePredominantFeelings')}
+    `.trim();
+
+    if (concept.length < 50) { // Check if there's enough content
+        toast({ title: "Aviso", description: "Forneça mais detalhes sobre a narrativa para gerar uma descrição." });
+        return;
+    }
+    
     setLoading(prev => ({ ...prev, narrative: true }));
     try {
         const result = await generateNarrativeDetails({ concept });
@@ -352,18 +439,18 @@ export default function GeradorDeArgumentoPage() {
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <Tabs defaultValue="tone" className="w-full" orientation="vertical">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-1 lg:h-full lg:w-48">
+            <Tabs defaultValue="tone" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-8">
                 {tabsWithContent.map(tab => <TabsTrigger key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>)}
               </TabsList>
               
-              <div className="w-full">
+              <div className="w-full mt-6">
                 <TabsContent value="tone">
                     <Card>
                         <CardContent className="pt-6">
                             <OptionsSelector name="tones" options={tones} label="Qual é o Sentimento da História?" control={form.control} />
                             <Separator className="my-6" />
-                            <FormField control={form.control} name="customTone" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio tom:</FormLabel><FormControl><Input placeholder="Ex: Absurdista e Filosófico" {...field} /></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="customTone" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio tom:</FormLabel><FormControl><Input placeholder="Ex: Absurdista e Filosófico" {...field} className="bg-muted/50" /></FormControl></FormItem>)} />
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -373,7 +460,7 @@ export default function GeradorDeArgumentoPage() {
                         <CardContent className="pt-6">
                             <OptionsSelector name="genres" options={genres} label="Qual é a Categoria da História?" control={form.control} />
                             <Separator className="my-6" />
-                            <FormField control={form.control} name="customGenre" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio gênero:</FormLabel><FormControl><Input placeholder="Ex: Comédia de Terror Espacial" {...field} /></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="customGenre" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio gênero:</FormLabel><FormControl><Input placeholder="Ex: Comédia de Terror Espacial" {...field} className="bg-muted/50" /></FormControl></FormItem>)} />
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -383,7 +470,7 @@ export default function GeradorDeArgumentoPage() {
                         <CardContent className="pt-6">
                         <OptionsSelector name="conflicts" options={conflicts} label="Qual é o Motor da História?" control={form.control} />
                             <Separator className="my-6" />
-                            <FormField control={form.control} name="customConflict" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio conflito:</FormLabel><FormControl><Input placeholder="Ex: O peso da imortalidade" {...field} /></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="customConflict" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio conflito:</FormLabel><FormControl><Input placeholder="Ex: O peso da imortalidade" {...field} className="bg-muted/50" /></FormControl></FormItem>)} />
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -393,7 +480,7 @@ export default function GeradorDeArgumentoPage() {
                         <CardContent className="pt-6">
                         <OptionsSelector name="narrativeStyles" options={narrativeStyles} label="Qual é a Estrutura da História?" control={form.control} />
                             <Separator className="my-6" />
-                            <FormField control={form.control} name="customNarrativeStyle" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio estilo:</FormLabel><FormControl><Input placeholder="Ex: Narrativa em primeira pessoa não confiável" {...field} /></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="customNarrativeStyle" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio estilo:</FormLabel><FormControl><Input placeholder="Ex: Narrativa em primeira pessoa não confiável" {...field} className="bg-muted/50" /></FormControl></FormItem>)} />
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -403,7 +490,7 @@ export default function GeradorDeArgumentoPage() {
                         <CardContent className="pt-6">
                         <OptionsSelector name="universes" options={universes} label="Onde a História Acontece?" control={form.control} />
                             <Separator className="my-6" />
-                            <FormField control={form.control} name="customUniverse" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio universo:</FormLabel><FormControl><Input placeholder="Ex: Uma biblioteca que contém todos os livros já escritos" {...field} /></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="customUniverse" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio universo:</FormLabel><FormControl><Input placeholder="Ex: Uma biblioteca que contém todos os livros já escritos" {...field} className="bg-muted/50" /></FormControl></FormItem>)} />
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -415,19 +502,19 @@ export default function GeradorDeArgumentoPage() {
                                 <FormItem>
                                     <FormLabel>Ideia para o tema</FormLabel>
                                     <FormControl>
-                                        <TextareaAutosize placeholder="Ex: Uma história sobre perdão e as consequências de não perdoar." {...field} className="w-full" />
+                                        <TextareaAutosize placeholder="Ex: Uma história sobre perdão e as consequências de não perdoar." {...field} className="w-full bg-muted/50" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                            <Button onClick={handleRefineTheme} disabled={loading.theme || !watch('initialTheme')} className="mt-4">
+                            <Button type="button" onClick={handleRefineTheme} disabled={loading.theme || !watch('initialTheme')} className="mt-4">
                                 {loading.theme ? 'Aprimorando...' : 'Aprimorar com IA'} <Sparkles className="ml-2"/>
                             </Button>
                             {watch('refinedTheme') && <TextareaAutosize readOnly value={watch('refinedTheme')} className="w-full mt-4 bg-muted" />}
                         </SectionCard>
 
                          <SectionCard title="2. Explorar Facetas" description="Gere ideias relacionadas ao seu tema principal para enriquecer a história.">
-                             <Button onClick={handleGenerateSuggestions} disabled={loading.suggestions || (!watch('initialTheme') && !watch('refinedTheme'))}>
+                             <Button type="button" onClick={handleGenerateSuggestions} disabled={loading.suggestions || (!watch('initialTheme') && !watch('refinedTheme'))}>
                                 {loading.suggestions ? 'Gerando...' : 'Gerar Sugestões'} <Sparkles className="ml-2"/>
                             </Button>
                             <FormField control={form.control} name="selectedSuggestions" render={() => (
@@ -443,6 +530,7 @@ export default function GeradorDeArgumentoPage() {
                                                     name="selectedSuggestions"
                                                     render={({ field }) => (
                                                         <Button
+                                                            type="button"
                                                             size="sm"
                                                             variant={field.value.includes(suggestion) ? "default" : "secondary"}
                                                             onClick={() => {
@@ -456,7 +544,7 @@ export default function GeradorDeArgumentoPage() {
                                                         </Button>
                                                     )}
                                                 />
-                                                 <Button size="icon" variant="ghost" onClick={() => handleRegenerateSuggestion(index)} disabled={loading[`suggestion_${index}`]}>
+                                                 <Button type="button" size="icon" variant="ghost" onClick={() => handleRegenerateSuggestion(index)} disabled={loading[`suggestion_${index}`]}>
                                                     <RefreshCcw className={loading[`suggestion_${index}`] ? 'animate-spin' : ''}/>
                                                 </Button>
                                             </CardFooter>
@@ -471,31 +559,31 @@ export default function GeradorDeArgumentoPage() {
                 <TabsContent value="characters">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                          <SectionCard title="Protagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado.">
-                            <FormField control={form.control} name="protagonistInitialConcept" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Conceitos para o Protagonista</FormLabel>
-                                    <FormControl>
-                                        <TextareaAutosize minRows={5} placeholder="Ex: Um detetive velho e cansado, assombrado por um caso não resolvido. Luta contra o alcoolismo. É cínico, mas justo." {...field} className="w-full" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
-                            <Button onClick={() => handleRefineCharacter('protagonist')} disabled={loading.protagonist || !watch('protagonistInitialConcept')} className="mt-4">
+                            <div className="space-y-4">
+                                <LabeledTextarea name="protagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Nome, profissão, idade, etnia, sexualidade, etc." control={control} form={form} />
+                                <LabeledTextarea name="protagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Otimista mas ingênuo, ansioso..." control={control} form={form} />
+                                <LabeledTextarea name="protagonistStrengths" label="Forças" placeholder="Ex: Corajoso sob pressão, mestre da dedução..." control={control} form={form} />
+                                <LabeledTextarea name="protagonistWeaknesses" label="Fraquezas" placeholder="Ex: Teimosia, medo de altura..." control={control} form={form} />
+                                <LabeledTextarea name="protagonistInternalMotivations" label="Motivações Internas" placeholder="Ex: Provar seu valor para si mesmo..." control={control} form={form} />
+                                <LabeledTextarea name="protagonistExternalMotivations" label="Motivações Externas" placeholder="Ex: Uma dívida a ser paga..." control={control} form={form} />
+                                <LabeledTextarea name="protagonistSocialMotivations" label="Motivações Sociais" placeholder="Ex: Proteger sua comunidade..." control={control} form={form} />
+                            </div>
+                            <Button type="button" onClick={() => handleRefineCharacter('protagonist')} disabled={loading.protagonist} className="mt-4">
                                 {loading.protagonist ? 'Gerando...' : 'Gerar Perfil com IA'} <Sparkles className="ml-2"/>
                             </Button>
                              {watch('protagonistProfile') && <TextareaAutosize readOnly value={watch('protagonistProfile')} minRows={5} className="w-full mt-4 bg-muted" />}
                          </SectionCard>
                         <SectionCard title="Antagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado.">
-                            <FormField control={form.control} name="antagonistInitialConcept" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Conceitos para o Antagonista</FormLabel>
-                                    <FormControl>
-                                        <TextareaAutosize minRows={5} placeholder="Ex: Um político carismático que secretamente lidera um cartel. Acredita que os fins justificam os meios. É charmoso e manipulador." {...field} className="w-full" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
-                            <Button onClick={() => handleRefineCharacter('antagonist')} disabled={loading.antagonist || !watch('antagonistInitialConcept')} className="mt-4">
+                           <div className="space-y-4">
+                                <LabeledTextarea name="antagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Um CEO carismático e manipulador..." control={control} form={form} />
+                                <LabeledTextarea name="antagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Narcisista, acredita que os fins justificam os meios..." control={control} form={form} />
+                                <LabeledTextarea name="antagonistStrengths" label="Forças" placeholder="Ex: Inteligência estratégica, grande fortuna..." control={control} form={form} />
+                                <LabeledTextarea name="antagonistWeaknesses" label="Fraquezas" placeholder="Ex: Arrogância, subestima os outros..." control={control} form={form} />
+                                <LabeledTextarea name="antagonistInternalMotivations" label="Motivações Internas" placeholder="Ex: Medo de ser irrelevante..." control={control} form={form} />
+                                <LabeledTextarea name="antagonistExternalMotivations" label="Motivações Externas" placeholder="Ex: Pressão de acionistas..." control={control} form={form} />
+                                <LabeledTextarea name="antagonistSocialMotivations" label="Motivações Sociais" placeholder="Ex: Manter o status e a imagem pública..." control={control} form={form} />
+                            </div>
+                            <Button type="button" onClick={() => handleRefineCharacter('antagonist')} disabled={loading.antagonist} className="mt-4">
                                 {loading.antagonist ? 'Gerando...' : 'Gerar Perfil com IA'} <Sparkles className="ml-2"/>
                             </Button>
                             {watch('antagonistProfile') && <TextareaAutosize readOnly value={watch('antagonistProfile')} minRows={5} className="w-full mt-4 bg-muted" />}
@@ -505,16 +593,16 @@ export default function GeradorDeArgumentoPage() {
 
                 <TabsContent value="narrative">
                      <SectionCard title="Detalhes da Narrativa" description="Forneça os conceitos e a IA irá expandi-los em uma descrição coesa.">
-                         <FormField control={form.control} name="narrativeInitialConcept" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Conceitos Fundamentais da Narrativa</FormLabel>
-                                <FormControl>
-                                    <TextareaAutosize minRows={8} placeholder="Conceito: Uma cidade onde a chuva nunca para. Objetivo da Trama: Descobrir a origem da chuva eterna. Objetivo do Personagem: Encontrar sua filha desaparecida. Plot Twist: A filha é quem controla a chuva. Objetos Chave: Um guarda-chuva que repele a água de forma anormal. Lugares Importantes: Uma torre de relógio parada. Sentimentos Predominantes: Melancolia e esperança." {...field} className="w-full" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                        <Button onClick={handleGenerateNarrative} disabled={loading.narrative || !watch('narrativeInitialConcept')} className="mt-4">
+                         <div className="space-y-4">
+                            <LabeledTextarea name="narrativeFundamentalConcept" label="Conceito Fundamental" placeholder="Ex: Uma cidade onde a chuva nunca para." control={control} form={form} />
+                            <LabeledTextarea name="narrativePlotObjective" label="Objetivo da Trama" placeholder="Ex: Descobrir a origem da chuva eterna." control={control} form={form} />
+                            <LabeledTextarea name="narrativeCharacterObjective" label="Objetivo do Personagem" placeholder="Ex: Encontrar sua filha desaparecida." control={control} form={form} />
+                            <LabeledTextarea name="narrativePlotTwist" label="Plot Twist" placeholder="Ex: A filha é quem controla a chuva." control={control} form={form} />
+                            <LabeledTextarea name="narrativeKeyObjects" label="Objetos Chave" placeholder="Ex: Um guarda-chuva que repele a água de forma anormal." control={control} form={form} />
+                            <LabeledTextarea name="narrativeImportantPlaces" label="Lugares Importantes" placeholder="Ex: Uma torre de relógio parada." control={control} form={form} />
+                            <LabeledTextarea name="narrativePredominantFeelings" label="Sentimentos Predominantes" placeholder="Ex: Melancolia e esperança." control={control} form={form} />
+                         </div>
+                        <Button type="button" onClick={handleGenerateNarrative} disabled={loading.narrative} className="mt-4">
                             {loading.narrative ? 'Gerando...' : 'Gerar Detalhes com IA'} <Sparkles className="ml-2"/>
                         </Button>
                         {watch('narrativeDetails') && <TextareaAutosize readOnly value={watch('narrativeDetails')} minRows={8} className="w-full mt-4 bg-muted" />}
@@ -553,3 +641,5 @@ export default function GeradorDeArgumentoPage() {
     </div>
   );
 }
+
+    
