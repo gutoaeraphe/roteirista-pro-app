@@ -12,14 +12,14 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GenerateThemeSuggestionsInputSchema = z.object({
+const GenerateThemeSuggestionsInputSchema = z.object({
   mainTheme: z.string().describe('O tema principal a partir do qual as sugestões serão geradas.'),
   count: z.number().optional().default(4).describe('O número de sugestões a serem geradas.'),
   storyContext: z.any().optional().describe('Um objeto contendo todas as seleções do usuário até o momento (tons, gêneros, conflitos, etc.).'),
 });
-export type GenerateThemeSuggestionsInput = z.infer<typeof GenerateThemeSuggestionsInputSchema>;
+type GenerateThemeSuggestionsInput = z.infer<typeof GenerateThemeSuggestionsInputSchema>;
 
-export const GenerateThemeSuggestionsOutputSchema = z.object({
+const GenerateThemeSuggestionsOutputSchema = z.object({
   suggestions: z.array(z.string()).describe('Uma lista de sugestões de temas relacionados.'),
 });
 export type GenerateThemeSuggestionsOutput = z.infer<typeof GenerateThemeSuggestionsOutputSchema>;
