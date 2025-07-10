@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -9,26 +10,26 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptCharacters } from "@/ai/flows/analyze-script-characters";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, User, UserCog, Bot, Orbit, BrainCircuit } from "lucide-react";
+import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb } from "lucide-react";
 import type { AnalyzeScriptCharactersOutput } from "@/ai/flows/analyze-script-characters";
 
 const CharacterAnalysisCard = ({ title, content, icon: Icon }: { title: string; content: string; icon: React.ElementType }) => (
   <Card>
     <CardHeader>
-      <CardTitle className="flex items-center gap-2 text-lg"><Icon className="w-5 h-5 text-primary"/> {title}</CardTitle>
+      <CardTitle className="flex items-center gap-2 text-lg font-semibold"><Icon className="w-5 h-5 text-primary"/> {title}</CardTitle>
     </CardHeader>
     <CardContent>
-      <p className="text-sm text-muted-foreground">{content}</p>
+      <p className="text-sm text-muted-foreground whitespace-pre-wrap">{content}</p>
     </CardContent>
   </Card>
 );
 
 const CharacterAnalysisSkeleton = () => (
-    <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        {[...Array(6)].map((_, i) => (
             <Card key={i}>
                 <CardHeader><Skeleton className="h-5 w-1/3" /></CardHeader>
-                <CardContent><Skeleton className="h-16 w-full" /></CardContent>
+                <CardContent><Skeleton className="h-24 w-full" /></CardContent>
             </Card>
         ))}
     </div>
@@ -67,6 +68,29 @@ export default function AnaliseDePersonagensPage() {
     return <PagePlaceholder title="Análise de Personagens" description="Para analisar os personagens, primeiro selecione um roteiro ativo." />;
   }
 
+  const renderCharacterAnalysis = (analysis: AnalyzeScriptCharactersOutput['protagonistAnalysis'] | AnalyzeScriptCharactersOutput['antagonistAnalysis']) => (
+    <div className="space-y-6">
+        <CharacterAnalysisCard title="Perfil Psicológico" content={analysis.psychologicalProfile} icon={BrainCircuit} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CharacterAnalysisCard title="Forças" content={analysis.strengths} icon={TrendingUp} />
+            <CharacterAnalysisCard title="Fraquezas" content={analysis.weaknesses} icon={TrendingDown} />
+        </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CharacterAnalysisCard title="Motivações Internas" content={analysis.internalMotivations} icon={Target}/>
+            <CharacterAnalysisCard title="Motivações Externas" content={analysis.externalMotivations} icon={User}/>
+        </div>
+        <CharacterAnalysisCard title="Arco do Personagem" content={analysis.arc} icon={Orbit}/>
+        <Card className="bg-primary/5 border-primary/20">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-primary"><Lightbulb className="w-5 h-5"/> Sugestões para Melhorar</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-sm text-foreground/90 whitespace-pre-wrap">{analysis.improvementSuggestions}</p>
+            </CardContent>
+        </Card>
+    </div>
+  )
+
   return (
     <div className="space-y-8">
       <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -79,40 +103,28 @@ export default function AnaliseDePersonagensPage() {
           <Sparkles className="ml-2 h-4 w-4" />
         </Button>
       </header>
-
-      {loading && (
-          <Tabs defaultValue="protagonist">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="protagonist"><User className="mr-2 h-4 w-4"/> Protagonista</TabsTrigger>
-                    <TabsTrigger value="antagonist"><Bot className="mr-2 h-4 w-4"/> Antagonista</TabsTrigger>
-                </TabsList>
-                <TabsContent value="protagonist"><CharacterAnalysisSkeleton /></TabsContent>
-                <TabsContent value="antagonist"><CharacterAnalysisSkeleton /></TabsContent>
-          </Tabs>
-      )}
-
-      {analysisResult && !loading && (
+        
         <Tabs defaultValue="protagonist" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="protagonist"><User className="mr-2 h-4 w-4"/> Protagonista</TabsTrigger>
             <TabsTrigger value="antagonist"><Bot className="mr-2 h-4 w-4"/> Antagonista</TabsTrigger>
           </TabsList>
-          <TabsContent value="protagonist" className="mt-4">
-            <div className="space-y-4">
-                <CharacterAnalysisCard title="Perfil Psicológico" content={analysisResult.protagonistAnalysis.psychologicalProfile} icon={BrainCircuit} />
-                <CharacterAnalysisCard title="Motivações" content={analysisResult.protagonistAnalysis.motivations} icon={UserCog}/>
-                <CharacterAnalysisCard title="Arco do Personagem" content={analysisResult.protagonistAnalysis.arc} icon={Orbit}/>
-            </div>
-          </TabsContent>
-          <TabsContent value="antagonist" className="mt-4">
-            <div className="space-y-4">
-                <CharacterAnalysisCard title="Perfil Psicológico" content={analysisResult.antagonistAnalysis.psychologicalProfile} icon={BrainCircuit} />
-                <CharacterAnalysisCard title="Motivações" content={analysisResult.antagonistAnalysis.motivations} icon={UserCog}/>
-                <CharacterAnalysisCard title="Arco do Personagem" content={analysisResult.antagonistAnalysis.arc} icon={Orbit}/>
-            </div>
-          </TabsContent>
+
+          {loading && (
+              <TabsContent value="protagonist"><CharacterAnalysisSkeleton /></TabsContent>
+          )}
+
+          {analysisResult && !loading && (
+            <>
+                <TabsContent value="protagonist" className="mt-6">
+                    {renderCharacterAnalysis(analysisResult.protagonistAnalysis)}
+                </TabsContent>
+                <TabsContent value="antagonist" className="mt-6">
+                    {renderCharacterAnalysis(analysisResult.antagonistAnalysis)}
+                </TabsContent>
+            </>
+          )}
         </Tabs>
-      )}
     </div>
   );
 }
