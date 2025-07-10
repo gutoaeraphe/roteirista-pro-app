@@ -121,7 +121,7 @@ export default function LoginPage() {
             <div className="flex justify-center items-center gap-2 mb-4">
                 <Clapperboard className="w-10 h-10 text-primary" />
                 <h1 className="text-3xl font-headline font-semibold text-primary">
-                    Roteiro Pro
+                    Roteirista Pro
                 </h1>
             </div>
           <CardTitle>Bem-vindo!</CardTitle>

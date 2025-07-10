@@ -50,7 +50,7 @@ export default function AjudaPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-3xl font-headline font-bold">Central de Ajuda</h1>
-        <p className="text-muted-foreground">Encontre respostas para suas dúvidas e saiba como aproveitar ao máximo o Roteiro Aprimorado.</p>
+        <p className="text-muted-foreground">Encontre respostas para suas dúvidas e saiba como aproveitar ao máximo o Roteirista Pro.</p>
       </header>
 
       <Card>

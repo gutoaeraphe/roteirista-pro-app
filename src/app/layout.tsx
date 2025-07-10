@@ -18,7 +18,7 @@ const fontBody = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Roteiro Pro",
+  title: "Roteirista Pro",
   description: "Desenvolva seus projetos audiovisuais com IA",
 };
 

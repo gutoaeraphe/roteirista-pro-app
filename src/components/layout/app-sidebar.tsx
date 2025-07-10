@@ -163,7 +163,7 @@ export function AppSidebar() {
         <div className="flex items-center gap-2">
             <Clapperboard className="w-8 h-8 text-primary" />
             <h1 className="text-xl font-headline font-semibold text-primary">
-            Roteiro Pro
+            Roteirista Pro
             </h1>
         </div>
       </SidebarHeader>
