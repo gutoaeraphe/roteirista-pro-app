@@ -1,6 +1,6 @@
 import type {
-  AnalyzeScriptNarrativeOutput,
-} from '@/ai/flows/analyze-script-narrative';
+  AnalyzeScriptStructureOutput,
+} from '@/ai/flows/analyze-script-structure';
 import type {
   AnalyzeScriptHeroJourneyOutput,
 } from '@/ai/flows/analyze-script-hero-journey';
@@ -25,7 +25,7 @@ export type Script = {
   genre: string;
   content: string;
   analysis: {
-    narrative?: AnalyzeScriptNarrativeOutput;
+    structure?: AnalyzeScriptStructureOutput;
     heroJourney?: AnalyzeScriptHeroJourneyOutput;
     characters?: AnalyzeScriptCharactersOutput;
     representation?: AnalyzeScriptRepresentationOutput;

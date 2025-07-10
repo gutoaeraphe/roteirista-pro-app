@@ -57,8 +57,8 @@ const navItems = [
     title: "Análises",
     items: [
       {
-        title: "Análise de Roteiro",
-        href: "/analise-de-roteiro",
+        title: "Estrutura de Roteiro",
+        href: "/estrutura-de-roteiro",
         icon: BarChart3,
       },
       {
