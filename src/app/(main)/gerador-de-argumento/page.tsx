@@ -8,13 +8,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Info } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
 const tones = [
@@ -149,31 +148,42 @@ const OptionsSelector = ({ name, options, label, control }: { name: string, opti
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {options.map((item) => (
-                        <div key={item.name} className="flex items-center gap-2">
-                             <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>{item.description}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                <FormControl>
-                                    <Checkbox
-                                        checked={field.value?.includes(item.name)}
-                                        onCheckedChange={(checked) => {
-                                            return checked
+                       <FormField
+                            key={item.name}
+                            control={control}
+                            name={name}
+                            render={({ field }) => {
+                                return (
+                                <FormItem
+                                    key={item.name}
+                                    className="flex flex-col p-4 border rounded-lg space-y-2"
+                                >
+                                    <div className="flex flex-row items-center space-x-3">
+                                        <FormControl>
+                                            <Checkbox
+                                            checked={field.value?.includes(item.name)}
+                                            onCheckedChange={(checked) => {
+                                                return checked
                                                 ? field.onChange([...(field.value || []), item.name])
-                                                : field.onChange(field.value?.filter((value: string) => value !== item.name));
-                                        }}
-                                    />
-                                </FormControl>
-                                <FormLabel className="font-normal text-sm">{item.name}</FormLabel>
-                            </FormItem>
-                        </div>
+                                                : field.onChange(
+                                                    field.value?.filter(
+                                                        (value: string) => value !== item.name
+                                                    )
+                                                    );
+                                            }}
+                                            />
+                                        </FormControl>
+                                        <FormLabel className="font-semibold text-sm">
+                                            {item.name}
+                                        </FormLabel>
+                                    </div>
+                                    <FormDescription className="text-xs ml-7">
+                                        {item.description}
+                                    </FormDescription>
+                                </FormItem>
+                                );
+                            }}
+                        />
                     ))}
                 </div>
                 <FormMessage />
