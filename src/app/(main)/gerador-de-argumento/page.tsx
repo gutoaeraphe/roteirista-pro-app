@@ -7,14 +7,21 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles } from "lucide-react";
+import { Sparkles, RefreshCcw, ThumbsUp, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import TextareaAutosize from 'react-textarea-autosize';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
+import { refineTheme } from '@/ai/flows/refine-theme-flow';
+import { generateThemeSuggestions } from '@/ai/flows/generate-theme-suggestions-flow';
+import { refineCharacterProfile } from '@/ai/flows/refine-character-profile-flow';
+import { generateNarrativeDetails } from '@/ai/flows/generate-narrative-details-flow';
+import { compileStoryArgument } from '@/ai/flows/compile-story-argument-flow';
 
 const tones = [
     { name: "Sombrio", description: "Pesado, sério, com elementos perturbadores." },
@@ -122,8 +129,8 @@ const universes = [
     { name: "Zona de Guerra ou Grande Conflito", description: "Um cenário dominado pela batalha, tensão e suas consequências." }
 ];
 
-
 const argumentSchema = z.object({
+  // Step 1: Concepts
   tones: z.array(z.string()),
   customTone: z.string(),
   genres: z.array(z.string()),
@@ -134,6 +141,19 @@ const argumentSchema = z.object({
   customNarrativeStyle: z.string(),
   universes: z.array(z.string()),
   customUniverse: z.string(),
+  // Step 2: Theme
+  initialTheme: z.string(),
+  refinedTheme: z.string(),
+  themeSuggestions: z.array(z.string()),
+  selectedSuggestions: z.array(z.string()),
+  // Step 3: Characters
+  protagonistInitialConcept: z.string(),
+  protagonistProfile: z.string(),
+  antagonistInitialConcept: z.string(),
+  antagonistProfile: z.string(),
+  // Step 4: Narrative
+  narrativeInitialConcept: z.string(),
+  narrativeDetails: z.string(),
 });
 type ArgumentFormData = z.infer<typeof argumentSchema>;
 
@@ -192,11 +212,25 @@ const OptionsSelector = ({ name, options, label, control }: { name: string, opti
     />
 );
 
-export default function GeradorDeArgumentoPage() {
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+const SectionCard = ({ title, description, children, ...props }: { title: string, description: string, children: React.ReactNode, [key: string]: any }) => (
+    <Card {...props}>
+        <CardHeader>
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+            {children}
+        </CardContent>
+    </Card>
+);
 
-  const form = useForm<ArgumentFormData>({
+export default function GeradorDeArgumentoPage() {
+    const [loading, setLoading] = useState<{[key:string]: boolean}>({});
+    const [finalArgument, setFinalArgument] = useState("");
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const { toast } = useToast();
+
+    const form = useForm<ArgumentFormData>({
     resolver: zodResolver(argumentSchema),
     defaultValues: {
       tones: [], customTone: '',
@@ -204,14 +238,110 @@ export default function GeradorDeArgumentoPage() {
       conflicts: [], customConflict: '',
       narrativeStyles: [], customNarrativeStyle: '',
       universes: [], customUniverse: '',
+      initialTheme: '', refinedTheme: '', themeSuggestions: ['', '', '', ''], selectedSuggestions: [],
+      protagonistInitialConcept: '', protagonistProfile: '',
+      antagonistInitialConcept: '', antagonistProfile: '',
+      narrativeInitialConcept: '', narrativeDetails: '',
     },
   });
 
+  const { watch, setValue } = form;
+
+  const handleRefineTheme = async () => {
+    const initialTheme = watch('initialTheme');
+    if (!initialTheme) return;
+    setLoading(prev => ({ ...prev, theme: true }));
+    try {
+        const result = await refineTheme({ idea: initialTheme });
+        setValue('refinedTheme', result.refinedTheme);
+    } catch (e) {
+        toast({ title: "Erro", description: "Não foi possível aprimorar o tema."});
+    } finally {
+        setLoading(prev => ({ ...prev, theme: false }));
+    }
+  }
+
+  const handleGenerateSuggestions = async () => {
+    const mainTheme = watch('refinedTheme') || watch('initialTheme');
+    if (!mainTheme) return;
+    setLoading(prev => ({ ...prev, suggestions: true }));
+    try {
+        const result = await generateThemeSuggestions({ mainTheme });
+        setValue('themeSuggestions', result.suggestions);
+    } catch (e) {
+        toast({ title: "Erro", description: "Não foi possível gerar sugestões."});
+    } finally {
+        setLoading(prev => ({ ...prev, suggestions: false }));
+    }
+  }
+
+  const handleRegenerateSuggestion = async (index: number) => {
+    const mainTheme = watch('refinedTheme') || watch('initialTheme');
+    if (!mainTheme) return;
+    setLoading(prev => ({ ...prev, [`suggestion_${index}`]: true }));
+    try {
+        const result = await generateThemeSuggestions({ mainTheme, count: 1 });
+        const currentSuggestions = watch('themeSuggestions');
+        currentSuggestions[index] = result.suggestions[0];
+        setValue('themeSuggestions', [...currentSuggestions]);
+    } catch (e) {
+        toast({ title: "Erro", description: "Não foi possível gerar a sugestão."});
+    } finally {
+        setLoading(prev => ({ ...prev, [`suggestion_${index}`]: false }));
+    }
+  }
+
+  const handleRefineCharacter = async (type: 'protagonist' | 'antagonist') => {
+    const concept = watch(type === 'protagonist' ? 'protagonistInitialConcept' : 'antagonistInitialConcept');
+    if (!concept) return;
+    setLoading(prev => ({ ...prev, [type]: true }));
+    try {
+        const result = await refineCharacterProfile({ concept });
+        setValue(type === 'protagonist' ? 'protagonistProfile' : 'antagonistProfile', result.detailedProfile);
+    } catch (e) {
+        toast({ title: "Erro", description: `Não foi possível aprimorar o ${type === 'protagonist' ? 'protagonista' : 'antagonista'}.`});
+    } finally {
+        setLoading(prev => ({ ...prev, [type]: false }));
+    }
+  }
+  
+  const handleGenerateNarrative = async () => {
+    const concept = watch('narrativeInitialConcept');
+    if (!concept) return;
+    setLoading(prev => ({ ...prev, narrative: true }));
+    try {
+        const result = await generateNarrativeDetails({ concept });
+        setValue('narrativeDetails', result.narrativeDetails);
+    } catch (e) {
+        toast({ title: "Erro", description: "Não foi possível gerar os detalhes da narrativa."});
+    } finally {
+        setLoading(prev => ({ ...prev, narrative: false }));
+    }
+  }
+
   const onSubmit = async (data: ArgumentFormData) => {
-    // Logic will be implemented in the next steps
-    console.log(data);
-    toast({ title: "Argumento Compilado (em breve)", description: "A lógica de compilação será implementada a seguir." });
+    setLoading(prev => ({ ...prev, compile: true }));
+    try {
+        const result = await compileStoryArgument({ storyData: JSON.stringify(data) });
+        setFinalArgument(result.fullArgument);
+        setIsDialogOpen(true);
+    } catch (e) {
+        toast({ title: "Erro", description: "Não foi possível compilar o argumento final."});
+    } finally {
+        setLoading(prev => ({ ...prev, compile: false }));
+    }
   };
+
+  const tabsWithContent = [
+    { value: "tone", label: "Tom" },
+    { value: "genre", label: "Gênero" },
+    { value: "conflict", label: "Conflito" },
+    { value: "style", label: "Estilo" },
+    { value: "universe", label: "Universo" },
+    { value: "theme", label: "Tema" },
+    { value: "characters", label: "Personagens" },
+    { value: "narrative", label: "Narrativa" },
+  ]
 
   return (
     <div className="space-y-8">
@@ -222,58 +352,204 @@ export default function GeradorDeArgumentoPage() {
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <Tabs defaultValue="tone" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 mb-4">
-                <TabsTrigger value="tone">Tom</TabsTrigger>
-                <TabsTrigger value="genre">Gênero</TabsTrigger>
-                <TabsTrigger value="conflict">Conflito</TabsTrigger>
-                <TabsTrigger value="style">Estilo</TabsTrigger>
-                <TabsTrigger value="universe">Universo</TabsTrigger>
+            <Tabs defaultValue="tone" className="w-full" orientation="vertical">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-1 lg:h-full lg:w-48">
+                {tabsWithContent.map(tab => <TabsTrigger key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>)}
               </TabsList>
               
-              <Card>
-                <CardContent className="pt-6">
-                   <TabsContent value="tone">
-                        <OptionsSelector name="tones" options={tones} label="Qual é o Sentimento da História?" control={form.control} />
-                        <Separator className="my-6" />
-                        <FormField control={form.control} name="customTone" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio tom:</FormLabel><FormControl><Input placeholder="Ex: Absurdista e Filosófico" {...field} /></FormControl></FormItem>)} />
-                   </TabsContent>
+              <div className="w-full">
+                <TabsContent value="tone">
+                    <Card>
+                        <CardContent className="pt-6">
+                            <OptionsSelector name="tones" options={tones} label="Qual é o Sentimento da História?" control={form.control} />
+                            <Separator className="my-6" />
+                            <FormField control={form.control} name="customTone" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio tom:</FormLabel><FormControl><Input placeholder="Ex: Absurdista e Filosófico" {...field} /></FormControl></FormItem>)} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-                   <TabsContent value="genre">
-                       <OptionsSelector name="genres" options={genres} label="Qual é a Categoria da História?" control={form.control} />
-                        <Separator className="my-6" />
-                        <FormField control={form.control} name="customGenre" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio gênero:</FormLabel><FormControl><Input placeholder="Ex: Comédia de Terror Espacial" {...field} /></FormControl></FormItem>)} />
-                   </TabsContent>
+                <TabsContent value="genre">
+                    <Card>
+                        <CardContent className="pt-6">
+                            <OptionsSelector name="genres" options={genres} label="Qual é a Categoria da História?" control={form.control} />
+                            <Separator className="my-6" />
+                            <FormField control={form.control} name="customGenre" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio gênero:</FormLabel><FormControl><Input placeholder="Ex: Comédia de Terror Espacial" {...field} /></FormControl></FormItem>)} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-                   <TabsContent value="conflict">
-                       <OptionsSelector name="conflicts" options={conflicts} label="Qual é o Motor da História?" control={form.control} />
-                        <Separator className="my-6" />
-                        <FormField control={form.control} name="customConflict" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio conflito:</FormLabel><FormControl><Input placeholder="Ex: O peso da imortalidade" {...field} /></FormControl></FormItem>)} />
-                   </TabsContent>
+                <TabsContent value="conflict">
+                    <Card>
+                        <CardContent className="pt-6">
+                        <OptionsSelector name="conflicts" options={conflicts} label="Qual é o Motor da História?" control={form.control} />
+                            <Separator className="my-6" />
+                            <FormField control={form.control} name="customConflict" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio conflito:</FormLabel><FormControl><Input placeholder="Ex: O peso da imortalidade" {...field} /></FormControl></FormItem>)} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-                   <TabsContent value="style">
-                       <OptionsSelector name="narrativeStyles" options={narrativeStyles} label="Qual é a Estrutura da História?" control={form.control} />
-                        <Separator className="my-6" />
-                        <FormField control={form.control} name="customNarrativeStyle" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio estilo:</FormLabel><FormControl><Input placeholder="Ex: Narrativa em primeira pessoa não confiável" {...field} /></FormControl></FormItem>)} />
-                   </TabsContent>
-                   
-                   <TabsContent value="universe">
-                       <OptionsSelector name="universes" options={universes} label="Onde a História Acontece?" control={form.control} />
-                        <Separator className="my-6" />
-                        <FormField control={form.control} name="customUniverse" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio universo:</FormLabel><FormControl><Input placeholder="Ex: Uma biblioteca que contém todos os livros já escritos" {...field} /></FormControl></FormItem>)} />
-                   </TabsContent>
-                </CardContent>
-              </Card>
+                <TabsContent value="style">
+                    <Card>
+                        <CardContent className="pt-6">
+                        <OptionsSelector name="narrativeStyles" options={narrativeStyles} label="Qual é a Estrutura da História?" control={form.control} />
+                            <Separator className="my-6" />
+                            <FormField control={form.control} name="customNarrativeStyle" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio estilo:</FormLabel><FormControl><Input placeholder="Ex: Narrativa em primeira pessoa não confiável" {...field} /></FormControl></FormItem>)} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                
+                <TabsContent value="universe">
+                    <Card>
+                        <CardContent className="pt-6">
+                        <OptionsSelector name="universes" options={universes} label="Onde a História Acontece?" control={form.control} />
+                            <Separator className="my-6" />
+                            <FormField control={form.control} name="customUniverse" render={({ field }) => (<FormItem><FormLabel>Ou adicione seu próprio universo:</FormLabel><FormControl><Input placeholder="Ex: Uma biblioteca que contém todos os livros já escritos" {...field} /></FormControl></FormItem>)} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="theme">
+                    <div className="space-y-6">
+                        <SectionCard title="1. Tema Principal" description="Insira sua ideia inicial e use a IA para aprimorá-la.">
+                             <FormField control={form.control} name="initialTheme" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Ideia para o tema</FormLabel>
+                                    <FormControl>
+                                        <TextareaAutosize placeholder="Ex: Uma história sobre perdão e as consequências de não perdoar." {...field} className="w-full" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <Button onClick={handleRefineTheme} disabled={loading.theme || !watch('initialTheme')} className="mt-4">
+                                {loading.theme ? 'Aprimorando...' : 'Aprimorar com IA'} <Sparkles className="ml-2"/>
+                            </Button>
+                            {watch('refinedTheme') && <TextareaAutosize readOnly value={watch('refinedTheme')} className="w-full mt-4 bg-muted" />}
+                        </SectionCard>
+
+                         <SectionCard title="2. Explorar Facetas" description="Gere ideias relacionadas ao seu tema principal para enriquecer a história.">
+                             <Button onClick={handleGenerateSuggestions} disabled={loading.suggestions || (!watch('initialTheme') && !watch('refinedTheme'))}>
+                                {loading.suggestions ? 'Gerando...' : 'Gerar Sugestões'} <Sparkles className="ml-2"/>
+                            </Button>
+                            <FormField control={form.control} name="selectedSuggestions" render={() => (
+                                <FormItem className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    {watch('themeSuggestions').map((suggestion, index) => (
+                                       <Card key={index} className="flex flex-col">
+                                            <CardContent className="pt-4 flex-grow">
+                                                <p className="text-sm text-muted-foreground">{suggestion || `Sugestão ${index + 1}`}</p>
+                                            </CardContent>
+                                            <CardFooter className="flex items-center justify-between mt-auto">
+                                                 <FormField
+                                                    control={form.control}
+                                                    name="selectedSuggestions"
+                                                    render={({ field }) => (
+                                                        <Button
+                                                            size="sm"
+                                                            variant={field.value.includes(suggestion) ? "default" : "secondary"}
+                                                            onClick={() => {
+                                                                const current = field.value || [];
+                                                                const newSelection = current.includes(suggestion) ? current.filter(s => s !== suggestion) : [...current, suggestion];
+                                                                field.onChange(newSelection);
+                                                            }}
+                                                            disabled={!suggestion}
+                                                        >
+                                                           <ThumbsUp className="mr-2"/> Selecionar
+                                                        </Button>
+                                                    )}
+                                                />
+                                                 <Button size="icon" variant="ghost" onClick={() => handleRegenerateSuggestion(index)} disabled={loading[`suggestion_${index}`]}>
+                                                    <RefreshCcw className={loading[`suggestion_${index}`] ? 'animate-spin' : ''}/>
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    ))}
+                                </FormItem>
+                            )}/>
+                        </SectionCard>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="characters">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                         <SectionCard title="Protagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado.">
+                            <FormField control={form.control} name="protagonistInitialConcept" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Conceitos para o Protagonista</FormLabel>
+                                    <FormControl>
+                                        <TextareaAutosize minRows={5} placeholder="Ex: Um detetive velho e cansado, assombrado por um caso não resolvido. Luta contra o alcoolismo. É cínico, mas justo." {...field} className="w-full" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <Button onClick={() => handleRefineCharacter('protagonist')} disabled={loading.protagonist || !watch('protagonistInitialConcept')} className="mt-4">
+                                {loading.protagonist ? 'Gerando...' : 'Gerar Perfil com IA'} <Sparkles className="ml-2"/>
+                            </Button>
+                             {watch('protagonistProfile') && <TextareaAutosize readOnly value={watch('protagonistProfile')} minRows={5} className="w-full mt-4 bg-muted" />}
+                         </SectionCard>
+                        <SectionCard title="Antagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado.">
+                            <FormField control={form.control} name="antagonistInitialConcept" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Conceitos para o Antagonista</FormLabel>
+                                    <FormControl>
+                                        <TextareaAutosize minRows={5} placeholder="Ex: Um político carismático que secretamente lidera um cartel. Acredita que os fins justificam os meios. É charmoso e manipulador." {...field} className="w-full" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <Button onClick={() => handleRefineCharacter('antagonist')} disabled={loading.antagonist || !watch('antagonistInitialConcept')} className="mt-4">
+                                {loading.antagonist ? 'Gerando...' : 'Gerar Perfil com IA'} <Sparkles className="ml-2"/>
+                            </Button>
+                            {watch('antagonistProfile') && <TextareaAutosize readOnly value={watch('antagonistProfile')} minRows={5} className="w-full mt-4 bg-muted" />}
+                        </SectionCard>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="narrative">
+                     <SectionCard title="Detalhes da Narrativa" description="Forneça os conceitos e a IA irá expandi-los em uma descrição coesa.">
+                         <FormField control={form.control} name="narrativeInitialConcept" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Conceitos Fundamentais da Narrativa</FormLabel>
+                                <FormControl>
+                                    <TextareaAutosize minRows={8} placeholder="Conceito: Uma cidade onde a chuva nunca para. Objetivo da Trama: Descobrir a origem da chuva eterna. Objetivo do Personagem: Encontrar sua filha desaparecida. Plot Twist: A filha é quem controla a chuva. Objetos Chave: Um guarda-chuva que repele a água de forma anormal. Lugares Importantes: Uma torre de relógio parada. Sentimentos Predominantes: Melancolia e esperança." {...field} className="w-full" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <Button onClick={handleGenerateNarrative} disabled={loading.narrative || !watch('narrativeInitialConcept')} className="mt-4">
+                            {loading.narrative ? 'Gerando...' : 'Gerar Detalhes com IA'} <Sparkles className="ml-2"/>
+                        </Button>
+                        {watch('narrativeDetails') && <TextareaAutosize readOnly value={watch('narrativeDetails')} minRows={8} className="w-full mt-4 bg-muted" />}
+                     </SectionCard>
+                </TabsContent>
+
+              </div>
             </Tabs>
 
-            <div className="flex justify-end">
-                <Button type="submit" disabled={true}>
-                    Compilar Argumento
-                    <Sparkles className="ml-2 h-4 w-4" />
+            <div className="flex justify-end pt-8 border-t">
+                <Button type="submit" disabled={loading.compile}>
+                    {loading.compile ? 'Compilando...' : 'Compilar Argumento Final'}
+                    <FileText className="ml-2" />
                 </Button>
             </div>
         </form>
       </Form>
+
+       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="max-w-3xl h-5/6 flex flex-col">
+              <DialogHeader>
+                  <DialogTitle>Argumento Final Compilado</DialogTitle>
+                  <DialogDescription>
+                      Este é o argumento da sua história, gerado com base em todas as suas seleções. Você pode copiá-lo e salvá-lo.
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="flex-grow overflow-auto pr-4">
+                <TextareaAutosize
+                    readOnly
+                    value={finalArgument}
+                    className="w-full h-full bg-transparent resize-none border-none focus:ring-0"
+                />
+              </div>
+          </DialogContent>
+      </Dialog>
     </div>
   );
 }
