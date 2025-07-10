@@ -6,7 +6,7 @@ import { HelpCircle, Mail } from "lucide-react";
 const faqItems = [
     {
         question: "Como funciona o Painel de Roteiros?",
-        answer: "No Painel de Roteiros, você pode adicionar novos roteiros colando o texto e preenchendo os metadados (nome, formato, gênero). A lista de roteiros permite que você selecione um como 'ativo' para ser usado em todas as ferramentas de análise. Você também pode excluir roteiros que não precisa mais."
+        answer: "No Painel de Roteiros, você pode adicionar novos roteiros fazendo o upload de arquivos de texto (.txt) e preenchendo os metadados. A lista de roteiros permite que você selecione um como 'ativo' para ser usado em todas as ferramentas de análise."
     },
     {
         question: "O que são as Análises?",
@@ -26,7 +26,7 @@ const faqItems = [
     },
     {
         question: "Meus roteiros estão seguros?",
-        answer: "Sim. Seus roteiros são armazenados apenas no seu navegador (usando Local Storage). Eles não são enviados para nossos servidores, exceto para o processamento de IA no momento da análise, e não são armazenados após o processo."
+        answer: "Sim. Seus roteiros são armazenados de forma segura no Firebase Cloud Firestore, associados à sua conta pessoal. Eles só são acessados para o processamento de IA no momento da análise."
     }
 ];
 
@@ -35,7 +35,7 @@ export default function AjudaPage() {
     <div className="space-y-8">
       <header>
         <h1 className="text-3xl font-headline font-bold">Central de Ajuda</h1>
-        <p className="text-muted-foreground">Encontre respostas para suas dúvidas e saiba como aproveitar ao máximo o Roteiro Aprimorado.</p>
+        <p className="text-muted-foreground">Encontre respostas para suas dúvidas e saiba como aproveitar ao máximo o Roteiro Pro.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
