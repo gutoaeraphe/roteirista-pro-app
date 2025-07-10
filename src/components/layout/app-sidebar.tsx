@@ -1,7 +1,7 @@
 // src/components/layout/app-sidebar.tsx
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -29,7 +29,8 @@ import {
   Film,
   Clapperboard,
   LogOut,
-  UserCircle
+  UserCircle,
+  FileText
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -103,21 +104,19 @@ const navItems = [
       },
     ],
   },
-  {
-    title: "Aprenda Mais",
-    items: [
-      {
-        title: "Masterclass",
-        href: "/masterclass",
-        icon: Youtube,
-      },
-      {
-        title: "Ajuda",
-        href: "/ajuda",
-        icon: HelpCircle,
-      },
-    ],
-  },
+];
+
+const learnMoreItems = [
+    {
+      title: "Masterclass",
+      href: "/masterclass",
+      icon: Youtube,
+    },
+    {
+      title: "Ajuda",
+      href: "/ajuda",
+      icon: HelpCircle,
+    },
 ];
 
 export function AppSidebar() {
@@ -125,6 +124,15 @@ export function AppSidebar() {
   const router = useRouter();
   const { activeScript, loading: scriptLoading } = useScript();
   const { user, loading: authLoading } = useAuth();
+  const [hasGeneratedArgument, setHasGeneratedArgument] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+        const storedArgument = localStorage.getItem('generatedArgument');
+        setHasGeneratedArgument(!!storedArgument);
+    }
+  }, [pathname]);
+
 
   const handleLogout = async () => {
     try {
@@ -178,6 +186,15 @@ export function AppSidebar() {
                       {item.title}
                     </SidebarNavLink>
                   ))}
+                  {hasGeneratedArgument && section.title === "Ferramentas" && (
+                     <SidebarNavLink
+                        href="/argumento-gerado"
+                        active={pathname === "/argumento-gerado"}
+                      >
+                        <FileText className="w-4 h-4" />
+                        Argumento Gerado
+                      </SidebarNavLink>
+                  )}
                 </>
               ) : (
                 <SidebarNavLink
@@ -190,6 +207,21 @@ export function AppSidebar() {
               )}
             </div>
           ))}
+          <div>
+            <SidebarNavHeader>
+                <SidebarNavHeaderTitle>Aprenda Mais</SidebarNavHeaderTitle>
+            </SidebarNavHeader>
+            {learnMoreItems.map((item) => (
+                 <SidebarNavLink
+                    key={item.href}
+                    href={item.href}
+                    active={pathname === item.href}
+                    >
+                    <item.icon className="w-4 h-4" />
+                    {item.title}
+                </SidebarNavLink>
+            ))}
+          </div>
         </SidebarNav>
       </SidebarMain>
       <SidebarFooter>

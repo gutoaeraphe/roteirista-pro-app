@@ -17,8 +17,16 @@ const CompileStoryArgumentInputSchema = z.object({
 });
 type CompileStoryArgumentInput = z.infer<typeof CompileStoryArgumentInputSchema>;
 
+const FinalArgumentSchema = z.object({
+  logline: z.string().describe('Uma frase concisa e impactante que resume a essência da história.'),
+  synopsis: z.string().describe('Um resumo da trama principal, apresentando os personagens, o conflito e o que está em jogo.'),
+  protagonistPresentation: z.string().describe('A apresentação final do protagonista, baseada em seu perfil.'),
+  antagonistPresentation: z.string().describe('A apresentação final do antagonista, baseada em seu perfil.'),
+  detailedArgument: z.string().describe('Um argumento detalhado em prosa, conectando todos os elementos da história.'),
+});
+
 const CompileStoryArgumentOutputSchema = z.object({
-    fullArgument: z.string().describe('O documento de argumento completo, incluindo logline, sinopse, perfis de personagem e o argumento em prosa.'),
+  finalArgument: FinalArgumentSchema,
 });
 export type CompileStoryArgumentOutput = z.infer<typeof CompileStoryArgumentOutputSchema>;
 
@@ -30,39 +38,21 @@ const prompt = ai.definePrompt({
   name: 'compileStoryArgumentPrompt',
   input: {schema: CompileStoryArgumentInputSchema},
   output: {schema: CompileStoryArgumentOutputSchema},
-  prompt: `Você é um roteirista e produtor experiente. Sua tarefa é compilar todas as informações fornecidas em um único documento de argumento coeso e profissional. Responda inteiramente em português.
+  prompt: `Você é um roteirista e produtor experiente. Sua tarefa é compilar todas as informações fornecidas em um único documento de argumento coeso e profissional. Responda inteiramente em português e NÃO use asteriscos (*) ou qualquer formatação especial. A saída deve ser em texto puro para cada campo.
 
 **Instruções:**
 1.  Analise o objeto JSON fornecido, que contém todas as seleções e entradas do usuário.
 2.  **Crie uma Logline:** Uma frase concisa e impactante que resuma a história.
 3.  **Crie uma Sinopse:** Um resumo da trama, apresentando os personagens, o conflito e o que está em jogo.
-4.  **Crie Perfis de Personagens:** Use os campos 'protagonistProfile' e 'antagonistProfile' para escrever breves apresentações dos personagens principais.
-5.  **Escreva o Argumento:** Com base em TODOS os dados fornecidos (tons, gêneros, conflitos, estilo, universo, tema, personagens, narrativa), escreva um argumento detalhado em prosa. O texto deve fluir como uma história, não como uma lista. Integre organicamente os conceitos em uma narrativa coesa.
-
-**Formato da Saída:**
-O resultado deve ser um único texto contínuo, formatado da seguinte maneira (use quebras de linha duplas entre as seções):
-
-**LOGLINE**
-[Sua logline aqui]
-
-**SINOPSE**
-[Sua sinopse aqui]
-
-**PERSONAGENS**
-
-**Protagonista:**
-[Apresentação do protagonista aqui]
-
-**Antagonista:**
-[Apresentação do antagonista aqui]
-
-**ARGUMENTO**
-[Seu argumento detalhado em prosa aqui]
+4.  **Crie Apresentações de Personagens:** Use os campos 'protagonistProfile' e 'antagonistProfile' para escrever breves apresentações dos personagens principais.
+5.  **Escreva o Argumento Detalhado:** Com base em TODOS os dados fornecidos (tons, gêneros, conflitos, estilo, universo, tema, personagens, narrativa), escreva um argumento detalhado em prosa. O texto deve fluir como uma história, não como uma lista. Integre organicamente os conceitos em uma narrativa coesa.
 
 ---
 **Dados da História (JSON):**
 {{{storyData}}}
 ---
+
+Gere o resultado no objeto 'finalArgument', preenchendo todos os seus campos.
 `,
 });
 

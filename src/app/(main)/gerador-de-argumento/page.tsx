@@ -15,7 +15,7 @@ import { Sparkles, RefreshCcw, ThumbsUp, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import TextareaAutosize from 'react-textarea-autosize';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 import { refineTheme } from '@/ai/flows/refine-theme-flow';
 import { generateThemeSuggestions } from '@/ai/flows/generate-theme-suggestions-flow';
@@ -262,8 +262,7 @@ const LabeledTextarea = ({ name, label, placeholder, control, minRows = 3 }: { n
 
 export default function GeradorDeArgumentoPage() {
     const [loading, setLoading] = useState<{[key:string]: boolean}>({});
-    const [finalArgument, setFinalArgument] = useState("");
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const router = useRouter();
     const { toast } = useToast();
 
     const form = useForm<ArgumentFormData>({
@@ -450,9 +449,12 @@ export default function GeradorDeArgumentoPage() {
     setLoading(prev => ({ ...prev, compile: true }));
     try {
         const result = await compileStoryArgument({ storyData: JSON.stringify(data) });
-        setFinalArgument(result.fullArgument);
-        setIsDialogOpen(true);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('generatedArgument', JSON.stringify(result.finalArgument));
+            router.push('/argumento-gerado');
+        }
     } catch (e) {
+        console.error("Erro ao compilar argumento:", e);
         toast({ title: "Erro", description: "Não foi possível compilar o argumento final."});
     } finally {
         setLoading(prev => ({ ...prev, compile: false }));
@@ -660,24 +662,6 @@ export default function GeradorDeArgumentoPage() {
             </div>
         </form>
       </Form>
-
-       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-4xl h-5/6 flex flex-col">
-              <DialogHeader>
-                  <DialogTitle>Argumento Final Compilado</DialogTitle>
-                  <DialogDescription>
-                      Este é o argumento da sua história, gerado com base em todas as suas seleções. Você pode copiá-lo e salvá-lo.
-                  </DialogDescription>
-              </DialogHeader>
-              <div className="flex-grow overflow-auto pr-4">
-                <TextareaAutosize
-                    readOnly
-                    value={finalArgument}
-                    className="w-full h-full bg-transparent resize-none border-none focus:ring-0 whitespace-pre-wrap"
-                />
-              </div>
-          </DialogContent>
-      </Dialog>
     </div>
   );
 }
