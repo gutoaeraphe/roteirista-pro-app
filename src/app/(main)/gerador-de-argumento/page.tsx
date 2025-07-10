@@ -2,54 +2,127 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { generateStoryArgument } from "@/ai/flows/generate-story-argument";
-import { Sparkles, PenSquare, FileText, Check, PlusCircle, X } from "lucide-react";
+import { Sparkles, Info } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 const tones = [
-    "Sombrio", "Leve", "Épico", "Íntimo", "Cômico", "Trágico", "Sarcástico/Irônico",
-    "Cínico", "Melancólico", "Inspirador/Otimista", "Tenso/Apreensivo", "Misterioso",
-    "Absurdo/Surreal", "Poético/Lírico", "Realista/Naturalista", "Nostálgico",
-    "Aventureiro", "Aterrador", "Farsesco", "Grotesco"
+    { name: "Sombrio", description: "Pesado, sério, com elementos perturbadores." },
+    { name: "Leve", description: "Despreocupado, otimista e fácil de assistir." },
+    { name: "Épico", description: "Grandioso, de grande escala, com temas heroicos." },
+    { name: "Íntimo", description: "Focado em poucos personagens e em seus conflitos internos." },
+    { name: "Cômico", description: "Engraçado, com o objetivo de fazer rir." },
+    { name: "Trágico", description: "Termina em desastre para o protagonista; inspira pena e medo." },
+    { name: "Sarcástico/Irônico", description: "Usa o humor ácido e a zombaria para criticar." },
+    { name: "Cínico", description: "Descrente da bondade e das motivações humanas." },
+    { name: "Melancólico", description: "Triste, nostálgico e pensativo." },
+    { name: "Inspirador/Otimista", description: "Eleva o espírito e celebra o potencial humano." },
+    { name: "Tenso/Apreensivo", description: "Cria uma sensação constante de suspense e perigo." },
+    { name: "Misterioso", description: "Enigmático, cheio de segredos a serem revelados." },
+    { name: "Absurdo/Surreal", description: "Desafia a lógica e a realidade de forma cômica ou filosófica." },
+    { name: "Poético/Lírico", description: "Focado na beleza da linguagem e das imagens." },
+    { name: "Realista/Naturalista", description: "Retrata a vida como ela é, sem filtros ou exageros." },
+    { name: "Nostálgico", description: "Ancorado em uma saudade de um tempo passado." },
+    { name: "Aventureiro", description: "Cheio de energia, exploração e descobertas." },
+    { name: "Aterrador", description: "Focado em causar medo e pavor extremo." },
+    { name: "Farsesco", description: "Comédia exagerada, baseada em situações improváveis e mal-entendidos." },
+    { name: "Grotesco", description: "Mistura o bizarro, o feio e o cômico de forma desconfortável." }
 ];
 const genres = [
-    "Ficção Científica", "Fantasia", "Terror", "Suspense (Thriller)", "Ação", "Aventura",
-    "Comédia", "Drama", "Romance", "Policial/Crime", "Mistério", "Faroeste (Western)",
-    "Musical", "Guerra", "Histórico/Épico", "Biografia (Biopic)", "Comédia Romântica",
-    "Thriller Psicológico", "Super-herói", "Falso Documentário (Mockumentary)"
+    { name: "Ficção Científica", description: "Explora conceitos de ciência e tecnologia futura." },
+    { name: "Fantasia", description: "Elementos mágicos e sobrenaturais em um mundo imaginário." },
+    { name: "Terror", description: "O objetivo principal é causar medo, choque ou repulsa." },
+    { name: "Suspense (Thriller)", description: "Cria tensão, ansiedade e expectativa no público." },
+    { name: "Ação", description: "Focado em sequências de combate, perseguições e feitos físicos." },
+    { name: "Aventura", description: "Uma jornada perigosa em busca de um objetivo ou tesouro." },
+    { name: "Comédia", description: "Leve e humorístico, geralmente com um final feliz." },
+    { name: "Drama", description: "Conflitos emocionais sérios e realistas entre personagens." },
+    { name: "Romance", description: "O desenvolvimento de um relacionamento amoroso é o foco central." },
+    { name: "Policial/Crime", description: "Centrado na investigação de um crime por parte da lei ou dos criminosos." },
+    { name: "Mistério", description: "Um quebra-cabeça a ser resolvido pelo protagonista e pelo público." },
+    { name: "Faroeste (Western)", description: "Ambientado no Velho Oeste americano, com cowboys e pioneiros." },
+    { name: "Musical", description: "A narrativa é contada ou interrompida por canções e danças." },
+    { name: "Guerra", description: "Ambientado durante um conflito militar real ou fictício." },
+    { name: "Histórico/Épico", description: "Baseado em eventos ou figuras históricas importantes." },
+    { name: "Biografia (Biopic)", description: "Dramatiza a vida de uma pessoa real e notável." },
+    { name: "Comédia Romântica", description: "Mistura humor leve com uma trama de amor." },
+    { name: "Thriller Psicológico", description: "Suspense focado na instabilidade mental e emocional dos personagens." },
+    { name: "Super-herói", description: "Centrado em personagens com habilidades sobre-humanas lutando pelo bem." },
+    { name: "Falso Documentário (Mockumentary)", description: "Filma a ficção no estilo de um documentário para criar humor ou realismo." }
 ];
 const conflicts = [
-    "Redenção", "Sobrevivência", "Vingança", "Poder", "Amor Proibido", "Justiça",
-    "Liberdade", "Ganância/Dinheiro", "Fé vs. Dúvida", "Tradição vs. Mudança",
-    "Busca por Identidade", "Dever vs. Desejo", "Perda e Luto", "Segredos e Mentiras",
-    "Ambição Cega", "Natureza vs. Criação", "Isolamento vs. Comunidade", "Sacrifício Pessoal",
-    "Humanidade vs. Tecnologia", "Ordem vs. Caos"
+    { name: "Redenção", description: "Buscar perdão ou reparação por um erro grave do passado." },
+    { name: "Sobrevivência", description: "Lutar contra a natureza, a sociedade ou a si mesmo para continuar vivo." },
+    { name: "Vingança", description: "A busca por retaliação contra quem causou um mal ao protagonista." },
+    { name: "Poder", description: "A luta para obter, manter ou desafiar o controle sobre outros." },
+    { name: "Amor Proibido", description: "Um romance que desafia as regras sociais, familiares ou éticas." },
+    { name: "Justiça", description: "O combate contra um sistema, indivíduo ou sociedade corrupta/injusta." },
+    { name: "Liberdade", description: "A fuga de uma opressão física, mental, social ou política." },
+    { name: "Ganância/Dinheiro", description: "A ambição desmedida por riqueza e suas trágicas consequências." },
+    { name: "Fé vs. Dúvida", description: "Um conflito interno sobre crenças espirituais, filosóficas ou pessoais." },
+    { name: "Tradição vs. Mudança", description: "O choque entre os valores antigos e as novas ideias." },
+    { name: "Busca por Identidade", description: "A jornada de um personagem para descobrir quem ele realmente é." },
+    { name: "Dever vs. Desejo", description: "O conflito entre a responsabilidade e a vontade pessoal." },
+    { name: "Perda e Luto", description: "O processo de aprender a lidar com a morte ou o fim de algo importante." },
+    { name: "Segredos e Mentiras", description: "As consequências de esconder ou revelar uma verdade impactante." },
+    { name: "Ambição Cega", description: "A perseguição de um objetivo a qualquer custo, mesmo que antiético." },
+    { name: "Natureza vs. Criação", description: "O debate sobre se somos moldados pela genética ou pelo ambiente." },
+    { name: "Isolamento vs. Comunidade", description: "A tensão entre a necessidade de pertencer e o desejo de se afastar." },
+    { name: "Sacrifício Pessoal", description: "Abrir mão de algo muito importante por um bem maior ou por outra pessoa." },
+    { name: "Humanidade vs. Tecnologia", description: "Os perigos e dilemas morais do avanço tecnológico." },
+    { name: "Ordem vs. Caos", description: "A luta para manter a estrutura e as regras em um mundo que tende à anarquia." }
 ];
 const narrativeStyles = [
-    "Jornada Clássica do Herói", "Estrutura de Três Atos", "Kishōtenketsu", "Dorama",
-    "Narrativa Não-Linear", "Narrativa Paralela", "Narrativa em Mosaico", "Rashomon",
-    "In Media Res", "Narrativa em Círculo", "Slice of Life (Retrato do Cotidiano)",
-    "Foreshadowing (Prefiguração)", "Ironia Dramática", "Red Herring", "Efeito MacGuffin"
+    { name: "Jornada Clássica do Herói", description: "A estrutura de 12 passos de transformação popularizada por Joseph Campbell." },
+    { name: "Estrutura de Três Atos", description: "A organização mais comum: Apresentação, Confronto e Resolução." },
+    { name: "Kishōtenketsu", description: "Estrutura asiática de 4 atos (Introdução, Desenvolvimento, Reviravolta, Conclusão) que não depende de conflito direto." },
+    { name: "Dorama", description: "Focado em desenvolvimento emocional, relacionamentos e reviravoltas dramáticas, geralmente em episódios." },
+    { name: "Narrativa Não-Linear", description: "A história é contada fora da ordem cronológica (ex: Pulp Fiction)." },
+    { name: "Narrativa Paralela", description: "Duas ou mais tramas se desenvolvem simultaneamente, conectando-se no clímax." },
+    { name: "Narrativa em Mosaico", description: "Várias tramas aparentemente desconexas que se conectam no final (ex: Crash)." },
+    { name: "Rashomon", description: "A mesma história é contada a partir de múltiplos pontos de vista contraditórios." },
+    { name: "In Media Res", description: "A história começa no meio da ação, com o passado sendo revelado aos poucos." },
+    { name: "Narrativa em Círculo", description: "A história termina onde começou, mas com o protagonista transformado." },
+    { name: "Slice of Life (Retrato do Cotidiano)", description: "Foco em momentos aparentemente mundanos da vida, sem uma trama grandiosa." },
+    { name: "Foreshadowing (Prefiguração)", description: "Pistas sutis plantadas no início para antecipar eventos futuros." },
+    { name: "Ironia Dramática", description: "O público sabe de algo crucial que os personagens não sabem." },
+    { name: "Red Herring", description: "Uma pista falsa inserida deliberadamente para enganar o público." },
+    { name: "Efeito MacGuffin", description: "A trama gira em torno da busca por um objeto, cuja natureza é menos importante que a jornada." }
 ];
 const universes = [
-    "Futuro Tecnológico Avançado", "Reino de Fantasia", "Pequena Cidade ou Vilarejo",
-    "Mundo Pós-Catástrofe", "Jornada Espacial de Longa Duração", "Passado Histórico Relevante",
-    "Ambiente de Crime e Conspiração", "Instituição de Ensino ou Treinamento",
-    "Mundo Digital ou Virtual", "Terra Selvagem e Inexplorada", "Plano Mental ou Espiritual",
-    "Microcosmo Isolado", "Organização Secreta e Poderosa", "Mundo Baseado em Mitologia",
-    "Centro de Poder e Intriga Política", "Mundo Alienígena Desconhecido", "Linha do Tempo Alternativa",
-    "Lugar Abandonado ou Esquecido", "Comunidade Nômade ou Itinerante", "Zona de Guerra ou Grande Conflito"
+    { name: "Futuro Tecnológico Avançado", description: "Cenários de alta tecnologia, seja em uma utopia, distopia ou cyberpunk." },
+    { name: "Reino de Fantasia", description: "Um mundo com regras próprias, onde magia e mitos são comuns." },
+    { name: "Pequena Cidade ou Vilarejo", description: "Um lugar isolado onde todos se conhecem, ideal para segredos e dramas." },
+    { name: "Mundo Pós-Catástrofe", description: "A civilização após um colapso, onde as antigas regras não se aplicam." },
+    { name: "Jornada Espacial de Longa Duração", description: "O confinamento e os desafios de uma viagem pelo cosmos." },
+    { name: "Passado Histórico Relevante", description: "Uma era passada que serve de pano de fundo e influencia a trama." },
+    { name: "Ambiente de Crime e Conspiração", description: "Os bastidores do submundo ou da alta sociedade." },
+    { name: "Instituição de Ensino ou Treinamento", description: "Uma escola, academia ou campo militar onde o aprendizado molda os personagens." },
+    { name: "Mundo Digital ou Virtual", description: "Uma realidade simulada, ciberespaço ou o interior de um game." },
+    { name: "Terra Selvagem e Inexplorada", description: "Uma região de fronteira, selva ou deserto, longe da civilização." },
+    { name: "Plano Mental ou Espiritual", description: "Cenários que acontecem dentro da mente, dos sonhos ou de memórias." },
+    { name: "Microcosmo Isolado", description: "Um ambiente único e fechado (navio, ilha, bunker) que força interações." },
+    { name: "Organização Secreta e Poderosa", description: "Os corredores de uma sociedade ou culto que manipula eventos." },
+    { name: "Mundo Baseado em Mitologia", description: "Um universo regido pelas lendas e deuses de culturas antigas." },
+    { name: "Centro de Poder e Intriga Política", description: "Os bastidores da realeza ou do governo, com jogos de influência." },
+    { name: "Mundo Alienígena Desconhecido", description: "Um planeta com ecossistemas, espécies e culturas estranhas." },
+    { name: "Linha do Tempo Alternativa", description: "Uma realidade onde a história tomou um rumo diferente." },
+    { name: "Lugar Abandonado ou Esquecido", description: "As ruínas de uma cidade ou um local que guarda ecos do passado." },
+    { name: "Comunidade Nômade ou Itinerante", description: "Um grupo que vive em constante movimento (um circo, uma tribo)." },
+    { name: "Zona de Guerra ou Grande Conflito", description: "Um cenário dominado pela batalha, tensão e suas consequências." }
 ];
+
 
 const argumentSchema = z.object({
   tones: z.array(z.string()),
@@ -65,7 +138,7 @@ const argumentSchema = z.object({
 });
 type ArgumentFormData = z.infer<typeof argumentSchema>;
 
-const OptionsSelector = ({ name, options, label, control }: { name: string, options: string[], label: string, control: any }) => (
+const OptionsSelector = ({ name, options, label, control }: { name: string, options: {name: string, description: string}[], label: string, control: any }) => (
     <FormField
         control={control}
         name={name}
@@ -74,21 +147,33 @@ const OptionsSelector = ({ name, options, label, control }: { name: string, opti
                 <div className="mb-4">
                     <FormLabel className="text-base font-semibold">{label}</FormLabel>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {options.map((item) => (
-                        <FormItem key={item} className="flex flex-row items-start space-x-3 space-y-0">
-                            <FormControl>
-                                <Checkbox
-                                    checked={field.value?.includes(item)}
-                                    onCheckedChange={(checked) => {
-                                        return checked
-                                            ? field.onChange([...(field.value || []), item])
-                                            : field.onChange(field.value?.filter((value: string) => value !== item));
-                                    }}
-                                />
-                            </FormControl>
-                            <FormLabel className="font-normal">{item}</FormLabel>
-                        </FormItem>
+                        <div key={item.name} className="flex items-center gap-2">
+                             <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{item.description}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormControl>
+                                    <Checkbox
+                                        checked={field.value?.includes(item.name)}
+                                        onCheckedChange={(checked) => {
+                                            return checked
+                                                ? field.onChange([...(field.value || []), item.name])
+                                                : field.onChange(field.value?.filter((value: string) => value !== item.name));
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormLabel className="font-normal text-sm">{item.name}</FormLabel>
+                            </FormItem>
+                        </div>
                     ))}
                 </div>
                 <FormMessage />
