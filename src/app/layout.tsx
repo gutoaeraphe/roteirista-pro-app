@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ScriptProvider } from "@/context/script-context";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { AuthProvider } from "@/context/auth-context";
 
 const fontBelleza = Belleza({
   subsets: ["latin"],
@@ -35,10 +36,12 @@ export default function RootLayout({
           fontBody.variable
         )}
       >
-        <ScriptProvider>
-          {children}
-          <Toaster />
-        </ScriptProvider>
+        <AuthProvider>
+          <ScriptProvider>
+            {children}
+            <Toaster />
+          </ScriptProvider>
+        </AuthProvider>
       </body>
     </html>
   );
