@@ -27,7 +27,7 @@ export function SidebarHeader({ className, children }: { className?: string; chi
 
 export function SidebarMain({ className, children }: { className?: string; children: ReactNode }) {
   return (
-    <main className={cn("flex-1 overflow-y-auto", className)}>
+    <main className={cn("flex-1", className)}>
       {children}
     </main>
   );
