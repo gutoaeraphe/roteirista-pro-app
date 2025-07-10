@@ -163,9 +163,9 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
 
   const navContent = (
     <div className="flex h-full max-h-screen flex-col gap-2">
-      <div className="flex h-20 items-center border-b px-4 lg:h-[80px] lg:px-6">
+      <div className="flex h-20 items-center justify-center border-b px-4 lg:h-[80px] lg:px-6">
         <Link href="/painel-de-roteiros" className="flex items-center gap-2 font-semibold">
-          <Image src="/logo.png" alt="Roteirista Pro" width={120} height={52} className="h-auto" />
+          <Image src="/logo.png" alt="Roteirista Pro" width={84} height={36} className="h-auto" />
         </Link>
       </div>
       <div className="flex-1 overflow-auto py-2">
