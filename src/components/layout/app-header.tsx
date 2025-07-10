@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { AppSidebar } from "./app-sidebar";
@@ -19,6 +19,10 @@ export function AppHeader() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col p-0 bg-card">
+            <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
+            <SheetDescription className="sr-only">
+              Navegue pelas diferentes seções do aplicativo Roteirista Pro.
+            </SheetDescription>
             <AppSidebar isMobile={true}/>
         </SheetContent>
       </Sheet>
