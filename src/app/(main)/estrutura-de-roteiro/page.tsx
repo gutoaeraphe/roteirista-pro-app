@@ -10,9 +10,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptStructure } from "@/ai/flows/analyze-script-structure";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, FileText, CheckCircle2, AlertTriangle, BookOpen, BrainCircuit, Target, Clapperboard, Award, TrendingUp, Lightbulb } from "lucide-react";
+import { Sparkles, FileText, BrainCircuit, TrendingUp, Lightbulb, BookOpen, Award, AlertTriangle } from "lucide-react";
 import type { AnalyzeScriptStructureOutput, Metric, DramaticElement } from "@/ai/flows/analyze-script-structure";
 import { StructureRadarChart } from "@/components/charts/structure-radar-chart";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Clapperboard } from "lucide-react";
 
 const MetricCard = ({ title, metric, icon: Icon }: { title: string; metric: Metric; icon: React.ElementType }) => (
     <Card>
@@ -149,6 +151,15 @@ export default function EstruturaDeRoteiroPage() {
                 </CardContent>
             </Card>
 
+            <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Nota sobre as Sugestões</AlertTitle>
+                <AlertDescription>
+                    Para manter o foco nos pontos mais críticos, a IA gera sugestões de melhoria apenas para os critérios com pontuação igual ou inferior a 7.
+                </AlertDescription>
+            </Alert>
+
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <MetricCard title="Estrutura Narrativa" metric={analysisResult.mainMetrics.narrativeStructure} icon={Clapperboard} />
                 <MetricCard title="Desenvolvimento de Personagens" metric={analysisResult.mainMetrics.characterDevelopment} icon={BrainCircuit} />
@@ -174,7 +185,7 @@ export default function EstruturaDeRoteiroPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2"><Award /> Análise da Estrutura</CardTitle>
-                            <CardDescription>Avaliação quantitativa e qualitativa dos critérios estruturais do roteiro. A IA gera sugestões apenas para notas iguais ou inferiores a 7.</CardDescription>
+                            <CardDescription>Avaliação quantitativa e qualitativa dos critérios estruturais do roteiro.</CardDescription>
                         </CardHeader>
                         <CardContent>
                              <Accordion type="single" collapsible className="w-full">
