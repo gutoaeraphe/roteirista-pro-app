@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
@@ -19,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Image from 'next/image';
+import { Checkbox } from "@/components/ui/checkbox";
 
 const loginSchema = z.object({
   email: z.string().email("Por favor, insira um e-mail válido."),
@@ -30,6 +32,9 @@ const signupSchema = z.object({
   name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
   email: z.string().email("Por favor, insira um e-mail válido."),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
+  acceptTerms: z.boolean().refine(val => val === true, {
+    message: "Você deve aceitar os termos e a política para continuar.",
+  }),
 });
 type SignupFormData = z.infer<typeof signupSchema>;
 
@@ -77,7 +82,7 @@ export default function LandingPage() {
 
   const signupForm = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { name: "", email: "", password: "", acceptTerms: false },
   });
 
   useEffect(() => {
@@ -175,6 +180,34 @@ export default function LandingPage() {
                               <FormField control={signupForm.control} name="name" render={({ field }) => (<FormItem><FormLabel className="sr-only">Nome</FormLabel><FormControl><Input placeholder="Seu nome" {...field} icon={User} /></FormControl><FormMessage /></FormItem>)} />
                               <FormField control={signupForm.control} name="email" render={({ field }) => (<FormItem><FormLabel className="sr-only">Email</FormLabel><FormControl><Input placeholder="seu@email.com" {...field} icon={Mail} /></FormControl><FormMessage /></FormItem>)} />
                               <FormField control={signupForm.control} name="password" render={({ field }) => (<FormItem><FormLabel className="sr-only">Senha</FormLabel><FormControl><Input type="password" placeholder="Crie uma senha" {...field} icon={KeyRound}/></FormControl><FormMessage /></FormItem>)} />
+                              <FormField
+                                control={signupForm.control}
+                                name="acceptTerms"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                      />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                      <FormLabel className="text-sm font-normal">
+                                        Eu li e aceito os{' '}
+                                        <Link href="/termos-de-uso" className="underline hover:text-primary" target="_blank">
+                                          Termos de Uso
+                                        </Link>{' '}
+                                        e a{' '}
+                                        <Link href="/politica-de-privacidade" className="underline hover:text-primary" target="_blank">
+                                          Política de Privacidade
+                                        </Link>
+                                        .
+                                      </FormLabel>
+                                      <FormMessage />
+                                    </div>
+                                  </FormItem>
+                                )}
+                              />
                               <Button type="submit" className="w-full" disabled={loading || authLoading}><UserPlus className="mr-2 h-4 w-4"/> Criar Conta com E-mail</Button>
                           </form>
                         </Form>
@@ -275,13 +308,11 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center text-sm text-muted-foreground">
             <p>&copy; {new Date().getFullYear()} Cinemarketing Conteúdo e Entretenimento. Todos os direitos reservados.</p>
             <div className="flex gap-4 mt-4 sm:mt-0">
-                <a href="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</a>
-                <a href="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</a>
+                <Link href="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
+                <Link href="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
             </div>
         </div>
       </footer>
     </div>
   );
 }
-
-    
