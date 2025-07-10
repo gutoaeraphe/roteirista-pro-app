@@ -12,12 +12,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const CompileStoryArgumentInputSchema = z.object({
+const CompileStoryArgumentInputSchema = z.object({
   storyData: z.string().describe('Uma string JSON com todos os dados da história coletados do usuário.'),
 });
 export type CompileStoryArgumentInput = z.infer<typeof CompileStoryArgumentInputSchema>;
 
-export const CompileStoryArgumentOutputSchema = z.object({
+const CompileStoryArgumentOutputSchema = z.object({
     fullArgument: z.string().describe('O documento de argumento completo, incluindo logline, sinopse e o argumento em prosa.'),
 });
 export type CompileStoryArgumentOutput = z.infer<typeof CompileStoryArgumentOutputSchema>;

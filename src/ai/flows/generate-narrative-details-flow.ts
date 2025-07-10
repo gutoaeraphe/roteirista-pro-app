@@ -12,12 +12,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GenerateNarrativeDetailsInputSchema = z.object({
+const GenerateNarrativeDetailsInputSchema = z.object({
   concept: z.string().describe('Os conceitos iniciais da narrativa fornecidos pelo usuário.'),
 });
 export type GenerateNarrativeDetailsInput = z.infer<typeof GenerateNarrativeDetailsInputSchema>;
 
-export const GenerateNarrativeDetailsOutputSchema = z.object({
+const GenerateNarrativeDetailsOutputSchema = z.object({
   narrativeDetails: z.string().describe('Uma descrição expandida e coesa dos detalhes da narrativa.'),
 });
 export type GenerateNarrativeDetailsOutput = z.infer<typeof GenerateNarrativeDetailsOutputSchema>;

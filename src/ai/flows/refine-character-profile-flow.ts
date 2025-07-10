@@ -12,12 +12,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const RefineCharacterProfileInputSchema = z.object({
+const RefineCharacterProfileInputSchema = z.object({
   concept: z.string().describe('O conceito inicial do personagem fornecido pelo usuário.'),
 });
 export type RefineCharacterProfileInput = z.infer<typeof RefineCharacterProfileInputSchema>;
 
-export const RefineCharacterProfileOutputSchema = z.object({
+const RefineCharacterProfileOutputSchema = z.object({
   detailedProfile: z.string().describe('O perfil detalhado do personagem, incluindo psicológico, forças, fraquezas e motivações.'),
 });
 export type RefineCharacterProfileOutput = z.infer<typeof RefineCharacterProfileOutputSchema>;

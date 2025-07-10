@@ -12,12 +12,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const RefineThemeInputSchema = z.object({
+const RefineThemeInputSchema = z.object({
   idea: z.string().describe('A ideia inicial do tema fornecida pelo usuário.'),
 });
 export type RefineThemeInput = z.infer<typeof RefineThemeInputSchema>;
 
-export const RefineThemeOutputSchema = z.object({
+const RefineThemeOutputSchema = z.object({
   refinedTheme: z.string().describe('O tema aprimorado e detalhado pela IA.'),
 });
 export type RefineThemeOutput = z.infer<typeof RefineThemeOutputSchema>;
