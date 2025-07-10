@@ -150,7 +150,7 @@ export default function LandingPage() {
       <section className="py-20 md:py-32">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h1 className="text-5xl md:text-7xl font-headline text-primary">Roteirista Pro</h1>
+            <Image src="/logo.png" alt="Roteirista Pro" width={400} height={100} />
             <p className="text-xl md:text-2xl text-muted-foreground font-body">Sua sala de roteiristas com inteligência artificial.</p>
             <p className="font-body">Transforme suas ideias em roteiros profissionais com a ajuda de uma IA especialista em dramaturgia, análise de mercado e estrutura narrativa. Otimize seu processo criativo, supere o bloqueio de página em branco e prepare seu projeto para o sucesso.</p>
           </div>
@@ -245,7 +245,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="relative aspect-square md:aspect-auto md:h-full w-full rounded-lg overflow-hidden shadow-lg min-h-[400px] md:min-h-[600px]">
-                    <Image src="https://placehold.co/600x800.png" alt="Foto de Guto Aeraphe" layout="fill" objectFit="cover" data-ai-hint="portrait man" />
+                    <Image src="/guto.png" alt="Foto de Guto Aeraphe" layout="fill" objectFit="cover" />
                 </div>
                 <div className="space-y-6">
                     <h2 className="text-4xl font-headline">Criado por Quem Vive o Cinema na Prática</h2>
@@ -279,7 +279,7 @@ export default function LandingPage() {
                     </div>
                 </div>
                  <div className="order-1 md:order-2 relative aspect-[3/4] w-full max-w-sm mx-auto rounded-lg overflow-hidden shadow-lg">
-                    <Image src="https://placehold.co/450x600.png" alt="Capa do livro Manual Prático de Criação" layout="fill" objectFit="cover" data-ai-hint="book cover" />
+                    <Image src="/livro.png" alt="Capa do livro Manual Prático de Criação" layout="fill" objectFit="cover" />
                 </div>
             </div>
         </div>
@@ -306,7 +306,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t">
         <div className="container mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} Cinemarketing Conteúdo e Entretenimento. Todos os direitos reservados.</p>
+            <Image src="/empresa.png" alt="Cinemarketing Conteúdo e Entretenimento" width={150} height={40} />
             <div className="flex gap-4 mt-4 sm:mt-0">
                 <Link href="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
                 <Link href="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>

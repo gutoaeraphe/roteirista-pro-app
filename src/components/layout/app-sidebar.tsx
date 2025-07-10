@@ -46,6 +46,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
 
 const navItems = [
@@ -160,12 +161,9 @@ export function AppSidebar() {
   return (
     <Sidebar className="hidden md:flex">
       <SidebarHeader>
-        <div className="flex items-center gap-2">
-            <Clapperboard className="w-8 h-8 text-primary" />
-            <h1 className="text-xl font-headline font-semibold text-primary">
-            Roteirista Pro
-            </h1>
-        </div>
+        <Link href="/painel-de-roteiros" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Roteirista Pro" width={180} height={45} />
+        </Link>
       </SidebarHeader>
       <SidebarMain className="flex flex-col flex-grow">
         <SidebarNav>
@@ -283,5 +281,3 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
-
-    
