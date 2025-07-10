@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptMarket } from "@/ai/flows/analyze-script-market";
-import { analyzeScriptNarrative } from "@/ai/flows/analyze-script-narrative";
+import { analyzeScriptStructure } from "@/ai/flows/analyze-script-structure";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
 import { Sparkles, Target, TrendingUp, Lightbulb, BookCopy, Tv, BarChartBig } from "lucide-react";
 import type { AnalyzeScriptMarketOutput } from "@/ai/flows/analyze-script-market";
@@ -46,18 +46,22 @@ export default function AnaliseDeMercadoPage() {
       setLoading(true);
       try {
         // We need a summary for this analysis. Let's generate it if it doesn't exist.
-        let summary = activeScript.analysis.narrative?.summary.plotSummary;
+        let summary = activeScript.analysis.structure?.plotSummary;
+        let scriptToUpdate = { ...activeScript };
+
         if (!summary) {
-            const narrativeResult = await analyzeScriptNarrative({ scriptContent: activeScript.content });
-            summary = narrativeResult.summary.plotSummary;
-            // Optionally update the script with this new analysis
-            updateScript({ ...activeScript, analysis: { ...activeScript.analysis, narrative: narrativeResult } });
+            const structureResult = await analyzeScriptStructure({ scriptContent: activeScript.content });
+            summary = structureResult.plotSummary;
+            scriptToUpdate.analysis.structure = structureResult;
         }
 
         const result = await analyzeScriptMarket({ scriptSummary: summary, genre: activeScript.genre });
         setAnalysisResult(result);
-        updateScript({ ...activeScript, analysis: { ...activeScript.analysis, market: result } });
-        toast({ title: "Análise Concluída", description: "A análise de mercado foi gerada." });
+        
+        scriptToUpdate.analysis.market = result;
+        updateScript(scriptToUpdate);
+        toast({ title: "Análise Concluída", description: "A análise de mercado foi gerada e salva." });
+
       } catch (error) {
         console.error(error);
         toast({ title: "Erro na Análise", description: "Não foi possível analisar o mercado.", variant: "destructive" });
