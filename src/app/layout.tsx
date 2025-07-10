@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Alegreya, Belleza } from "next/font/google";
+import { Belleza, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import { ScriptProvider } from "@/context/script-context";
 import "./globals.css";
@@ -11,9 +11,9 @@ const fontBelleza = Belleza({
   variable: "--font-belleza",
 });
 
-const fontAlegreya = Alegreya({
+const fontBody = Inter({
   subsets: ["latin"],
-  variable: "--font-alegreya",
+  variable: "--font-body",
 });
 
 export const metadata: Metadata = {
@@ -32,7 +32,7 @@ export default function RootLayout({
         className={cn(
           "min-h-screen bg-background font-body antialiased",
           fontBelleza.variable,
-          fontAlegreya.variable
+          fontBody.variable
         )}
       >
         <ScriptProvider>
