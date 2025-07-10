@@ -137,7 +137,7 @@ export function AppSidebar() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      router.push('/login');
+      router.push('/');
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
@@ -158,7 +158,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar>
+    <Sidebar className="hidden md:flex">
       <SidebarHeader>
         <div className="flex items-center gap-2">
             <Clapperboard className="w-8 h-8 text-primary" />
@@ -283,3 +283,5 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+
+    

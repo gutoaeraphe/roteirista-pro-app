@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AppSidebar } from "@/components/layout/app-sidebar";
@@ -16,7 +17,7 @@ export default function MainLayout({
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/login");
+      router.push("/");
     }
   }, [user, loading, router]);
 
@@ -37,7 +38,7 @@ export default function MainLayout({
   return (
     <div className="flex">
       <AppSidebar />
-      <main className="flex-1 ml-64 p-4 lg:p-8">
+      <main className="flex-1 ml-0 md:ml-64 p-4 lg:p-8">
         <div className="max-w-7xl mx-auto w-full">
           {children}
         </div>
@@ -45,3 +46,5 @@ export default function MainLayout({
     </div>
   );
 }
+
+    

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Belleza, Inter } from "next/font/google";
+import { Belleza, Alegreya } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import { ScriptProvider } from "@/context/script-context";
 import "./globals.css";
@@ -12,7 +12,7 @@ const fontBelleza = Belleza({
   variable: "--font-belleza",
 });
 
-const fontBody = Inter({
+const fontBody = Alegreya({
   subsets: ["latin"],
   variable: "--font-body",
 });
