@@ -20,11 +20,23 @@ const GeneratePitchingDocumentInputSchema = z.object({
 
 export type GeneratePitchingDocumentInput = z.infer<typeof GeneratePitchingDocumentInputSchema>;
 
+const PitchingDocumentSchema = z.object({
+    logline: z.string().describe('Uma frase concisa e impactante que resume a essência da história.'),
+    synopsis: z.string().describe('Um resumo da trama principal, apresentando o protagonista, seu objetivo, o conflito e o que está em jogo.'),
+    theme: z.string().describe('A mensagem central e as questões universais que a obra explora.'),
+    targetAudience: z.string().describe('Uma descrição do principal grupo de audiência para este filme.'),
+    justification: z.string().describe('Uma explicação convincente de por que esta história é relevante e precisa ser contada agora.'),
+    mainCharacters: z.string().describe('Breves descrições do protagonista e do antagonista, focando em seus arcos e conflitos.'),
+    toneAndStyle: z.string().describe('A atmosfera, o estilo visual e a abordagem narrativa do filme.'),
+    storyArc: z.string().describe('Um resumo do desenvolvimento da trama através de seus atos principais.'),
+    detailedArgument: z.string().describe('Um tratamento mais expandido da história, cobrindo os principais pontos da trama do início ao fim.'),
+    marketingPotential: z.string().describe('Uma análise das oportunidades de marketing e do apelo comercial do projeto.'),
+});
+
+
 const GeneratePitchingDocumentOutputSchema = z.object({
-  pitchingDocument: z
-    .string()
-    .describe(
-      'O documento de pitching completo e formatado, pronto para apresentação.'
+  pitchingDocument: PitchingDocumentSchema.describe(
+      'O documento de pitching completo, com cada seção preenchida.'
     ),
 });
 
@@ -42,20 +54,19 @@ const generatePitchingDocumentPrompt = ai.definePrompt({
   output: {schema: GeneratePitchingDocumentOutputSchema},
   prompt: `Você é um produtor executivo de cinema experiente. Sua tarefa é analisar o roteiro fornecido e criar um documento de vendas (pitching document) profissional, coeso e persuasivo. A resposta deve ser em português.
 
-Formate a saída como um único documento de texto (string), usando marcações simples como títulos (ex: "## Logline") e parágrafos para organizar o conteúdo.
+**Instruções:**
+Analise o roteiro e gere o conteúdo para cada uma das seções a seguir. Seja conciso, mas informativo. O conteúdo deve ser em texto simples, sem formatação markdown complexa.
 
-O documento deve incluir as seguintes seções, nesta ordem:
-
-1.  **Logline**: Uma frase concisa e impactante que resume a essência da história.
-2.  **Sinopse**: Um resumo da trama principal, apresentando o protagonista, seu objetivo, o conflito e o que está em jogo.
-3.  **Tema**: A mensagem central e as questões universais que a obra explora.
-4.  **Público-Alvo**: Uma descrição do principal grupo de audiência para este filme.
-5.  **Justificativa**: Uma explicação convincente de por que esta história é relevante e precisa ser contada agora.
-6.  **Personagens Principais**: Breves descrições do protagonista e do antagonista, focando em seus arcos e conflitos.
-7.  **Tom e Estilo**: A atmosfera, o estilo visual e a abordagem narrativa do filme.
-8.  **Arco da História**: Um resumo do desenvolvimento da trama através de seus atos principais.
-9.  **Argumento Detalhado**: Um tratamento mais expandido da história, cobrindo os principais pontos da trama do início ao fim.
-10. **Potencial de Marketing**: Uma análise das oportunidades de marketing e do apelo comercial do projeto.
+1.  **logline**: Uma frase concisa e impactante.
+2.  **synopsis**: Um resumo da trama principal, apresentando o protagonista, seu objetivo, o conflito e o que está em jogo.
+3.  **theme**: A mensagem central e as questões universais que a obra explora.
+4.  **targetAudience**: Uma descrição do principal grupo de audiência para este filme.
+5.  **justification**: Uma explicação convincente de por que esta história é relevante e precisa ser contada agora.
+6.  **mainCharacters**: Breves descrições do protagonista e do antagonista, focando em seus arcos e conflitos.
+7.  **toneAndStyle**: A atmosfera, o estilo visual e a abordagem narrativa do filme.
+8.  **storyArc**: Um resumo do desenvolvimento da trama através de seus atos principais.
+9.  **detailedArgument**: Um tratamento mais expandido da história, cobrindo os principais pontos da trama do início ao fim.
+10. **marketingPotential**: Uma análise das oportunidades de marketing e do apelo comercial do projeto.
 
 ---
 Gênero do Filme: {{{genre}}}
@@ -64,7 +75,7 @@ Conteúdo do Roteiro:
 {{{scriptContent}}}
 ---
 
-Gere o documento de pitching completo no campo 'pitchingDocument'.`,
+Gere o documento de pitching completo, preenchendo o objeto 'pitchingDocument'.`,
 });
 
 const generatePitchingDocumentFlow = ai.defineFlow(
