@@ -81,9 +81,10 @@ export default function JornadaDoHeroiPage() {
 
   const hasBeenAnalyzed = !!analysisResult;
   const chartData = analysisResult
-    ? analysisResult.identifiedSteps.map((step) => ({
+    ? analysisResult.identifiedSteps.map((step, index) => ({
         step: step.stepName,
         intensity: step.intensity,
+        label: `${index + 1}. ${step.stepName}`
       }))
     : [];
 
@@ -107,24 +108,9 @@ export default function JornadaDoHeroiPage() {
       {loading && (
         <div className="space-y-6">
             <Skeleton className="h-48 w-full" />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card>
-                <CardHeader><Skeleton className="h-6 w-1/2" /></CardHeader>
-                <CardContent className="space-y-4">
-                  {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
-                </CardContent>
-              </Card>
-              <div className="space-y-8">
-                <Card>
-                    <CardHeader><Skeleton className="h-6 w-1/2" /></CardHeader>
-                    <CardContent><Skeleton className="h-[300px] w-full" /></CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader><Skeleton className="h-6 w-1/2" /></CardHeader>
-                    <CardContent><Skeleton className="h-40 w-full" /></CardContent>
-                </Card>
-              </div>
-            </div>
+            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-[400px] w-full" />
+            <Skeleton className="h-96 w-full" />
         </div>
       )}
 
@@ -160,45 +146,42 @@ export default function JornadaDoHeroiPage() {
                 </AlertDescription>
             </Alert>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-              <Card>
+            <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><GitCommitHorizontal /> Passos da Jornada Identificados</CardTitle>
-                  <CardDescription>Apenas os passos encontrados no roteiro são listados abaixo, na ordem em que aparecem.</CardDescription>
+                        <CardTitle className="flex items-center gap-2"><BookCheck /> Análise de 3 Atos</CardTitle>
+                        <CardDescription>Comentários sobre a estrutura de atos do roteiro.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Accordion type="single" collapsible className="w-full">
-                    {analysisResult.identifiedSteps.map((step, index) => (
-                      <StepCard step={step} index={index} key={index} />
-                    ))}
-                  </Accordion>
-                </CardContent>
-              </Card>
-              
-              <div className="space-y-8">
-                <IntensityChart data={chartData} />
-                <Card>
-                    <CardHeader>
-                         <CardTitle className="flex items-center gap-2"><BookCheck /> Análise de 3 Atos</CardTitle>
-                         <CardDescription>Comentários sobre a estrutura de atos do roteiro.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
+                <CardContent className="space-y-4">
+                    <div>
+                        <h4 className="font-semibold">Primeiro Ato (Apresentação)</h4>
+                        <p className="text-sm text-muted-foreground">{analysisResult.threeActAnalysis.actOne}</p>
+                    </div>
                         <div>
-                            <h4 className="font-semibold">Primeiro Ato (Apresentação)</h4>
-                            <p className="text-sm text-muted-foreground">{analysisResult.threeActAnalysis.actOne}</p>
-                        </div>
-                         <div>
-                            <h4 className="font-semibold">Segundo Ato (Confronto)</h4>
-                            <p className="text-sm text-muted-foreground">{analysisResult.threeActAnalysis.actTwo}</p>
-                        </div>
-                         <div>
-                            <h4 className="font-semibold">Terceiro Ato (Resolução)</h4>
-                            <p className="text-sm text-muted-foreground">{analysisResult.threeActAnalysis.actThree}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-              </div>
-            </div>
+                        <h4 className="font-semibold">Segundo Ato (Confronto)</h4>
+                        <p className="text-sm text-muted-foreground">{analysisResult.threeActAnalysis.actTwo}</p>
+                    </div>
+                        <div>
+                        <h4 className="font-semibold">Terceiro Ato (Resolução)</h4>
+                        <p className="text-sm text-muted-foreground">{analysisResult.threeActAnalysis.actThree}</p>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <IntensityChart data={chartData} />
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><GitCommitHorizontal /> Passos da Jornada Identificados</CardTitle>
+                <CardDescription>Apenas os passos encontrados no roteiro são listados abaixo, na ordem em que aparecem.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                  {analysisResult.identifiedSteps.map((step, index) => (
+                    <StepCard step={step} index={index} key={index} />
+                  ))}
+                </Accordion>
+              </CardContent>
+            </Card>
         </div>
       )}
     </div>
