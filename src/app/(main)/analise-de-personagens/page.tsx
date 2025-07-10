@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptCharacters } from "@/ai/flows/analyze-script-characters";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb } from "lucide-react";
+import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb, UserCheck } from "lucide-react";
 import type { AnalyzeScriptCharactersOutput } from "@/ai/flows/analyze-script-characters";
 
 const CharacterAnalysisCard = ({ title, content, icon: Icon }: { title: string; content: string; icon: React.ElementType }) => (
@@ -26,7 +26,7 @@ const CharacterAnalysisCard = ({ title, content, icon: Icon }: { title: string; 
 
 const CharacterAnalysisSkeleton = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        {[...Array(6)].map((_, i) => (
+        {[...Array(8)].map((_, i) => (
             <Card key={i}>
                 <CardHeader><Skeleton className="h-5 w-1/3" /></CardHeader>
                 <CardContent><Skeleton className="h-24 w-full" /></CardContent>
@@ -49,6 +49,7 @@ export default function AnaliseDePersonagensPage() {
       return;
     }
     setLoading(true);
+    setAnalysisResult(undefined);
     try {
       const result = await analyzeScriptCharacters({ scriptContent: activeScript.content });
       setAnalysisResult(result);
@@ -70,6 +71,7 @@ export default function AnaliseDePersonagensPage() {
 
   const renderCharacterAnalysis = (analysis: AnalyzeScriptCharactersOutput['protagonistAnalysis'] | AnalyzeScriptCharactersOutput['antagonistAnalysis']) => (
     <div className="space-y-6">
+        <CharacterAnalysisCard title="Análise Geral" content={analysis.generalAnalysis} icon={UserCheck} />
         <CharacterAnalysisCard title="Perfil Psicológico" content={analysis.psychologicalProfile} icon={BrainCircuit} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CharacterAnalysisCard title="Forças" content={analysis.strengths} icon={TrendingUp} />

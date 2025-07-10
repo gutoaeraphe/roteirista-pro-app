@@ -22,6 +22,7 @@ export type AnalyzeScriptCharactersInput = z.infer<
 >;
 
 const CharacterProfileSchema = z.object({
+  generalAnalysis: z.string().describe('Uma análise geral do personagem, resumindo suas principais características e seu papel na história.'),
   psychologicalProfile: z
     .string()
     .describe(
@@ -74,13 +75,14 @@ const prompt = ai.definePrompt({
   prompt: `Você é um analista de roteiros e psicólogo de personagens especialista. Analise o roteiro fornecido para criar perfis detalhados do protagonista e do antagonista. Responda inteiramente em português.
 
 Para cada personagem (protagonista e antagonista), forneça a seguinte análise aprofundada:
-1.  **Perfil Psicológico**: Descreva a personalidade, traços de caráter e estado emocional geral.
-2.  **Forças**: Liste suas qualidades positivas, talentos e habilidades.
-3.  **Fraquezas**: Aponte suas vulnerabilidades, defeitos e falhas de caráter.
-4.  **Motivações Internas**: Explique seus desejos, necessidades e impulsos mais profundos.
-5.  **Motivações Externas**: Descreva os fatores e eventos externos que o influenciam.
-6.  **Arco de Personagem**: Trace sua jornada de transformação, identificando mudanças, objetivos e os obstáculos que enfrenta.
-7.  **Sugestões para Melhorar**: Ofereça insights e recomendações claras para aprofundar o personagem, tornando-o mais complexo e cativante.
+1.  **Análise Geral**: Resuma as principais características do personagem e seu papel na história.
+2.  **Perfil Psicológico**: Descreva a personalidade, traços de caráter e estado emocional geral.
+3.  **Forças**: Liste suas qualidades positivas, talentos e habilidades.
+4.  **Fraquezas**: Aponte suas vulnerabilidades, defeitos e falhas de caráter.
+5.  **Motivações Internas**: Explique seus desejos, necessidades e impulsos mais profundos.
+6.  **Motivações Externas**: Descreva os fatores e eventos externos que o influenciam.
+7.  **Arco de Personagem**: Trace sua jornada de transformação, identificando mudanças, objetivos e os obstáculos que enfrenta.
+8.  **Sugestões para Melhorar**: Ofereça insights e recomendações claras para aprofundar o personagem, tornando-o mais complexo e cativante.
 
 Seja detalhado e forneça análises que possam ser diretamente usadas pelo roteirista para aprimorar a história.
 
