@@ -56,12 +56,24 @@ const prompt = ai.definePrompt({
   name: 'analyzeScriptHeroJourneyPrompt',
   input: {schema: AnalyzeScriptHeroJourneyInputSchema},
   output: {schema: AnalyzeScriptHeroJourneyOutputSchema},
-  prompt: `Você é um analista de roteiros especialista em dramaturgia e na Jornada do Herói. Analise o roteiro fornecido. Responda inteiramente em português.
+  prompt: `Você é um analista de roteiros especialista em dramaturgia e na Jornada do Herói. Analise o roteiro fornecido e responda inteiramente em português, seguindo estritamente o formato de saída JSON.
 
-**Instruções Importantes:**
-1.  **Não force a estrutura:** Identifique **APENAS** os passos da Jornada do Herói que estão claramente presentes no roteiro. Se um passo não existir, não o inclua na análise.
-2.  **Ordem de Aparição:** Liste os passos identificados na ordem em que eles aparecem na narrativa, não na ordem teórica tradicional.
-3.  **Análise Detalhada:** Para a **Análise Geral**, escreva um resumo da análise dramatúrgica geral sobre como a Jornada do Herói é (ou não é) utilizada. Atribua uma nota geral de 1 a 10. Se a nota for 7 ou menos, forneça sugestões para melhorar a estrutura geral da jornada. Para os **Passos Identificados**, para cada passo que você identificar, forneça: o \`stepName\` (nome do passo), a \`analysis\` (análise de como se manifesta), a \`score\` (nota de 1 a 10), \`suggestions\` (sugestões se a nota for <= 7), e \`intensity\` (0-100 para a intensidade dramática). Para a **Estrutura de 3 Atos**, forneça uma análise concisa de cada um dos três atos (Apresentação, Confronto, Resolução).
+**Tarefas de Análise:**
+
+1.  **Análise Geral (overallAnalysis):**
+    *   'summary': Escreva um resumo da análise dramatúrgica geral sobre como a Jornada do Herói é (ou não é) utilizada.
+    *   'score': Atribua uma nota geral de 1 a 10.
+    *   'suggestions': Se a nota for 7 ou menos, forneça sugestões para melhorar a estrutura geral.
+
+2.  **Passos Identificados (identifiedSteps):**
+    *   **IMPORTANTE**: Identifique APENAS os passos da Jornada do Herói que estão claramente presentes. Não force a estrutura.
+    *   Liste os passos na ordem em que eles aparecem na narrativa.
+    *   Para cada passo, forneça: 'stepName', 'analysis' (concisa), 'score' (1-10), 'intensity' (0-100), e 'suggestions' (apenas se a nota for <= 7).
+
+3.  **Estrutura de 3 Atos (threeActAnalysis):**
+    *   'actOne': Forneça uma análise concisa do Primeiro Ato (Apresentação).
+    *   'actTwo': Forneça uma análise concisa do Segundo Ato (Confronto).
+    *   'actThree': Forneça uma análise concisa do Terceiro Ato (Resolução).
 
 **Roteiro para Análise:**
 {{{script}}}
