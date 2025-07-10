@@ -1,8 +1,9 @@
+// src/components/layout/app-sidebar.tsx
 "use client";
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Sidebar,
   SidebarHeader,
@@ -26,11 +27,25 @@ import {
   Youtube,
   HelpCircle,
   Film,
-  Sparkles,
   Clapperboard,
+  LogOut,
+  UserCircle
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 
 const navItems = [
   {
@@ -107,7 +122,23 @@ const navItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { activeScript, loading } = useScript();
+  const router = useRouter();
+  const { activeScript, loading: scriptLoading } = useScript();
+  const { user, loading: authLoading } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/login');
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
+  };
+  
+  const getInitials = (email: string | null | undefined) => {
+    if (!email) return "?";
+    return email.substring(0, 2).toUpperCase();
+  }
 
   return (
     <Sidebar>
@@ -120,31 +151,6 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
       <SidebarMain className="flex flex-col flex-grow">
-        <div className="border-t border-border -mx-4 mb-4"></div>
-        {loading ? (
-          <div className="p-4">Carregando...</div>
-        ) : activeScript ? (
-          <div className="px-4 mb-4">
-            <p className="text-xs text-muted-foreground mb-1">Roteiro Ativo</p>
-            <div className="p-3 rounded-lg bg-muted flex items-center gap-3">
-              <Film className="w-5 h-5 text-primary flex-shrink-0" />
-              <div className="flex-grow overflow-hidden">
-                <p className="font-semibold truncate text-sm">{activeScript.name}</p>
-                <p className="text-xs text-muted-foreground">{activeScript.format} • {activeScript.genre}</p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="px-4 mb-4">
-            <p className="text-xs text-muted-foreground mb-1">Nenhum roteiro ativo</p>
-            <Link href="/painel-de-roteiros" passHref>
-              <Button variant="outline" size="sm" className="w-full">
-                <FileUp className="w-4 h-4 mr-2" />
-                Gerenciar Roteiros
-              </Button>
-            </Link>
-          </div>
-        )}
         <SidebarNav>
           {navItems.map((section, sectionIndex) => (
             <div key={sectionIndex}>
@@ -178,9 +184,59 @@ export function AppSidebar() {
         </SidebarNav>
       </SidebarMain>
       <SidebarFooter>
-        <div className="p-4 text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Roteiro Aprimorado
-        </div>
+        <div className="border-t border-border -mx-4 mb-2"></div>
+         {scriptLoading || authLoading ? (
+          <div className="p-4">Carregando...</div>
+        ) : activeScript ? (
+          <div className="px-4 mb-2">
+            <p className="text-xs text-muted-foreground mb-1">Roteiro Ativo</p>
+            <div className="p-3 rounded-lg bg-muted flex items-center gap-3">
+              <Film className="w-5 h-5 text-primary flex-shrink-0" />
+              <div className="flex-grow overflow-hidden">
+                <p className="font-semibold truncate text-sm">{activeScript.name}</p>
+                <p className="text-xs text-muted-foreground">{activeScript.format} • {activeScript.genre}</p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="px-4 mb-2">
+            <Link href="/painel-de-roteiros" passHref>
+              <Button variant="outline" size="sm" className="w-full">
+                <FileUp className="w-4 h-4 mr-2" />
+                Gerenciar Roteiros
+              </Button>
+            </Link>
+          </div>
+        )}
+        <div className="border-t border-border -mx-4 my-2"></div>
+        {user && (
+           <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-start items-center gap-2 px-2 h-auto">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 text-left overflow-hidden">
+                      <p className="text-sm font-medium truncate">{user.email}</p>
+                    </div>
+                  </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 mb-2" side="top" align="start">
+                <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/perfil">
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Gerenciar Perfil</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sair</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+        )}
       </SidebarFooter>
     </Sidebar>
   );
