@@ -21,7 +21,7 @@ import type {
 export type Script = {
   id: string;
   name: string;
-  format: 'Longa-metragem' | 'Curta-metragem' | 'Série' | 'Outro';
+  format: string;
   genre: string;
   content: string;
   analysis: {

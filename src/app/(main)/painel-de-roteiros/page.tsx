@@ -1,52 +1,58 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScript } from "@/context/script-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Script } from "@/lib/types";
-import { FilePlus2, Trash2, CheckCircle } from "lucide-react";
+import { FilePlus2, Trash2, CheckCircle, Upload } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const scriptSchema = z.object({
   name: z.string().min(1, "O nome do roteiro é obrigatório."),
-  format: z.enum(['Longa-metragem', 'Curta-metragem', 'Série', 'Outro'], {
-    required_error: "O formato é obrigatório."
-  }),
+  format: z.string().min(1, "O formato é obrigatório."),
   genre: z.string().min(1, "O gênero é obrigatório."),
-  content: z.string().min(1, "O conteúdo do roteiro não pode estar vazio."),
+  file: z.instanceof(File).refine(file => file.size > 0, "É necessário selecionar um arquivo de roteiro."),
 });
 
 type ScriptFormData = z.infer<typeof scriptSchema>;
 
 export default function PainelDeRoteirosPage() {
   const { scripts, addScript, activeScript, setActiveScript, deleteScript, loading } = useScript();
+  const { toast } = useToast();
+  const [fileName, setFileName] = useState("");
 
   const form = useForm<ScriptFormData>({
     resolver: zodResolver(scriptSchema),
     defaultValues: {
       name: "",
-      format: undefined,
+      format: "",
       genre: "",
-      content: "",
     },
   });
 
-  const onSubmit = (data: ScriptFormData) => {
-    addScript(data);
-    form.reset();
+  const onSubmit = async (data: ScriptFormData) => {
+    try {
+      const content = await data.file.text();
+      const scriptData = {
+        name: data.name,
+        format: data.format,
+        genre: data.genre,
+        content: content,
+      };
+      addScript(scriptData);
+      form.reset();
+      setFileName("");
+      toast({ title: "Sucesso!", description: "Roteiro adicionado." });
+    } catch (error) {
+        toast({ title: "Erro", description: "Não foi possível ler o arquivo do roteiro.", variant: "destructive" });
+    }
   };
 
   return (
@@ -146,19 +152,9 @@ export default function PainelDeRoteirosPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Formato</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione o formato" />
-                            </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                <SelectItem value="Longa-metragem">Longa-metragem</SelectItem>
-                                <SelectItem value="Curta-metragem">Curta-metragem</SelectItem>
-                                <SelectItem value="Série">Série</SelectItem>
-                                <SelectItem value="Outro">Outro</SelectItem>
-                            </SelectContent>
-                        </Select>
+                      <FormControl>
+                        <Input placeholder="Ex: Longa-metragem" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -178,17 +174,29 @@ export default function PainelDeRoteirosPage() {
                 />
                 <FormField
                   control={form.control}
-                  name="content"
+                  name="file"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Conteúdo do Roteiro</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Cole o conteúdo completo do seu roteiro aqui."
-                          className="min-h-[200px]"
-                          {...field}
-                        />
-                      </FormControl>
+                      <FormLabel>Arquivo do Roteiro</FormLabel>
+                        <FormControl>
+                          <label htmlFor="file-upload" className="flex items-center justify-center w-full h-10 px-3 py-2 text-sm border rounded-md cursor-pointer border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                            <Upload className="mr-2 h-4 w-4" />
+                            <span>{fileName || "Selecione o arquivo (.txt)"}</span>
+                            <Input 
+                              id="file-upload"
+                              type="file"
+                              className="hidden"
+                              accept=".txt"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  field.onChange(file);
+                                  setFileName(file.name);
+                                }
+                              }}
+                            />
+                          </label>
+                        </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
