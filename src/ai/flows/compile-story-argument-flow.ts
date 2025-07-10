@@ -15,10 +15,10 @@ import {z} from 'genkit';
 const CompileStoryArgumentInputSchema = z.object({
   storyData: z.string().describe('Uma string JSON com todos os dados da história coletados do usuário.'),
 });
-export type CompileStoryArgumentInput = z.infer<typeof CompileStoryArgumentInputSchema>;
+type CompileStoryArgumentInput = z.infer<typeof CompileStoryArgumentInputSchema>;
 
 const CompileStoryArgumentOutputSchema = z.object({
-    fullArgument: z.string().describe('O documento de argumento completo, incluindo logline, sinopse e o argumento em prosa.'),
+    fullArgument: z.string().describe('O documento de argumento completo, incluindo logline, sinopse, perfis de personagem e o argumento em prosa.'),
 });
 export type CompileStoryArgumentOutput = z.infer<typeof CompileStoryArgumentOutputSchema>;
 
@@ -36,16 +36,25 @@ const prompt = ai.definePrompt({
 1.  Analise o objeto JSON fornecido, que contém todas as seleções e entradas do usuário.
 2.  **Crie uma Logline:** Uma frase concisa e impactante que resuma a história.
 3.  **Crie uma Sinopse:** Um resumo da trama, apresentando os personagens, o conflito e o que está em jogo.
-4.  **Escreva o Argumento:** Com base em TODOS os dados fornecidos (tons, gêneros, conflitos, estilo, universo, tema, personagens, narrativa), escreva um argumento detalhado em prosa. O texto deve fluir como uma história, não como uma lista de itens. Integre organicamente os conceitos em uma narrativa coesa.
+4.  **Crie Perfis de Personagens:** Use os campos 'protagonistProfile' e 'antagonistProfile' para escrever breves apresentações dos personagens principais.
+5.  **Escreva o Argumento:** Com base em TODOS os dados fornecidos (tons, gêneros, conflitos, estilo, universo, tema, personagens, narrativa), escreva um argumento detalhado em prosa. O texto deve fluir como uma história, não como uma lista. Integre organicamente os conceitos em uma narrativa coesa.
 
 **Formato da Saída:**
-O resultado deve ser um único texto contínuo, formatado da seguinte maneira:
+O resultado deve ser um único texto contínuo, formatado da seguinte maneira (use quebras de linha duplas entre as seções):
 
 **LOGLINE**
 [Sua logline aqui]
 
 **SINOPSE**
 [Sua sinopse aqui]
+
+**PERSONAGENS**
+
+**Protagonista:**
+[Apresentação do protagonista aqui]
+
+**Antagonista:**
+[Apresentação do antagonista aqui]
 
 **ARGUMENTO**
 [Seu argumento detalhado em prosa aqui]

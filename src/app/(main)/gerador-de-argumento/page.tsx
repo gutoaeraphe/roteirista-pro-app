@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, RefreshCcw, ThumbsUp, FileText, Info } from "lucide-react";
+import { Sparkles, RefreshCcw, ThumbsUp, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import TextareaAutosize from 'react-textarea-autosize';
@@ -129,23 +129,24 @@ const universes = [
     { name: "Zona de Guerra ou Grande Conflito", description: "Um cenário dominado pela batalha, tensão e suas consequências." }
 ];
 
+// Zod schema defines the shape of the form data
 const argumentSchema = z.object({
   // Step 1: Concepts
-  tones: z.array(z.string()),
+  tones: z.array(z.string()).optional(),
   customTone: z.string().optional(),
-  genres: z.array(z.string()),
+  genres: z.array(z.string()).optional(),
   customGenre: z.string().optional(),
-  conflicts: z.array(z.string()),
+  conflicts: z.array(z.string()).optional(),
   customConflict: z.string().optional(),
-  narrativeStyles: z.array(z.string()),
+  narrativeStyles: z.array(z.string()).optional(),
   customNarrativeStyle: z.string().optional(),
-  universes: z.array(z.string()),
+  universes: z.array(z.string()).optional(),
   customUniverse: z.string().optional(),
   // Step 2: Theme
   initialTheme: z.string().optional(),
   refinedTheme: z.string().optional(),
-  themeSuggestions: z.array(z.string()),
-  selectedSuggestions: z.array(z.string()),
+  themeSuggestions: z.array(z.string()).optional(),
+  selectedSuggestions: z.array(z.string()).optional(),
   // Step 3: Characters
   protagonistInitialConcept: z.string().optional(),
   protagonistPsychologicalProfile: z.string().optional(),
@@ -175,7 +176,7 @@ const argumentSchema = z.object({
 });
 type ArgumentFormData = z.infer<typeof argumentSchema>;
 
-const OptionsSelector = ({ name, options, label, control }: { name: string, options: {name: string, description: string}[], label: string, control: any }) => (
+const OptionsSelector = ({ name, options, label, control }: { name: keyof ArgumentFormData, options: {name: string, description: string}[], label: string, control: any }) => (
     <FormField
         control={control}
         name={name}
@@ -242,7 +243,7 @@ const SectionCard = ({ title, description, children, ...props }: { title: string
     </Card>
 );
 
-const LabeledTextarea = ({ name, label, placeholder, control }: { name: keyof ArgumentFormData, label: string, placeholder: string, control: any}) => (
+const LabeledTextarea = ({ name, label, placeholder, control, minRows = 3 }: { name: keyof ArgumentFormData, label: string, placeholder: string, control: any, minRows?: number}) => (
     <FormField
         control={control}
         name={name}
@@ -251,7 +252,7 @@ const LabeledTextarea = ({ name, label, placeholder, control }: { name: keyof Ar
                 <FormLabel>{label}</FormLabel>
                 <FormControl>
                     <TextareaAutosize
-                        minRows={2}
+                        minRows={minRows}
                         placeholder={placeholder}
                         {...field}
                         className="w-full bg-muted/50 p-2 rounded"
@@ -277,7 +278,7 @@ export default function GeradorDeArgumentoPage() {
       conflicts: [], customConflict: '',
       narrativeStyles: [], customNarrativeStyle: '',
       universes: [], customUniverse: '',
-      initialTheme: '', refinedTheme: '', themeSuggestions: ['', '', '', ''], selectedSuggestions: [],
+      initialTheme: '', refinedTheme: '', themeSuggestions: [], selectedSuggestions: [],
       protagonistInitialConcept: '', protagonistPsychologicalProfile: '', protagonistStrengths: '', protagonistWeaknesses: '', protagonistInternalMotivations: '', protagonistExternalMotivations: '', protagonistSocialMotivations: '', protagonistProfile: '',
       antagonistInitialConcept: '', antagonistPsychologicalProfile: '', antagonistStrengths: '', antagonistWeaknesses: '', antagonistInternalMotivations: '', antagonistExternalMotivations: '', antagonistSocialMotivations: '', antagonistProfile: '',
       narrativeFundamentalConcept: '', narrativePlotObjective: '', narrativeCharacterObjective: '', narrativePlotTwist: '', narrativeKeyObjects: '', narrativeImportantPlaces: '', narrativePredominantFeelings: '', narrativeDetails: '',
@@ -305,7 +306,7 @@ export default function GeradorDeArgumentoPage() {
     if (!mainTheme) return;
     setLoading(prev => ({ ...prev, suggestions: true }));
     try {
-        const result = await generateThemeSuggestions({ mainTheme });
+        const result = await generateThemeSuggestions({ mainTheme, count: 4 });
         setValue('themeSuggestions', result.suggestions);
     } catch (e) {
         toast({ title: "Erro", description: "Não foi possível gerar sugestões."});
@@ -320,7 +321,7 @@ export default function GeradorDeArgumentoPage() {
     setLoading(prev => ({ ...prev, [`suggestion_${index}`]: true }));
     try {
         const result = await generateThemeSuggestions({ mainTheme, count: 1 });
-        const currentSuggestions = watch('themeSuggestions');
+        const currentSuggestions = watch('themeSuggestions') || [];
         currentSuggestions[index] = result.suggestions[0];
         setValue('themeSuggestions', [...currentSuggestions]);
     } catch (e) {
@@ -365,7 +366,7 @@ export default function GeradorDeArgumentoPage() {
         Motivações Sociais: ${watch(fields.social as keyof ArgumentFormData)}
     `.trim();
 
-    if (concept.length < 50) { // Check if there's enough content
+    if (concept.replace(/\s/g, '').length < 10) { 
         toast({ title: "Aviso", description: "Forneça mais detalhes sobre o personagem para gerar um perfil." });
         return;
     }
@@ -391,7 +392,7 @@ export default function GeradorDeArgumentoPage() {
         Sentimentos Predominantes: ${watch('narrativePredominantFeelings')}
     `.trim();
 
-    if (concept.length < 50) { // Check if there's enough content
+    if (concept.replace(/\s/g, '').length < 10) { 
         toast({ title: "Aviso", description: "Forneça mais detalhes sobre a narrativa para gerar uma descrição." });
         return;
     }
@@ -503,7 +504,7 @@ export default function GeradorDeArgumentoPage() {
                                 <FormItem>
                                     <FormLabel>Ideia para o tema</FormLabel>
                                     <FormControl>
-                                        <TextareaAutosize minRows={3} placeholder="Ex: Uma história sobre perdão e as consequências de não perdoar." {...field} className="w-full bg-muted/50 p-2 rounded" />
+                                        <TextareaAutosize minRows={5} placeholder="Ex: Uma história sobre perdão e as consequências de não perdoar." {...field} className="w-full bg-muted/50 p-2 rounded" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -511,7 +512,7 @@ export default function GeradorDeArgumentoPage() {
                             <Button type="button" onClick={handleRefineTheme} disabled={loading.theme || !watch('initialTheme')} className="mt-4">
                                 {loading.theme ? 'Aprimorando...' : 'Aprimorar com IA'} <Sparkles className="ml-2"/>
                             </Button>
-                            {watch('refinedTheme') && <TextareaAutosize readOnly value={watch('refinedTheme')} minRows={3} className="w-full mt-4 bg-muted p-2 rounded" />}
+                            {watch('refinedTheme') && <TextareaAutosize readOnly value={watch('refinedTheme') || ''} minRows={5} className="w-full mt-4 bg-muted p-2 rounded" />}
                         </SectionCard>
 
                          <SectionCard title="2. Explorar Facetas" description="Gere ideias relacionadas ao seu tema principal para enriquecer a história.">
@@ -520,12 +521,12 @@ export default function GeradorDeArgumentoPage() {
                             </Button>
                             <FormField control={form.control} name="selectedSuggestions" render={() => (
                                 <FormItem className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                    {watch('themeSuggestions').map((suggestion, index) => (
+                                    {(watch('themeSuggestions') || [...Array(4)]).slice(0, 4).map((suggestion, index) => (
                                        <Card key={index} className="flex flex-col">
                                             <CardContent className="pt-4 flex-grow">
                                                 <p className="text-sm text-muted-foreground">{suggestion || `Sugestão ${index + 1}`}</p>
                                             </CardContent>
-                                            <CardFooter className="flex items-center justify-between mt-auto">
+                                            <CardFooter className="flex items-center justify-between mt-auto pt-4">
                                                  <FormField
                                                     control={form.control}
                                                     name="selectedSuggestions"
@@ -533,7 +534,7 @@ export default function GeradorDeArgumentoPage() {
                                                         <Button
                                                             type="button"
                                                             size="sm"
-                                                            variant={field.value.includes(suggestion) ? "default" : "secondary"}
+                                                            variant={field.value?.includes(suggestion) ? "default" : "secondary"}
                                                             onClick={() => {
                                                                 const current = field.value || [];
                                                                 const newSelection = current.includes(suggestion) ? current.filter(s => s !== suggestion) : [...current, suggestion];
@@ -561,33 +562,33 @@ export default function GeradorDeArgumentoPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                          <SectionCard title="Protagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado.">
                             <div className="space-y-4">
-                                <LabeledTextarea name="protagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Nome, profissão, idade, etnia, sexualidade, etc." control={control} />
-                                <LabeledTextarea name="protagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Otimista mas ingênuo, ansioso..." control={control} />
-                                <LabeledTextarea name="protagonistStrengths" label="Forças" placeholder="Ex: Corajoso sob pressão, mestre da dedução..." control={control} />
-                                <LabeledTextarea name="protagonistWeaknesses" label="Fraquezas" placeholder="Ex: Teimosia, medo de altura..." control={control} />
-                                <LabeledTextarea name="protagonistInternalMotivations" label="Motivações Internas" placeholder="Ex: Provar seu valor para si mesmo..." control={control} />
-                                <LabeledTextarea name="protagonistExternalMotivations" label="Motivações Externas" placeholder="Ex: Uma dívida a ser paga..." control={control} />
-                                <LabeledTextarea name="protagonistSocialMotivations" label="Motivações Sociais" placeholder="Ex: Proteger sua comunidade..." control={control} />
+                                <LabeledTextarea name="protagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Nome, profissão, idade, etnia, sexualidade, etc." control={control} minRows={5}/>
+                                <LabeledTextarea name="protagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Otimista mas ingênuo, ansioso..." control={control} minRows={5}/>
+                                <LabeledTextarea name="protagonistStrengths" label="Forças" placeholder="Ex: Corajoso sob pressão, mestre da dedução..." control={control} minRows={5}/>
+                                <LabeledTextarea name="protagonistWeaknesses" label="Fraquezas" placeholder="Ex: Teimosia, medo de altura..." control={control} minRows={5}/>
+                                <LabeledTextarea name="protagonistInternalMotivations" label="Motivações Internas" placeholder="Ex: Provar seu valor para si mesmo..." control={control} minRows={5}/>
+                                <LabeledTextarea name="protagonistExternalMotivations" label="Motivações Externas" placeholder="Ex: Uma dívida a ser paga..." control={control} minRows={5}/>
+                                <LabeledTextarea name="protagonistSocialMotivations" label="Motivações Sociais" placeholder="Ex: Proteger sua comunidade..." control={control} minRows={5}/>
                             </div>
                             <Button type="button" onClick={() => handleRefineCharacter('protagonist')} disabled={loading.protagonist} className="mt-4">
                                 {loading.protagonist ? 'Gerando...' : 'Gerar Perfil com IA'} <Sparkles className="ml-2"/>
                             </Button>
-                             {watch('protagonistProfile') && <TextareaAutosize readOnly value={watch('protagonistProfile')} minRows={5} className="w-full mt-4 bg-muted p-2 rounded" />}
+                             {watch('protagonistProfile') && <TextareaAutosize readOnly value={watch('protagonistProfile') || ''} minRows={5} className="w-full mt-4 bg-muted p-2 rounded" />}
                          </SectionCard>
                         <SectionCard title="Antagonista" description="Forneça conceitos iniciais e a IA criará um perfil detalhado.">
                            <div className="space-y-4">
-                                <LabeledTextarea name="antagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Um CEO carismático e manipulador..." control={control} />
-                                <LabeledTextarea name="antagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Narcisista, acredita que os fins justificam os meios..." control={control} />
-                                <LabeledTextarea name="antagonistStrengths" label="Forças" placeholder="Ex: Inteligência estratégica, grande fortuna..." control={control} />
-                                <LabeledTextarea name="antagonistWeaknesses" label="Fraquezas" placeholder="Ex: Arrogância, subestima os outros..." control={control} />
-                                <LabeledTextarea name="antagonistInternalMotivations" label="Motivações Internas" placeholder="Ex: Medo de ser irrelevante..." control={control} />
-                                <LabeledTextarea name="antagonistExternalMotivations" label="Motivações Externas" placeholder="Ex: Pressão de acionistas..." control={control} />
-                                <LabeledTextarea name="antagonistSocialMotivations" label="Motivações Sociais" placeholder="Ex: Manter o status e a imagem pública..." control={control} />
+                                <LabeledTextarea name="antagonistInitialConcept" label="Conceito Inicial" placeholder="Ex: Um CEO carismático e manipulador..." control={control} minRows={5}/>
+                                <LabeledTextarea name="antagonistPsychologicalProfile" label="Perfil Psicológico" placeholder="Ex: Narcisista, acredita que os fins justificam os meios..." control={control} minRows={5}/>
+                                <LabeledTextarea name="antagonistStrengths" label="Forças" placeholder="Ex: Inteligência estratégica, grande fortuna..." control={control} minRows={5}/>
+                                <LabeledTextarea name="antagonistWeaknesses" label="Fraquezas" placeholder="Ex: Arrogância, subestima os outros..." control={control} minRows={5}/>
+                                <LabeledTextarea name="antagonistInternalMotivations" label="Motivações Internas" placeholder="Ex: Medo de ser irrelevante..." control={control} minRows={5}/>
+                                <LabeledTextarea name="antagonistExternalMotivations" label="Motivações Externas" placeholder="Ex: Pressão de acionistas..." control={control} minRows={5}/>
+                                <LabeledTextarea name="antagonistSocialMotivations" label="Motivações Sociais" placeholder="Ex: Manter o status e a imagem pública..." control={control} minRows={5}/>
                             </div>
                             <Button type="button" onClick={() => handleRefineCharacter('antagonist')} disabled={loading.antagonist} className="mt-4">
                                 {loading.antagonist ? 'Gerando...' : 'Gerar Perfil com IA'} <Sparkles className="ml-2"/>
                             </Button>
-                            {watch('antagonistProfile') && <TextareaAutosize readOnly value={watch('antagonistProfile')} minRows={5} className="w-full mt-4 bg-muted p-2 rounded" />}
+                            {watch('antagonistProfile') && <TextareaAutosize readOnly value={watch('antagonistProfile') || ''} minRows={5} className="w-full mt-4 bg-muted p-2 rounded" />}
                         </SectionCard>
                     </div>
                 </TabsContent>
@@ -595,18 +596,18 @@ export default function GeradorDeArgumentoPage() {
                 <TabsContent value="narrative">
                      <SectionCard title="Detalhes da Narrativa" description="Forneça os conceitos e a IA irá expandi-los em uma descrição coesa.">
                          <div className="space-y-4">
-                            <LabeledTextarea name="narrativeFundamentalConcept" label="Conceito Fundamental" placeholder="Ex: Uma cidade onde a chuva nunca para." control={control} />
-                            <LabeledTextarea name="narrativePlotObjective" label="Objetivo da Trama" placeholder="Ex: Descobrir a origem da chuva eterna." control={control} />
-                            <LabeledTextarea name="narrativeCharacterObjective" label="Objetivo do Personagem" placeholder="Ex: Encontrar sua filha desaparecida." control={control} />
-                            <LabeledTextarea name="narrativePlotTwist" label="Plot Twist" placeholder="Ex: A filha é quem controla a chuva." control={control} />
-                            <LabeledTextarea name="narrativeKeyObjects" label="Objetos Chave" placeholder="Ex: Um guarda-chuva que repele a água de forma anormal." control={control} />
-                            <LabeledTextarea name="narrativeImportantPlaces" label="Lugares Importantes" placeholder="Ex: Uma torre de relógio parada." control={control} />
-                            <LabeledTextarea name="narrativePredominantFeelings" label="Sentimentos Predominantes" placeholder="Ex: Melancolia e esperança." control={control} />
+                            <LabeledTextarea name="narrativeFundamentalConcept" label="Conceito Fundamental" placeholder="Ex: Uma cidade onde a chuva nunca para." control={control} minRows={5}/>
+                            <LabeledTextarea name="narrativePlotObjective" label="Objetivo da Trama" placeholder="Ex: Descobrir a origem da chuva eterna." control={control} minRows={5}/>
+                            <LabeledTextarea name="narrativeCharacterObjective" label="Objetivo do Personagem" placeholder="Ex: Encontrar sua filha desaparecida." control={control} minRows={5}/>
+                            <LabeledTextarea name="narrativePlotTwist" label="Plot Twist" placeholder="Ex: A filha é quem controla a chuva." control={control} minRows={5}/>
+                            <LabeledTextarea name="narrativeKeyObjects" label="Objetos Chave" placeholder="Ex: Um guarda-chuva que repele a água de forma anormal." control={control} minRows={5}/>
+                            <LabeledTextarea name="narrativeImportantPlaces" label="Lugares Importantes" placeholder="Ex: Uma torre de relógio parada." control={control} minRows={5}/>
+                            <LabeledTextarea name="narrativePredominantFeelings" label="Sentimentos Predominantes" placeholder="Ex: Melancolia e esperança." control={control} minRows={5}/>
                          </div>
                         <Button type="button" onClick={handleGenerateNarrative} disabled={loading.narrative} className="mt-4">
                             {loading.narrative ? 'Gerando...' : 'Gerar Detalhes com IA'} <Sparkles className="ml-2"/>
                         </Button>
-                        {watch('narrativeDetails') && <TextareaAutosize readOnly value={watch('narrativeDetails')} minRows={8} className="w-full mt-4 bg-muted p-2 rounded" />}
+                        {watch('narrativeDetails') && <TextareaAutosize readOnly value={watch('narrativeDetails') || ''} minRows={8} className="w-full mt-4 bg-muted p-2 rounded" />}
                      </SectionCard>
                 </TabsContent>
 
@@ -623,7 +624,7 @@ export default function GeradorDeArgumentoPage() {
       </Form>
 
        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-3xl h-5/6 flex flex-col">
+          <DialogContent className="max-w-4xl h-5/6 flex flex-col">
               <DialogHeader>
                   <DialogTitle>Argumento Final Compilado</DialogTitle>
                   <DialogDescription>
@@ -634,7 +635,7 @@ export default function GeradorDeArgumentoPage() {
                 <TextareaAutosize
                     readOnly
                     value={finalArgument}
-                    className="w-full h-full bg-transparent resize-none border-none focus:ring-0"
+                    className="w-full h-full bg-transparent resize-none border-none focus:ring-0 whitespace-pre-wrap"
                 />
               </div>
           </DialogContent>

@@ -16,12 +16,12 @@ const GenerateThemeSuggestionsInputSchema = z.object({
   mainTheme: z.string().describe('O tema principal a partir do qual as sugestões serão geradas.'),
   count: z.number().optional().default(4).describe('O número de sugestões a serem geradas.'),
 });
-export type GenerateThemeSuggestionsInput = z.infer<typeof GenerateThemeSuggestionsInputSchema>;
+type GenerateThemeSuggestionsInput = z.infer<typeof GenerateThemeSuggestionsInputSchema>;
 
 const GenerateThemeSuggestionsOutputSchema = z.object({
   suggestions: z.array(z.string()).describe('Uma lista de sugestões de temas relacionados.'),
 });
-export type GenerateThemeSuggestionsOutput = z.infer<typeof GenerateThemeSuggestionsOutputSchema>;
+type GenerateThemeSuggestionsOutput = z.infer<typeof GenerateThemeSuggestionsOutputSchema>;
 
 export async function generateThemeSuggestions(input: GenerateThemeSuggestionsInput): Promise<GenerateThemeSuggestionsOutput> {
   return generateThemeSuggestionsFlow(input);
@@ -31,7 +31,10 @@ const prompt = ai.definePrompt({
   name: 'generateThemeSuggestionsPrompt',
   input: {schema: GenerateThemeSuggestionsInputSchema},
   output: {schema: GenerateThemeSuggestionsOutputSchema},
-  prompt: `Você é um roteirista e filósofo. Com base no tema principal fornecido, gere {{count}} sugestões de temas secundários ou facetas que possam enriquecer a história. Cada sugestão deve ser uma frase concisa e instigante. Responda inteiramente em português.
+  prompt: `Você é um roteirista e filósofo. Com base no tema principal fornecido, gere exatamente {{count}} sugestões. Cada sugestão deve ser uma frase concisa que introduza um tema secundário e explique brevemente como ele pode enriquecer a história principal. Responda inteiramente em português.
+
+**Exemplo de Formato:**
+"Explorar o luto como um catalisador para a mudança, mostrando como a perda força o protagonista a confrontar suas falhas."
 
 **Tema Principal:**
 {{{mainTheme}}}

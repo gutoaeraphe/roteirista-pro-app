@@ -15,12 +15,12 @@ import {z} from 'genkit';
 const RefineCharacterProfileInputSchema = z.object({
   concept: z.string().describe('O conceito inicial do personagem fornecido pelo usuário.'),
 });
-export type RefineCharacterProfileInput = z.infer<typeof RefineCharacterProfileInputSchema>;
+type RefineCharacterProfileInput = z.infer<typeof RefineCharacterProfileInputSchema>;
 
 const RefineCharacterProfileOutputSchema = z.object({
   detailedProfile: z.string().describe('O perfil detalhado do personagem, incluindo psicológico, forças, fraquezas e motivações.'),
 });
-export type RefineCharacterProfileOutput = z.infer<typeof RefineCharacterProfileOutputSchema>;
+type RefineCharacterProfileOutput = z.infer<typeof RefineCharacterProfileOutputSchema>;
 
 export async function refineCharacterProfile(input: RefineCharacterProfileInput): Promise<RefineCharacterProfileOutput> {
   return refineCharacterProfileFlow(input);
@@ -30,7 +30,7 @@ const prompt = ai.definePrompt({
   name: 'refineCharacterProfilePrompt',
   input: {schema: RefineCharacterProfileInputSchema},
   output: {schema: RefineCharacterProfileOutputSchema},
-  prompt: `Você é um criador de personagens especialista. Com base no conceito inicial fornecido pelo usuário, crie um perfil de personagem detalhado. Elabore sobre o perfil psicológico, forças, fraquezas e motivações (internas, externas, sociais). Apresente o resultado como um texto em prosa, bem escrito e coeso, não como uma lista. Responda inteiramente em português.
+  prompt: `Você é um criador de personagens especialista. Com base no conceito inicial fornecido pelo usuário, crie um perfil de personagem detalhado. Elabore sobre o perfil psicológico, forças, fraquezas e motivações (internas, externas, sociais). Apresente o resultado como um texto em prosa, bem escrito, objetivo e conciso, não como uma lista. Responda inteiramente em português.
 
 **Conceito Inicial:**
 {{{concept}}}
