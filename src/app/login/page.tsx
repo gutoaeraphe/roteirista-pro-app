@@ -1,13 +1,14 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Clapperboard, Mail, KeyRound, UserPlus } from 'lucide-react';
+import { Clapperboard, Mail, KeyRound, User, UserPlus } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,9 +21,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const loginSchema = z.object({
   email: z.string().email("Por favor, insira um e-mail válido."),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
+  password: z.string().min(1, "A senha é obrigatória."),
 });
 type LoginFormData = z.infer<typeof loginSchema>;
+
+const signupSchema = z.object({
+  name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
+  email: z.string().email("Por favor, insira um e-mail válido."),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
+});
+type SignupFormData = z.infer<typeof signupSchema>;
 
 
 export default function LoginPage() {
@@ -31,9 +39,14 @@ export default function LoginPage() {
   const { toast } = useToast();
   const [authLoading, setAuthLoading] = useState(false);
 
-  const form = useForm<LoginFormData>({
+  const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
+  });
+
+  const signupForm = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: { name: "", email: "", password: "" },
   });
 
   useEffect(() => {
@@ -68,12 +81,16 @@ export default function LoginPage() {
     }
   };
   
-  const handleEmailSignUp = async (data: LoginFormData) => {
+  const handleEmailSignUp = async (data: SignupFormData) => {
     setAuthLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      await updateProfile(userCredential.user, {
+        displayName: data.name
+      });
+
       toast({ title: "Conta criada com sucesso!", description: "Você já pode fazer o login." });
-      form.reset();
+      signupForm.reset();
     } catch (error: any) {
       console.error("Erro ao criar conta com e-mail:", error);
       if (error.code === 'auth/email-already-in-use') {
@@ -127,74 +144,91 @@ export default function LoginPage() {
                 <TabsTrigger value="login">Entrar</TabsTrigger>
                 <TabsTrigger value="signup">Criar Conta</TabsTrigger>
             </TabsList>
-            <Form {...form}>
+            
             <TabsContent value="login">
-                <form onSubmit={form.handleSubmit(handleEmailSignIn)} className="space-y-4 mt-4">
-                     <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="sr-only">Email</FormLabel>
-                            <FormControl>
-                                <Input placeholder="seu@email.com" {...field} icon={Mail} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                     <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                        <FormItem>
-                             <FormLabel className="sr-only">Senha</FormLabel>
-                            <FormControl>
-                                <Input type="password" placeholder="Sua senha" {...field} icon={KeyRound}/>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <Button type="submit" className="w-full" disabled={loading || authLoading}>
-                        <Mail className="mr-2"/> Entrar com E-mail
-                    </Button>
-                </form>
+                <Form {...loginForm}>
+                  <form onSubmit={loginForm.handleSubmit(handleEmailSignIn)} className="space-y-4 mt-4">
+                      <FormField
+                          control={loginForm.control}
+                          name="email"
+                          render={({ field }) => (
+                          <FormItem>
+                              <FormLabel className="sr-only">Email</FormLabel>
+                              <FormControl>
+                                  <Input placeholder="seu@email.com" {...field} icon={Mail} />
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                          )}
+                      />
+                      <FormField
+                          control={loginForm.control}
+                          name="password"
+                          render={({ field }) => (
+                          <FormItem>
+                              <FormLabel className="sr-only">Senha</FormLabel>
+                              <FormControl>
+                                  <Input type="password" placeholder="Sua senha" {...field} icon={KeyRound}/>
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                          )}
+                      />
+                      <Button type="submit" className="w-full" disabled={loading || authLoading}>
+                          <Mail className="mr-2"/> Entrar com E-mail
+                      </Button>
+                  </form>
+                </Form>
             </TabsContent>
+
             <TabsContent value="signup">
-                 <form onSubmit={form.handleSubmit(handleEmailSignUp)} className="space-y-4 mt-4">
-                     <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="sr-only">Email</FormLabel>
-                            <FormControl>
-                                <Input placeholder="seu@email.com" {...field} icon={Mail} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                     <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                        <FormItem>
-                             <FormLabel className="sr-only">Senha</FormLabel>
-                            <FormControl>
-                                <Input type="password" placeholder="Crie uma senha" {...field} icon={KeyRound}/>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <Button type="submit" className="w-full" disabled={loading || authLoading}>
-                        <UserPlus className="mr-2"/> Criar Conta com E-mail
-                    </Button>
-                </form>
+                <Form {...signupForm}>
+                  <form onSubmit={signupForm.handleSubmit(handleEmailSignUp)} className="space-y-4 mt-4">
+                      <FormField
+                          control={signupForm.control}
+                          name="name"
+                          render={({ field }) => (
+                          <FormItem>
+                              <FormLabel className="sr-only">Nome</FormLabel>
+                              <FormControl>
+                                  <Input placeholder="Seu nome" {...field} icon={User} />
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                          )}
+                      />
+                      <FormField
+                          control={signupForm.control}
+                          name="email"
+                          render={({ field }) => (
+                          <FormItem>
+                              <FormLabel className="sr-only">Email</FormLabel>
+                              <FormControl>
+                                  <Input placeholder="seu@email.com" {...field} icon={Mail} />
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                          )}
+                      />
+                      <FormField
+                          control={signupForm.control}
+                          name="password"
+                          render={({ field }) => (
+                          <FormItem>
+                              <FormLabel className="sr-only">Senha</FormLabel>
+                              <FormControl>
+                                  <Input type="password" placeholder="Crie uma senha" {...field} icon={KeyRound}/>
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                          )}
+                      />
+                      <Button type="submit" className="w-full" disabled={loading || authLoading}>
+                          <UserPlus className="mr-2"/> Criar Conta com E-mail
+                      </Button>
+                  </form>
+                </Form>
             </TabsContent>
-             </Form>
         </Tabs>
 
         </CardContent>

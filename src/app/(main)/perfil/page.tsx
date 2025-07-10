@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserCircle, Mail, KeyRound } from "lucide-react";
+import { UserCircle, Mail, KeyRound, User } from "lucide-react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
@@ -58,6 +58,13 @@ export default function PerfilPage() {
           <CardDescription>Estes são os detalhes associados à sua conta.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+           <div className="space-y-2">
+            <Label htmlFor="displayName">Nome</Label>
+            <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input id="displayName" value={user?.displayName || "Não informado"} readOnly className="pl-9" />
+            </div>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="email">E-mail</Label>
             <div className="relative">

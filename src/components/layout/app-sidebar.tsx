@@ -44,7 +44,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 
 const navItems = [
@@ -135,9 +135,18 @@ export function AppSidebar() {
     }
   };
   
-  const getInitials = (email: string | null | undefined) => {
-    if (!email) return "?";
-    return email.substring(0, 2).toUpperCase();
+  const getInitials = (name: string | null | undefined, email: string | null | undefined) => {
+    if (name) {
+      const names = name.split(' ');
+      if (names.length > 1) {
+        return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+      }
+      return name.substring(0, 2).toUpperCase();
+    }
+    if (email) {
+      return email.substring(0, 2).toUpperCase();
+    }
+    return "?";
   }
 
   return (
@@ -214,10 +223,11 @@ export function AppSidebar() {
               <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="w-full justify-start items-center gap-2 px-2 h-auto">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                       {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || user.email || ''} />}
+                       <AvatarFallback>{getInitials(user.displayName, user.email)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 text-left overflow-hidden">
-                      <p className="text-sm font-medium truncate">{user.email}</p>
+                      <p className="text-sm font-medium truncate">{user.displayName || user.email}</p>
                     </div>
                   </Button>
               </DropdownMenuTrigger>
