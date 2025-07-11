@@ -40,9 +40,9 @@ export default function MainLayout({
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <>
       <AppSidebar />
-      <div className="flex flex-col md:pl-64">
+      <div className="md:pl-64">
         <AppHeader />
         <main className="flex-1 p-4 lg:p-8 pt-24 md:pt-8">
           <div className="max-w-7xl mx-auto w-full">
@@ -50,6 +50,6 @@ export default function MainLayout({
           </div>
         </main>
       </div>
-    </div>
+    </>
   );
 }

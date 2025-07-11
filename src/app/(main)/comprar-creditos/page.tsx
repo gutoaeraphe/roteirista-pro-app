@@ -1,10 +1,17 @@
+
 // src/app/(main)/comprar-creditos/page.tsx
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { CheckCircle, CreditCard, Mail, Star, Sparkles } from "lucide-react";
+import { CheckCircle, Mail, Star, Sparkles, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { loadStripe } from '@stripe/stripe-js';
+import { useAuth } from "@/context/auth-context";
+
+// Carrega a chave publicável do Stripe. Garanta que ela esteja no seu .env.local
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const creditPackages = [
     {
@@ -13,6 +20,7 @@ const creditPackages = [
         price: "19,90",
         description: "Ideal para testar e fazer análises pontuais.",
         features: ["10 créditos de análise", "Acesso a todas as ferramentas", "Suporte por e-mail"],
+        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_BASICO, // Variável de ambiente
     },
     {
         name: "Pacote Padrão",
@@ -21,6 +29,7 @@ const creditPackages = [
         description: "O mais popular para roteiristas ativos.",
         features: ["20 créditos de análise", "Melhor custo-benefício", "Acesso a todas as ferramentas", "Suporte prioritário"],
         isPopular: true,
+        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PADRAO, // Variável de ambiente
     },
     {
         name: "Pacote Pro",
@@ -28,18 +37,78 @@ const creditPackages = [
         price: "59,90",
         description: "Perfeito para uso intensivo e múltiplos projetos.",
         features: ["50 créditos de análise", "O menor preço por crédito", "Acesso a todas as ferramentas", "Suporte prioritário"],
+        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO, // Variável de ambiente
     },
 ]
 
 export default function ComprarCreditosPage() {
     const { toast } = useToast();
+    const { user } = useAuth();
+    const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
 
-    const handlePurchase = (packageName: string) => {
-        // Lógica de integração de pagamento (Stripe/MercadoPago) virá aqui.
-        toast({
-            title: "Função em Desenvolvimento",
-            description: `A integração de pagamento para o ${packageName} ainda não está ativa.`,
-        });
+    const handlePurchase = async (priceId: string | undefined) => {
+        if (!priceId) {
+            toast({
+                title: "Produto não configurado",
+                description: "Este pacote de créditos ainda não está pronto para venda.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        if (!user) {
+            toast({
+                title: "Usuário não autenticado",
+                description: "Você precisa estar logado para fazer uma compra.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        setLoadingPriceId(priceId);
+
+        try {
+            // 1. Chamar nosso endpoint de API para criar a sessão de checkout
+            const response = await fetch('/api/stripe/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ priceId, userId: user.uid }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Falha ao criar a sessão de checkout.');
+            }
+
+            const { sessionId } = await response.json();
+
+            // 2. Redirecionar o usuário para o Checkout do Stripe
+            const stripe = await stripePromise;
+            if (!stripe) {
+                throw new Error('Stripe.js não foi carregado.');
+            }
+
+            const { error } = await stripe.redirectToCheckout({ sessionId });
+
+            if (error) {
+                console.error('Erro ao redirecionar para o checkout:', error);
+                toast({
+                    title: "Erro no Pagamento",
+                    description: error.message || "Não foi possível iniciar o processo de pagamento.",
+                    variant: "destructive",
+                });
+            }
+        } catch (error: any) {
+            console.error("Erro na compra:", error);
+            toast({
+                title: "Erro",
+                description: error.message || "Ocorreu um problema. Tente novamente.",
+                variant: "destructive",
+            });
+        } finally {
+            setLoadingPriceId(null);
+        }
     }
 
     return (
@@ -72,8 +141,20 @@ export default function ComprarCreditosPage() {
                             </ul>
                         </CardContent>
                         <CardFooter>
-                            <Button className="w-full" onClick={() => handlePurchase(pkg.name)} variant={pkg.isPopular ? 'default' : 'secondary'}>
-                                Comprar Agora
+                            <Button
+                                className="w-full"
+                                onClick={() => handlePurchase(pkg.priceId)}
+                                disabled={loadingPriceId === pkg.priceId}
+                                variant={pkg.isPopular ? 'default' : 'secondary'}
+                            >
+                                {loadingPriceId === pkg.priceId ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Aguarde...
+                                    </>
+                                ) : (
+                                    "Comprar Agora"
+                                )}
                             </Button>
                         </CardFooter>
                     </Card>
