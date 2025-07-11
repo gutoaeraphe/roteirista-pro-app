@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     }
 
     const YOUR_DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_URL || 'http://localhost:3000';
+    const SUCCESS_URL = "https://roteiristapro.com/painel-de-roteiros";
 
     const session = await stripe.checkout.sessions.create({
       line_items: [
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
         },
       ],
       mode: 'payment',
-      success_url: `${YOUR_DOMAIN}/compra-sucesso?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: SUCCESS_URL,
       cancel_url: `${YOUR_DOMAIN}/comprar-creditos`, // Redireciona de volta para a página de compra
       client_reference_id: userId, // Passa o UID do usuário do Firebase
       metadata: {
