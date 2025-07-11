@@ -7,12 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { CheckCircle, Mail, Star, Sparkles, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { loadStripe } from '@stripe/stripe-js';
 import { useAuth } from "@/context/auth-context";
 
-// Carrega a chave publicável do Stripe. Garanta que ela esteja no seu .env.local
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
+// Substitua pelas URLs dos seus Links de Pagamento do Stripe
 const creditPackages = [
     {
         name: "Pacote Básico",
@@ -20,7 +17,7 @@ const creditPackages = [
         price: "19,90",
         description: "Ideal para testar e fazer análises pontuais.",
         features: ["10 créditos de análise", "Acesso a todas as ferramentas", "Suporte por e-mail"],
-        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_BASICO,
+        paymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BASICO,
     },
     {
         name: "Pacote Creator",
@@ -29,7 +26,7 @@ const creditPackages = [
         description: "O mais popular para roteiristas ativos.",
         features: ["25 créditos de análise", "Melhor custo-benefício", "Acesso a todas as ferramentas", "Suporte prioritário"],
         isPopular: true,
-        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_CREATOR,
+        paymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_CREATOR,
     },
     {
         name: "Pacote Pro",
@@ -37,20 +34,20 @@ const creditPackages = [
         price: "69,90",
         description: "Perfeito para uso intensivo e múltiplos projetos.",
         features: ["50 créditos de análise", "O menor preço por crédito", "Acesso a todas as ferramentas", "Suporte prioritário"],
-        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO,
+        paymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_PRO,
     },
 ]
 
 export default function ComprarCreditosPage() {
     const { toast } = useToast();
     const { user } = useAuth();
-    const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
+    const [loadingLink, setLoadingLink] = useState<string | null>(null);
 
-    const handlePurchase = async (priceId: string | undefined) => {
-        if (!priceId) {
+    const handlePurchase = (paymentLink: string | undefined) => {
+        if (!paymentLink) {
             toast({
                 title: "Produto não configurado",
-                description: "Este pacote de créditos ainda não está pronto para venda.",
+                description: "Este pacote de créditos ainda não está pronto para venda. Verifique as variáveis de ambiente.",
                 variant: "destructive",
             });
             return;
@@ -65,49 +62,13 @@ export default function ComprarCreditosPage() {
             return;
         }
 
-        setLoadingPriceId(priceId);
-
-        try {
-            const response = await fetch('/api/stripe/checkout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ priceId, userId: user.uid }),
-            });
-
-            if (!response.ok) {
-                const errorBody = await response.json();
-                throw new Error(errorBody.error || 'Falha ao criar a sessão de checkout.');
-            }
-
-            const { sessionId } = await response.json();
-
-            const stripe = await stripePromise;
-            if (!stripe) {
-                throw new Error('Stripe.js não foi carregado.');
-            }
-
-            const { error } = await stripe.redirectToCheckout({ sessionId });
-
-            if (error) {
-                console.error('Erro ao redirecionar para o checkout:', error);
-                toast({
-                    title: "Erro no Pagamento",
-                    description: error.message || "Não foi possível iniciar o processo de pagamento.",
-                    variant: "destructive",
-                });
-            }
-        } catch (error: any) {
-            console.error("Erro na compra:", error);
-            toast({
-                title: "Erro",
-                description: error.message || "Ocorreu um problema. Tente novamente.",
-                variant: "destructive",
-            });
-        } finally {
-            setLoadingPriceId(null);
-        }
+        setLoadingLink(paymentLink);
+        
+        // Adiciona o client_reference_id na URL para identificar o usuário no webhook
+        const urlComUsuario = `${paymentLink}?client_reference_id=${user.uid}`;
+        
+        // Redireciona o usuário para o link de pagamento
+        window.location.href = urlComUsuario;
     }
 
     return (
@@ -142,11 +103,11 @@ export default function ComprarCreditosPage() {
                         <CardFooter>
                             <Button
                                 className="w-full"
-                                onClick={() => handlePurchase(pkg.priceId)}
-                                disabled={loadingPriceId === pkg.priceId}
+                                onClick={() => handlePurchase(pkg.paymentLink)}
+                                disabled={loadingLink === pkg.paymentLink}
                                 variant={pkg.isPopular ? 'default' : 'secondary'}
                             >
-                                {loadingPriceId === pkg.priceId ? (
+                                {loadingLink === pkg.paymentLink ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                         Aguarde...

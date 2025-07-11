@@ -6,6 +6,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 });
 
+// Este endpoint não é mais utilizado pela página de compra de créditos,
+// mas é mantido para referência ou uso futuro.
+// A lógica foi movida para usar Links de Pagamento diretamente no frontend.
 export async function POST(request: Request) {
   try {
     const { priceId, userId } = await request.json();
