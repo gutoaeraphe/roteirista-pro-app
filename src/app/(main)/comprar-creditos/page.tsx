@@ -9,7 +9,7 @@ import { CheckCircle, Mail, Star, Sparkles, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
 
-// Substitua pelas URLs dos seus Links de Pagamento do Stripe
+// Substitua pelos URLs dos seus Links de Pagamento do Stripe
 const creditPackages = [
     {
         name: "Pacote Básico",
