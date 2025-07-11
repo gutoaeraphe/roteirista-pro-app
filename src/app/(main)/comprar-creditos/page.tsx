@@ -20,7 +20,7 @@ const creditPackages = [
         price: "19,90",
         description: "Ideal para testar e fazer análises pontuais.",
         features: ["10 créditos de análise", "Acesso a todas as ferramentas", "Suporte por e-mail"],
-        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_BASICO, // Variável de ambiente
+        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_BASICO,
     },
     {
         name: "Pacote Padrão",
@@ -29,7 +29,7 @@ const creditPackages = [
         description: "O mais popular para roteiristas ativos.",
         features: ["20 créditos de análise", "Melhor custo-benefício", "Acesso a todas as ferramentas", "Suporte prioritário"],
         isPopular: true,
-        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PADRAO, // Variável de ambiente
+        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PADRAO,
     },
     {
         name: "Pacote Pro",
@@ -37,7 +37,7 @@ const creditPackages = [
         price: "59,90",
         description: "Perfeito para uso intensivo e múltiplos projetos.",
         features: ["50 créditos de análise", "O menor preço por crédito", "Acesso a todas as ferramentas", "Suporte prioritário"],
-        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO, // Variável de ambiente
+        priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO,
     },
 ]
 
@@ -68,7 +68,6 @@ export default function ComprarCreditosPage() {
         setLoadingPriceId(priceId);
 
         try {
-            // 1. Chamar nosso endpoint de API para criar a sessão de checkout
             const response = await fetch('/api/stripe/checkout', {
                 method: 'POST',
                 headers: {
@@ -78,12 +77,12 @@ export default function ComprarCreditosPage() {
             });
 
             if (!response.ok) {
-                throw new Error('Falha ao criar a sessão de checkout.');
+                const errorBody = await response.json();
+                throw new Error(errorBody.error || 'Falha ao criar a sessão de checkout.');
             }
 
             const { sessionId } = await response.json();
 
-            // 2. Redirecionar o usuário para o Checkout do Stripe
             const stripe = await stripePromise;
             if (!stripe) {
                 throw new Error('Stripe.js não foi carregado.');
