@@ -5,6 +5,7 @@ import { ScriptProvider } from "@/context/script-context";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/context/auth-context";
+import CookieConsent from "@/components/cookie-consent";
 
 const fontBody = Inter({
   subsets: ["latin"],
@@ -39,6 +40,7 @@ export default function RootLayout({
           <ScriptProvider>
             {children}
             <Toaster />
+            <CookieConsent />
           </ScriptProvider>
         </AuthProvider>
       </body>
