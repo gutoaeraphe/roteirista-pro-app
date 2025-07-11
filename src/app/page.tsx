@@ -10,7 +10,7 @@ import { auth, googleProvider, handleEmailSignUp } from '@/lib/firebase';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Clapperboard, Mail, KeyRound, User, UserPlus, BrainCircuit, GitCommitHorizontal, BarChart3, Scale, Lightbulb, Presentation, Stethoscope, PenSquare, Youtube, CheckCircle, Star, Sparkles, Building, School } from 'lucide-react';
+import { Clapperboard, Mail, KeyRound, User, UserPlus, BrainCircuit, GitCommitHorizontal, BarChart3, Scale, Lightbulb, Presentation, Stethoscope, PenSquare, Youtube, CheckCircle, Star, Sparkles, Building, School, Rocket } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -170,7 +170,7 @@ export default function LandingPage() {
   return (
     <div className="bg-background text-foreground">
       {/* Hero Section */}
-      <section className="py-20 md:py-32">
+      <section className="py-20 md:py-32" id="inicio">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <Image src="/logo.png" alt="Roteirista Pro" width={400} height={100} className="w-64 md:w-96 h-auto" />
@@ -260,6 +260,21 @@ export default function LandingPage() {
                     </Card>
                 ))}
             </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section id="cta-teste-gratis" className="py-20 bg-accent text-accent-foreground">
+        <div className="container mx-auto px-4 text-center">
+          <Rocket className="w-16 h-16 mx-auto mb-4" />
+          <h2 className="text-3xl md:text-4xl font-headline mb-4">Pronto para Elevar seu Roteiro?</h2>
+          <p className="text-lg text-accent-foreground/80 mb-8 max-w-3xl mx-auto">
+            Chega de incertezas. Valide suas ideias, aprimore sua estrutura e ganhe a confiança para levar seu projeto ao próximo nível. 
+            **Cadastre-se agora e ganhe 3 créditos gratuitos** para testar todas as nossas ferramentas de IA.
+          </p>
+          <Button asChild size="lg" variant="secondary" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
+            <a href="#inicio">Criar Minha Conta Gratuita</a>
+          </Button>
         </div>
       </section>
 
