@@ -1,26 +1,30 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check for admin status
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
-
+    
+    // Regras para a coleção de usuários
     match /users/{userId} {
-      // Admins can list all users.
-      // Individual users can read, create, and update their own document.
-      allow list, get: if isAdmin();
-      allow read, create, update: if request.auth != null && request.auth.uid == userId;
+      // Usuários autenticados podem criar seu próprio documento
+      allow create: if request.auth != null;
+
+      // Usuários autenticados podem ler, atualizar e deletar apenas seu próprio documento
+      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
       
-      // Admins can update any user document.
-      allow update: if isAdmin();
+      // Administradores podem listar (ler) todos os documentos de usuários
+      allow list: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+
+      // Regras para a subcoleção de roteiros
+      match /scripts/{scriptId} {
+        // Usuários autenticados podem gerenciar (criar, ler, atualizar, deletar) apenas seus próprios roteiros
+        allow read, create, update, delete: if request.auth != null && request.auth.uid == userId;
+      }
     }
 
-    match /users/{userId}/scripts/{scriptId} {
-      // Users can manage their own scripts.
-      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+    // Regra de grupo para permitir que administradores leiam todos os roteiros de todos os usuários
+    match /{path=**}/scripts/{scriptId} {
+        allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
   }
 }
