@@ -1,0 +1,22 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Regras para a coleção 'users'
+    match /users/{userId} {
+      // Qualquer usuário autenticado pode criar seu próprio documento de perfil.
+      // Um usuário só pode ler, atualizar ou excluir seu próprio documento.
+      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null;
+    }
+
+    // Regras para a subcoleção 'scripts' de cada usuário
+    match /users/{userId}/scripts/{scriptId} {
+      // Um usuário autenticado só pode ler, escrever ou excluir roteiros
+      // que estão dentro de seu próprio documento de usuário.
+      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
