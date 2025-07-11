@@ -4,27 +4,22 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Regras para a coleção de usuários
+    // Allow users to manage their own profile
     match /users/{userId} {
-      // Usuários autenticados podem criar seu próprio documento
-      allow create: if request.auth != null;
-
-      // Usuários autenticados podem ler, atualizar e deletar apenas seu próprio documento
-      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-      
-      // Administradores podem listar (ler) todos os documentos de usuários
-      allow list: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-
-      // Regras para a subcoleção de roteiros
-      match /scripts/{scriptId} {
-        // Usuários autenticados podem gerenciar (criar, ler, atualizar, deletar) apenas seus próprios roteiros
-        allow read, create, update, delete: if request.auth != null && request.auth.uid == userId;
-      }
+      allow read, update, delete: if request.auth.uid == userId;
+      allow create: if request.auth.uid != null;
+      // Allow admins to read all user profiles
+      allow list: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // Regra de grupo para permitir que administradores leiam todos os roteiros de todos os usuários
+    // Allow users to manage their own scripts
+    match /users/{userId}/scripts/{scriptId} {
+      allow read, write, delete: if request.auth.uid == userId;
+    }
+
+    // Allow admins to perform collection group queries on scripts for stats
     match /{path=**}/scripts/{scriptId} {
-        allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+        allow list, get: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
   }
 }
