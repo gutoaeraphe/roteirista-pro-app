@@ -17,6 +17,15 @@ import type {
   GeneratePitchingDocumentOutput
 } from '@/ai/flows/generate-pitching-document';
 
+export type UserProfile = {
+    uid: string;
+    email: string | null;
+    name: string | null;
+    photoURL?: string;
+    credits: number;
+    scriptDoctorMessagesRemaining: number;
+    isAdmin: boolean;
+};
 
 export type Script = {
   id: string;

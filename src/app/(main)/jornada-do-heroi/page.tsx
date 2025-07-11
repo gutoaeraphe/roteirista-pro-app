@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { useScript } from "@/context/script-context";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -14,6 +15,7 @@ import { Sparkles, GitCommitHorizontal, AlertTriangle, BookCheck } from "lucide-
 import type { AnalyzeScriptHeroJourneyOutput, HeroJourneyStep } from "@/ai/flows/analyze-script-hero-journey";
 import { IntensityChart } from "@/components/charts/intensity-chart";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 
 const StepCard = ({ step, index }: { step: HeroJourneyStep; index: number }) => (
     <AccordionItem value={`item-${index}`} key={index}>
@@ -41,6 +43,7 @@ const StepCard = ({ step, index }: { step: HeroJourneyStep; index: number }) => 
 
 export default function JornadaDoHeroiPage() {
   const { activeScript, updateScript } = useScript();
+  const { userProfile, updateUserProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalyzeScriptHeroJourneyOutput | undefined>(
     activeScript?.analysis.heroJourney
@@ -49,11 +52,11 @@ export default function JornadaDoHeroiPage() {
 
   const handleAnalysis = async () => {
     if (!activeScript) {
-      toast({
-        title: "Erro",
-        description: "Nenhum roteiro ativo selecionado.",
-        variant: "destructive",
-      });
+      toast({ title: "Erro", description: "Nenhum roteiro ativo selecionado.", variant: "destructive" });
+      return;
+    }
+    if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
+      toast({ title: "Créditos Insuficientes", description: "Você precisa de créditos para realizar esta análise.", variant: "destructive" });
       return;
     }
 
@@ -63,17 +66,15 @@ export default function JornadaDoHeroiPage() {
       const result = await analyzeScriptHeroJourney({ script: activeScript.content });
       setAnalysisResult(result);
       updateScript({ ...activeScript, analysis: { ...activeScript.analysis, heroJourney: result } });
-      toast({
-        title: "Análise Concluída",
-        description: "A jornada do herói foi mapeada com sucesso.",
-      });
+      
+      if (!userProfile?.isAdmin) {
+          await updateUserProfile({ credits: (userProfile?.credits ?? 0) - 1 });
+      }
+
+      toast({ title: "Análise Concluída", description: "A jornada do herói foi mapeada com sucesso. 1 crédito foi consumido." });
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Erro na Análise",
-        description: "Não foi possível analisar a jornada do herói. Tente novamente.",
-        variant: "destructive",
-      });
+      toast({ title: "Erro na Análise", description: "Não foi possível analisar a jornada do herói. Tente novamente.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -92,6 +93,10 @@ export default function JornadaDoHeroiPage() {
     return <PagePlaceholder title="Análise da Jornada do Herói" description="Para mapear a jornada do herói, primeiro selecione um roteiro ativo no Painel de Roteiros." />;
   }
 
+  if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
+    return <NoCreditsPlaceholder title="Análise da Jornada do Herói" />;
+  }
+
   return (
     <div className="space-y-8">
       <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -100,7 +105,7 @@ export default function JornadaDoHeroiPage() {
           <p className="text-muted-foreground">Identifique os passos da jornada do herói e visualize a intensidade dramática.</p>
         </div>
         <Button onClick={handleAnalysis} disabled={loading}>
-          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar" : "Analisar"}
+          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar (-1 crédito)" : "Analisar (-1 crédito)"}
           <Sparkles className="ml-2 h-4 w-4" />
         </Button>
       </header>

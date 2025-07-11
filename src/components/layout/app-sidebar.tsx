@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -19,7 +20,9 @@ import {
   Film,
   LogOut,
   UserCircle,
-  FileText
+  FileText,
+  CreditCard,
+  Crown
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -104,19 +107,26 @@ const learnMoreItems = [
       icon: Youtube,
     },
     {
+      title: "Comprar Créditos",
+      href: "/comprar-creditos",
+      icon: CreditCard,
+    },
+    {
       title: "Ajuda",
       href: "/ajuda",
       icon: HelpCircle,
     },
 ];
 
-const NavLink = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
+const NavLink = ({ href, active, children, disabled }: { href: string; active: boolean; children: React.ReactNode, disabled?: boolean }) => (
   <Link
-    href={href}
+    href={disabled ? "#" : href}
     className={cn(
       "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-      active && "bg-muted text-primary"
+      active && "bg-muted text-primary",
+      disabled && "cursor-not-allowed opacity-50"
     )}
+    onClick={(e) => disabled && e.preventDefault()}
   >
     {children}
   </Link>
@@ -127,7 +137,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const { activeScript, loading: scriptLoading } = useScript();
-  const { user, loading: authLoading } = useAuth();
+  const { user, userProfile, loading: authLoading } = useAuth();
   const [hasGeneratedArgument, setHasGeneratedArgument] = useState(false);
 
   useEffect(() => {
@@ -161,6 +171,8 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
     return "?";
   }
 
+  const hasCredits = userProfile?.isAdmin || (userProfile?.credits ?? 0) > 0;
+
   const navContent = (
     <div className="flex h-full max-h-screen flex-col gap-2">
       <div className="flex h-20 items-center justify-center border-b px-4 lg:h-[80px] lg:px-6">
@@ -180,6 +192,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
                       key={item.href}
                       href={item.href}
                       active={pathname === item.href}
+                      disabled={!hasCredits && item.href !== '/gerador-de-argumento'}
                     >
                       <item.icon className="h-4 w-4" />
                       {item.title}
@@ -244,7 +257,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
               </Button>
             </Link>
         )}
-        {user && (
+        {user && userProfile && (
            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="w-full justify-start items-center gap-2 px-2 h-auto mt-4">
@@ -254,6 +267,19 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
                     </Avatar>
                     <div className="flex-1 text-left overflow-hidden">
                       <p className="text-sm font-medium truncate">{user.displayName || user.email}</p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        {userProfile.isAdmin ? (
+                          <>
+                           <Crown className="w-3 h-3 text-amber-400" /> 
+                           <span>Admin</span>
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="w-3 h-3" />
+                            <span>{userProfile.credits} créditos</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </Button>
               </DropdownMenuTrigger>
@@ -266,6 +292,13 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
                     <span>Gerenciar Perfil</span>
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/comprar-creditos">
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    <span>Comprar Créditos</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sair</span>

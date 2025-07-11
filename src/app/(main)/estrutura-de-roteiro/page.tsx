@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { useScript } from "@/context/script-context";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -15,6 +16,7 @@ import type { AnalyzeScriptStructureOutput, Metric, DramaticElement } from "@/ai
 import { StructureRadarChart } from "@/components/charts/structure-radar-chart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Clapperboard } from "lucide-react";
+import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 
 const MetricCard = ({ title, metric, icon: Icon }: { title: string; metric: Metric; icon: React.ElementType }) => (
     <Card>
@@ -54,19 +56,20 @@ const DramaticElementCard = ({ element }: { element: DramaticElement }) => (
 
 export default function EstruturaDeRoteiroPage() {
   const { activeScript, updateScript } = useScript();
+  const { userProfile, updateUserProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalyzeScriptStructureOutput | undefined>(
     activeScript?.analysis.structure
   );
   const { toast } = useToast();
-
+  
   const handleAnalysis = async () => {
     if (!activeScript) {
-      toast({
-        title: "Erro",
-        description: "Nenhum roteiro ativo selecionado.",
-        variant: "destructive",
-      });
+      toast({ title: "Erro", description: "Nenhum roteiro ativo selecionado.", variant: "destructive" });
+      return;
+    }
+    if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
+      toast({ title: "Créditos Insuficientes", description: "Você precisa de créditos para realizar esta análise.", variant: "destructive" });
       return;
     }
 
@@ -76,17 +79,15 @@ export default function EstruturaDeRoteiroPage() {
       const result = await analyzeScriptStructure({ scriptContent: activeScript.content });
       setAnalysisResult(result);
       updateScript({ ...activeScript, analysis: { ...activeScript.analysis, structure: result } });
-      toast({
-        title: "Análise Concluída",
-        description: "A análise da estrutura do roteiro foi gerada.",
-      });
+      
+      if (!userProfile?.isAdmin) {
+          await updateUserProfile({ credits: (userProfile?.credits ?? 0) - 1 });
+      }
+
+      toast({ title: "Análise Concluída", description: "A análise da estrutura do roteiro foi gerada. 1 crédito foi consumido." });
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Erro na Análise",
-        description: "Não foi possível analisar a estrutura. Tente novamente.",
-        variant: "destructive",
-      });
+      toast({ title: "Erro na Análise", description: "Não foi possível analisar a estrutura. Tente novamente.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -115,6 +116,10 @@ export default function EstruturaDeRoteiroPage() {
   if (!activeScript) {
     return <PagePlaceholder title="Estrutura de Roteiro" description="Para analisar a estrutura do seu roteiro, primeiro selecione um roteiro ativo." />;
   }
+  
+  if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
+    return <NoCreditsPlaceholder title="Estrutura de Roteiro" />;
+  }
 
   return (
     <div className="space-y-8">
@@ -124,7 +129,7 @@ export default function EstruturaDeRoteiroPage() {
           <p className="text-muted-foreground">Obtenha um dashboard completo sobre a estrutura e potencial do seu roteiro.</p>
         </div>
         <Button onClick={handleAnalysis} disabled={loading}>
-          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Estrutura" : "Analisar Estrutura"}
+          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Estrutura (-1 crédito)" : "Analisar Estrutura (-1 crédito)"}
           <Sparkles className="ml-2 h-4 w-4" />
         </Button>
       </header>

@@ -6,14 +6,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserCircle, Mail, KeyRound, User } from "lucide-react";
+import { UserCircle, Mail, KeyRound, User, CreditCard, Crown } from "lucide-react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 
 export default function PerfilPage() {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const { toast } = useToast();
 
   const handlePasswordReset = async () => {
@@ -49,7 +49,7 @@ export default function PerfilPage() {
           <UserCircle className="w-8 h-8" />
           Meu Perfil
         </h1>
-        <p className="text-muted-foreground">Gerencie as informações da sua conta.</p>
+        <p className="text-muted-foreground">Gerencie as informações da sua conta e créditos.</p>
       </header>
 
       <Card>
@@ -62,14 +62,30 @@ export default function PerfilPage() {
             <Label htmlFor="displayName">Nome</Label>
             <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="displayName" value={user?.displayName || "Não informado"} readOnly className="pl-9" />
+                <Input id="displayName" value={userProfile?.name || "Não informado"} readOnly className="pl-9" />
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">E-mail</Label>
             <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="email" value={user?.email || ""} readOnly className="pl-9" />
+                <Input id="email" value={userProfile?.email || ""} readOnly className="pl-9" />
+            </div>
+          </div>
+           <div className="space-y-2">
+            <Label htmlFor="credits">Saldo</Label>
+             <div className="relative">
+                {userProfile?.isAdmin ? (
+                    <>
+                        <Crown className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input id="credits" value="Acesso Ilimitado (Admin)" readOnly className="pl-9" />
+                    </>
+                ) : (
+                    <>
+                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input id="credits" value={`${userProfile?.credits || 0} créditos | ${userProfile?.scriptDoctorMessagesRemaining || 0} mensagens no Script Doctor`} readOnly className="pl-9" />
+                    </>
+                )}
             </div>
           </div>
         </CardContent>

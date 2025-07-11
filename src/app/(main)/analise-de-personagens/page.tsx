@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { useScript } from "@/context/script-context";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,6 +13,7 @@ import { analyzeScriptCharacters } from "@/ai/flows/analyze-script-characters";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
 import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb, UserCheck } from "lucide-react";
 import type { AnalyzeScriptCharactersOutput } from "@/ai/flows/analyze-script-characters";
+import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 
 const CharacterAnalysisCard = ({ title, content, icon: Icon }: { title: string; content: string; icon: React.ElementType }) => (
   <Card>
@@ -37,6 +39,7 @@ const CharacterAnalysisSkeleton = () => (
 
 export default function AnaliseDePersonagensPage() {
   const { activeScript, updateScript } = useScript();
+  const { userProfile, updateUserProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalyzeScriptCharactersOutput | undefined>(
     activeScript?.analysis.characters
@@ -48,13 +51,23 @@ export default function AnaliseDePersonagensPage() {
       toast({ title: "Erro", description: "Nenhum roteiro ativo selecionado.", variant: "destructive" });
       return;
     }
+     if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
+      toast({ title: "Créditos Insuficientes", description: "Você precisa de créditos para realizar esta análise.", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
     setAnalysisResult(undefined);
     try {
       const result = await analyzeScriptCharacters({ scriptContent: activeScript.content });
       setAnalysisResult(result);
       updateScript({ ...activeScript, analysis: { ...activeScript.analysis, characters: result } });
-      toast({ title: "Análise Concluída", description: "A análise de personagens foi gerada." });
+      
+      if (!userProfile?.isAdmin) {
+          await updateUserProfile({ credits: (userProfile?.credits ?? 0) - 1 });
+      }
+
+      toast({ title: "Análise Concluída", description: "A análise de personagens foi gerada. 1 crédito foi consumido." });
     } catch (error) {
       console.error(error);
       toast({ title: "Erro na Análise", description: "Não foi possível analisar os personagens.", variant: "destructive" });
@@ -67,6 +80,10 @@ export default function AnaliseDePersonagensPage() {
 
   if (!activeScript) {
     return <PagePlaceholder title="Análise de Personagens" description="Para analisar os personagens, primeiro selecione um roteiro ativo." />;
+  }
+
+  if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
+    return <NoCreditsPlaceholder title="Análise de Personagens" />;
   }
 
   const renderCharacterAnalysis = (analysis: AnalyzeScriptCharactersOutput['protagonistAnalysis'] | AnalyzeScriptCharactersOutput['antagonistAnalysis']) => (
@@ -101,7 +118,7 @@ export default function AnaliseDePersonagensPage() {
           <p className="text-muted-foreground">Avalie o perfil psicológico, motivações e arco do protagonista e antagonista.</p>
         </div>
         <Button onClick={handleAnalysis} disabled={loading}>
-          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Personagens" : "Analisar Personagens"}
+          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Personagens (-1 crédito)" : "Analisar Personagens (-1 crédito)"}
           <Sparkles className="ml-2 h-4 w-4" />
         </Button>
       </header>

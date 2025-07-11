@@ -5,8 +5,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
+import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, googleProvider, handleEmailSignUp } from '@/lib/firebase';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -120,13 +120,10 @@ export default function LandingPage() {
     }
   };
   
-  const handleEmailSignUp = async (data: SignupFormData) => {
+  const onEmailSignUp = async (data: SignupFormData) => {
     setAuthLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      await updateProfile(userCredential.user, {
-        displayName: data.name
-      });
+      await handleEmailSignUp(data.name, data.email, data.password);
       toast({ title: "Conta criada com sucesso!", description: "Você já pode fazer o login." });
       signupForm.reset();
     } catch (error: any) {
@@ -177,7 +174,7 @@ export default function LandingPage() {
                     </TabsContent>
                     <TabsContent value="signup" className="pt-4">
                         <Form {...signupForm}>
-                          <form onSubmit={signupForm.handleSubmit(handleEmailSignUp)} className="space-y-4">
+                          <form onSubmit={signupForm.handleSubmit(onEmailSignUp)} className="space-y-4">
                               <FormField control={signupForm.control} name="name" render={({ field }) => (<FormItem><FormLabel className="sr-only">Nome</FormLabel><FormControl><Input placeholder="Seu nome" {...field} icon={User} /></FormControl><FormMessage /></FormItem>)} />
                               <FormField control={signupForm.control} name="email" render={({ field }) => (<FormItem><FormLabel className="sr-only">Email</FormLabel><FormControl><Input placeholder="seu@email.com" {...field} icon={Mail} /></FormControl><FormMessage /></FormItem>)} />
                               <FormField control={signupForm.control} name="password" render={({ field }) => (<FormItem><FormLabel className="sr-only">Senha</FormLabel><FormControl><Input type="password" placeholder="Crie uma senha" {...field} icon={KeyRound}/></FormControl><FormMessage /></FormItem>)} />

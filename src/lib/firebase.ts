@@ -1,7 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 // Your web app's Firebase configuration, loaded from environment variables
 const firebaseConfig = {
@@ -20,3 +21,27 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+
+const ADMIN_EMAILS = ['gutoaeraphe@yahoo.com.br', 'atendimento@cmkfilmes.com'];
+
+export const handleEmailSignUp = async (name: string, email: string, password: string) => {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const user = userCredential.user;
+  
+  await updateProfile(user, {
+    displayName: name
+  });
+
+  const userDocRef = doc(db, "users", user.uid);
+  await setDoc(userDocRef, {
+      uid: user.uid,
+      email: user.email,
+      name: name,
+      photoURL: user.photoURL || '',
+      credits: 3,
+      scriptDoctorMessagesRemaining: 0,
+      isAdmin: ADMIN_EMAILS.includes(email),
+  });
+
+  return userCredential;
+}
