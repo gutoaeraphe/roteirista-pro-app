@@ -31,7 +31,7 @@ export default function ScriptDoctorPage() {
   const { userProfile, updateUserProfile } = useAuth();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>(activeScript?.analysis.scriptDoctor || []);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [showCreditDialog, setShowCreditDialog] = useState(false);
   const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -65,12 +65,12 @@ export default function ScriptDoctorPage() {
     
     await updateUserProfile({
       credits: (userProfile.credits ?? 0) - 1,
-      scriptDoctorMessagesRemaining: (userProfile.scriptDoctorMessagesRemaining ?? 0) + 10
+      scriptDoctorMessagesRemaining: (userProfile.scriptDoctorMessagesRemaining ?? 0) + 20
     });
     
     toast({
       title: "Sessão Ativada!",
-      description: "Você tem 10 novas mensagens para usar com o Script Doctor. 1 crédito foi consumido."
+      description: "Você tem 20 novas mensagens para usar com o Script Doctor. 1 crédito foi consumido."
     });
     
     setShowCreditDialog(false);
@@ -98,7 +98,7 @@ export default function ScriptDoctorPage() {
     setLoading(true);
 
     try {
-      await updateUserProfile({ scriptDoctorMessagesRemaining: userProfile.scriptDoctorMessagesRemaining - 1 });
+      await updateUserProfile({ scriptDoctorMessagesRemaining: (userProfile.scriptDoctorMessagesRemaining ?? 0) - 1 });
 
       const result = await scriptDoctorConsultant({ scriptContent: activeScript.content, query });
       const aiMessage: ChatMessage = { role: 'assistant', content: result.feedback };
@@ -115,7 +115,15 @@ export default function ScriptDoctorPage() {
     } catch (error) {
       console.error(error);
       const errorMessage = "Desculpe, não consegui processar sua pergunta. Tente novamente.";
-      setChatHistory([...newHistory, { role: 'assistant', content: errorMessage }]);
+      const finalHistory = [...newHistory, { role: 'assistant', content: errorMessage }]
+      setChatHistory(finalHistory);
+      updateScript({ 
+          ...activeScript, 
+          analysis: { 
+              ...activeScript.analysis, 
+              scriptDoctor: finalHistory
+          } 
+      });
       toast({ title: "Erro na Consulta", description: "Houve um problema com o Script Doctor.", variant: "destructive" });
     } finally {
       setLoading(false);
@@ -217,7 +225,7 @@ export default function ScriptDoctorPage() {
               Ativar Sessão do Script Doctor?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Você não tem mais mensagens para usar no chat. Deseja usar 1 crédito para obter mais 10 mensagens?
+            Você não tem mais mensagens para usar no chat. Deseja usar 1 crédito para obter mais 20 mensagens?
             Seu saldo atual é de {userProfile?.credits || 0} créditos.
           </AlertDialogDescription>
         </AlertDialogHeader>
