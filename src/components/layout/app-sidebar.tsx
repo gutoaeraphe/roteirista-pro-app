@@ -22,7 +22,8 @@ import {
   UserCircle,
   FileText,
   CreditCard,
-  Crown
+  Crown,
+  ShieldCheck
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -167,6 +168,31 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
   }
 
   const hasCredits = userProfile?.isAdmin || (userProfile?.credits ?? 0) > 0;
+  const hasMessages = userProfile?.isAdmin || (userProfile?.scriptDoctorMessagesRemaining ?? 0) > 0;
+  const isAnalysisToolDisabled = !activeScript;
+  const isScriptDoctorDisabled = !activeScript || (!hasMessages && !hasCredits);
+  const isPitchingDisabled = !activeScript || !hasCredits;
+
+  const getIsDisabled = (href: string) => {
+    if (userProfile?.isAdmin) return false;
+    switch(href) {
+        case '/estrutura-de-roteiro':
+        case '/jornada-do-heroi':
+        case '/analise-de-personagens':
+        case '/teste-de-representatividade':
+        case '/analise-de-mercado':
+            return isAnalysisToolDisabled || !hasCredits;
+        case '/script-doctor':
+            return isScriptDoctorDisabled;
+        case '/gerador-de-pitching':
+            return isPitchingDisabled;
+        case '/gerador-de-argumento':
+             return false; // Sempre habilitado
+        default:
+            return false;
+    }
+  }
+
 
   const navContent = (
     <div className="flex h-full max-h-screen flex-col gap-2">
@@ -187,7 +213,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
                       key={item.href}
                       href={item.href}
                       active={pathname === item.href}
-                      disabled={!hasCredits && item.href !== '/gerador-de-argumento'}
+                      disabled={getIsDisabled(item.href)}
                     >
                       <item.icon className="h-4 w-4" />
                       {item.title}
@@ -234,6 +260,15 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
                         Comprar Créditos
                     </Link>
                   </Button>
+                </div>
+            )}
+             {userProfile?.isAdmin && (
+                <div className="my-2">
+                    <h3 className="mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase">Admin</h3>
+                    <NavLink href="/admin" active={pathname === "/admin"}>
+                        <ShieldCheck className="h-4 w-4" />
+                        Painel de Admin
+                    </NavLink>
                 </div>
             )}
           </div>

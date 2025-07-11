@@ -1,3 +1,4 @@
+
 // src/app/(main)/perfil/page.tsx
 "use client";
 
@@ -6,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserCircle, Mail, KeyRound, User, CreditCard, Crown } from "lucide-react";
+import { UserCircle, Mail, KeyRound, User, CreditCard, Crown, MessageSquare } from "lucide-react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
@@ -73,7 +74,7 @@ export default function PerfilPage() {
             </div>
           </div>
            <div className="space-y-2">
-            <Label htmlFor="credits">Saldo</Label>
+            <Label>Saldo</Label>
              <div className="relative">
                 {userProfile?.isAdmin ? (
                     <>
@@ -81,10 +82,16 @@ export default function PerfilPage() {
                         <Input id="credits" value="Acesso Ilimitado (Admin)" readOnly className="pl-9" />
                     </>
                 ) : (
-                    <>
-                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input id="credits" value={`${userProfile?.credits || 0} créditos | ${userProfile?.scriptDoctorMessagesRemaining || 0} mensagens no Script Doctor`} readOnly className="pl-9" />
-                    </>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="relative">
+                            <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input id="credits" value={`${userProfile?.credits || 0} créditos`} readOnly className="pl-9" />
+                        </div>
+                        <div className="relative">
+                             <MessageSquare className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input id="messages" value={`${userProfile?.scriptDoctorMessagesRemaining || 0} mensagens no Doutor`} readOnly className="pl-9" />
+                        </div>
+                    </div>
                 )}
             </div>
           </div>
