@@ -107,11 +107,6 @@ const learnMoreItems = [
       icon: Youtube,
     },
     {
-      title: "Comprar Créditos",
-      href: "/comprar-creditos",
-      icon: CreditCard,
-    },
-    {
       title: "Ajuda",
       href: "/ajuda",
       icon: HelpCircle,
@@ -231,6 +226,16 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
                     {item.title}
                 </NavLink>
             ))}
+             {!userProfile?.isAdmin && (
+                <div className="px-3 py-2">
+                  <Button asChild className="w-full animate-pulse">
+                    <Link href="/comprar-creditos">
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Comprar Créditos
+                    </Link>
+                  </Button>
+                </div>
+            )}
           </div>
         </nav>
       </div>
