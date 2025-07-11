@@ -263,6 +263,25 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Creator Section */}
+      <section id="criador" className="py-20 bg-primary/5">
+        <div className="container mx-auto px-4">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="relative aspect-[4/5] md:aspect-auto md:h-full w-full rounded-lg overflow-hidden shadow-lg min-h-[400px]">
+                    <Image src="/guto.png" alt="Foto de Guto Aeraphe" layout="fill" objectFit="cover" />
+                </div>
+                <div className="space-y-6">
+                    <h2 className="text-3xl md:text-4xl font-headline">Criado por Quem Vive o Cinema na Prática</h2>
+                    <p className="text-muted-foreground">Guto Aeraphe não é apenas um teórico. Com mais de 25 anos de experiência como cineasta, roteirista e produtor audiovisual, ele coleciona prêmios em festivais internacionais como os de Los Angeles e Marseille, e é membro da prestigiada Academia Brasileira de Cinema e Artes Visuais. Fundador da CMK Filmes, Guto também dedicou anos à formação de novos talentos como professor universitário. O método Lean Film Design é fruto dessa trajetória: uma solução prática e inovadora que nasceu da necessidade de unir a paixão pela arte de contar histórias com a inteligência estratégica que o mercado audiovisual moderno exige. Ele é o autor que vai te guiar nesta jornada, transformando sua visão em um projeto de sucesso.</p>
+                    <blockquote className="border-l-4 border-primary pl-6 italic text-muted-foreground">
+                    “Eu passei anos no set dirigindo, escrevendo roteiros e na sala de aula, e vi de perto o potencial incrível de tantos criadores ser desperdiçado pela falta de um método. O Lean Film Design nasceu do meu desejo de criar uma ponte entre a alma de uma história e a lógica do mercado. Este aplicativo não substitui o seu talento; ele o potencializa. É o seu assistente criativo 24 horas por dia, uma bússola para organizar o caos da criação e transformar suas ideias mais ousadas em realidade.”
+                    <footer className="mt-2 not-italic font-semibold text-foreground">— Guto Aeraphe, Cineasta e Criador do Lean Film Design.</footer>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+      </section>
+
       {/* Pricing Section */}
        <section id="precos" className="py-20">
         <div className="container mx-auto px-4 text-center">
@@ -312,25 +331,6 @@ export default function LandingPage() {
                     </a>
                 </CardContent>
             </Card>
-        </div>
-      </section>
-
-      {/* Creator Section */}
-      <section id="criador" className="py-20 bg-primary/5">
-        <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-                <div className="relative aspect-[4/5] md:aspect-auto md:h-full w-full rounded-lg overflow-hidden shadow-lg min-h-[400px]">
-                    <Image src="/guto.png" alt="Foto de Guto Aeraphe" layout="fill" objectFit="cover" />
-                </div>
-                <div className="space-y-6">
-                    <h2 className="text-3xl md:text-4xl font-headline">Criado por Quem Vive o Cinema na Prática</h2>
-                    <p className="text-muted-foreground">Guto Aeraphe não é apenas um teórico. Com mais de 25 anos de experiência como cineasta, roteirista e produtor audiovisual, ele coleciona prêmios em festivais internacionais como os de Los Angeles e Marseille, e é membro da prestigiada Academia Brasileira de Cinema e Artes Visuais. Fundador da CMK Filmes, Guto também dedicou anos à formação de novos talentos como professor universitário. O método Lean Film Design é fruto dessa trajetória: uma solução prática e inovadora que nasceu da necessidade de unir a paixão pela arte de contar histórias com a inteligência estratégica que o mercado audiovisual moderno exige. Ele é o autor que vai te guiar nesta jornada, transformando sua visão em um projeto de sucesso.</p>
-                    <blockquote className="border-l-4 border-primary pl-6 italic text-muted-foreground">
-                    “Eu passei anos no set dirigindo, escrevendo roteiros e na sala de aula, e vi de perto o potencial incrível de tantos criadores ser desperdiçado pela falta de um método. O Lean Film Design nasceu do meu desejo de criar uma ponte entre a alma de uma história e a lógica do mercado. Este aplicativo não substitui o seu talento; ele o potencializa. É o seu assistente criativo 24 horas por dia, uma bússola para organizar o caos da criação e transformar suas ideias mais ousadas em realidade.”
-                    <footer className="mt-2 not-italic font-semibold text-foreground">— Guto Aeraphe, Cineasta e Criador do Lean Film Design.</footer>
-                    </blockquote>
-                </div>
-            </div>
         </div>
       </section>
 
