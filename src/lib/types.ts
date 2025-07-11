@@ -31,6 +31,7 @@ export type Script = {
     representation?: AnalyzeScriptRepresentationOutput;
     market?: AnalyzeScriptMarketOutput;
     pitchingDocument?: GeneratePitchingDocumentOutput;
+    scriptDoctor?: ChatMessage[];
   };
 };
 

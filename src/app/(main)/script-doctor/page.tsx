@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useScript } from "@/context/script-context";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,11 +13,25 @@ import { Stethoscope, Send, User, Bot, Sparkles } from "lucide-react";
 import { ChatMessage } from "@/lib/types";
 
 export default function ScriptDoctorPage() {
-  const { activeScript } = useScript();
+  const { activeScript, updateScript } = useScript();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>(activeScript?.analysis.scriptDoctor || []);
   const { toast } = useToast();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (activeScript) {
+        setChatHistory(activeScript.analysis.scriptDoctor || []);
+    }
+  }, [activeScript]);
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+        scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
+    }
+  }, [chatHistory, loading]);
+
 
   const handleQuery = async () => {
     if (!activeScript) {
@@ -29,14 +43,25 @@ export default function ScriptDoctorPage() {
       return;
     }
 
-    const newHistory: ChatMessage[] = [...chatHistory, { role: 'user', content: query }];
+    const userMessage: ChatMessage = { role: 'user', content: query };
+    const newHistory = [...chatHistory, userMessage];
     setChatHistory(newHistory);
     setQuery("");
     setLoading(true);
 
     try {
       const result = await scriptDoctorConsultant({ scriptContent: activeScript.content, query });
-      setChatHistory([...newHistory, { role: 'assistant', content: result.feedback }]);
+      const aiMessage: ChatMessage = { role: 'assistant', content: result.feedback };
+      const finalHistory = [...newHistory, aiMessage];
+      setChatHistory(finalHistory);
+      updateScript({ 
+          ...activeScript, 
+          analysis: { 
+              ...activeScript.analysis, 
+              scriptDoctor: finalHistory 
+          } 
+      });
+
     } catch (error) {
       console.error(error);
       const errorMessage = "Desculpe, não consegui processar sua pergunta. Tente novamente.";
@@ -66,9 +91,9 @@ export default function ScriptDoctorPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full pr-4">
+          <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
             <div className="space-y-4">
-              {chatHistory.length === 0 && (
+              {chatHistory.length === 0 && !loading && (
                 <div className="text-center text-muted-foreground py-10">
                   <p>Faça sua primeira pergunta sobre o roteiro.</p>
                   <p className="text-sm">Ex: "Como posso melhorar o diálogo da cena 5?"</p>
