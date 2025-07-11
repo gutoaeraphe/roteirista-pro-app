@@ -9,8 +9,8 @@ import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, googleProvider, handleEmailSignUp } from '@/lib/firebase';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Clapperboard, Mail, KeyRound, User, UserPlus, BrainCircuit, GitCommitHorizontal, BarChart3, Scale, Lightbulb, Presentation, Stethoscope, PenSquare, Youtube } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Clapperboard, Mail, KeyRound, User, UserPlus, BrainCircuit, GitCommitHorizontal, BarChart3, Scale, Lightbulb, Presentation, Stethoscope, PenSquare, Youtube, CheckCircle, Star, Sparkles, Building, School } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,21 +53,46 @@ const advantages = [
 
 const faqItems = [
     {
-      question: "Qual o principal diferencial do Roteirista Pro?",
-      answer: "O grande diferencial é a metodologia Lean Film Design, que une a arte da dramaturgia com a estratégia do design thinking. O aplicativo não apenas 'analisa' seu roteiro, mas o faz com o olhar de um produtor e roteirista experiente, focando em estrutura, viabilidade de mercado e potencial narrativo de forma integrada."
+        question: "Como funciona o sistema de créditos?",
+        answer: "É simples: 1 crédito equivale a 1 análise completa (Estrutura, Jornada do Herói, Personagens, etc.). Para o Script Doctor, 1 crédito desbloqueia um pacote de 20 mensagens para você usar no chat com a IA. Você pode comprar pacotes de créditos para usar como precisar."
     },
     {
-      question: "Meus roteiros estão seguros na plataforma?",
-      answer: "Sim. A segurança dos seus projetos é nossa prioridade máxima. Seus roteiros são armazenados de forma privada e criptografada na sua própria conta, acessíveis apenas por você. Não utilizamos seus textos para treinar nossos modelos de IA, garantindo total confidencialidade do seu trabalho criativo."
+        question: "Preciso pagar para testar a plataforma?",
+        answer: "Não! Ao criar sua conta, você ganha 3 créditos gratuitos para testar todas as funcionalidades da plataforma imediatamente. Queremos que você experimente o poder do Roteirista Pro sem nenhum compromisso inicial."
     },
     {
-      question: "O Gerador de Argumento é para quem não tem uma ideia pronta?",
-      answer: "Exatamente! Ele é a ferramenta ideal para o começo de tudo. Se você tem apenas um sentimento, um gênero ou um conflito em mente, o Gerador de Argumento o guia passo a passo, ajudando a definir tema, personagens e estrutura narrativa para transformar uma faísca de inspiração em um argumento de história completo."
+        question: "Meus roteiros e ideias estão seguros?",
+        answer: "Sim, a segurança e a confidencialidade do seu trabalho são nossa prioridade máxima. Seus roteiros são armazenados de forma privada e criptografada, acessíveis apenas por você. Jamais utilizamos seu conteúdo para treinar nossos modelos de IA ou para qualquer outra finalidade."
     },
     {
-      question: "O Roteirista Pro substitui a necessidade de um roteirista humano?",
-      answer: "De forma alguma. O Roteirista Pro é uma ferramenta de auxílio, um copiloto para sua criatividade. Ele foi projetado para potencializar seu talento, automatizar análises complexas e te ajudar a superar bloqueios criativos, mas a genialidade e a voz da história serão sempre suas."
+        question: "O Roteirista Pro substitui um roteirista humano?",
+        answer: "De forma alguma. O Roteirista Pro é o seu copiloto criativo. Ele foi projetado para potencializar seu talento, automatizar análises complexas, gerar insights e ajudar a superar bloqueios, mas a genialidade, a emoção e a voz da história serão sempre suas."
     }
+];
+
+const creditPackages = [
+    {
+        name: "Pacote Básico",
+        credits: 10,
+        price: "19,90",
+        description: "Ideal para análises pontuais em seus projetos.",
+        features: ["10 créditos de análise", "Ou 200 mensagens no Script Doctor", "Acesso a todas as ferramentas"],
+    },
+    {
+        name: "Pacote Padrão",
+        credits: 20,
+        price: "29,90",
+        description: "O mais popular para roteiristas ativos.",
+        features: ["20 créditos de análise", "Ou 400 mensagens no Script Doctor", "Melhor custo-benefício", "Acesso a todas as ferramentas"],
+        isPopular: true,
+    },
+    {
+        name: "Pacote Pro",
+        credits: 50,
+        price: "59,90",
+        description: "Perfeito para uso intensivo e múltiplos projetos.",
+        features: ["50 créditos de análise", "Ou 1000 mensagens no Script Doctor", "O menor preço por crédito", "Acesso a todas as ferramentas"],
+    },
 ];
 
 export default function LandingPage() {
@@ -150,18 +175,18 @@ export default function LandingPage() {
           <div className="space-y-6">
             <Image src="/logo.png" alt="Roteirista Pro" width={400} height={100} className="w-64 md:w-96 h-auto" />
             <p className="text-xl md:text-2xl text-muted-foreground font-body">Sua sala de roteiristas com inteligência artificial.</p>
-            <p className="font-body">Transforme suas ideias em roteiros profissionais com a ajuda de uma IA especialista em dramaturgia, análise de mercado e estrutura narrativa. Otimize seu processo criativo, supere o bloqueio de página em branco e prepare seu projeto para o sucesso.</p>
+            <p className="font-body">Transforme suas ideias em roteiros profissionais com a ajuda de uma IA especialista em dramaturgia, análise de mercado e estrutura narrativa. **Cadastre-se e ganhe 3 créditos para testar todas as ferramentas agora mesmo.**</p>
           </div>
           <div>
             <Card className="w-full max-w-md mx-auto">
               <CardHeader className="text-center">
                 <CardTitle>Acesse sua Conta</CardTitle>
-                <CardDescription>Faça login ou crie uma conta para começar.</CardDescription>
+                <CardDescription>Faça login ou crie uma nova conta para começar. É grátis!</CardDescription>
               </CardHeader>
               <CardContent>
                 <Button className="w-full" onClick={handleGoogleSignIn} disabled={loading || authLoading}><GoogleIcon className="mr-2 h-5 w-5" /> Entrar com o Google</Button>
                 <div className="flex items-center my-4 space-x-2"><Separator className="flex-1" /><span className="text-xs text-muted-foreground">OU</span><Separator className="flex-1" /></div>
-                <Tabs defaultValue="login" className="w-full">
+                <Tabs defaultValue="signup" className="w-full">
                     <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="login">Entrar</TabsTrigger><TabsTrigger value="signup">Criar Conta</TabsTrigger></TabsList>
                     <TabsContent value="login" className="pt-4">
                         <Form {...loginForm}>
@@ -206,7 +231,7 @@ export default function LandingPage() {
                                   </FormItem>
                                 )}
                               />
-                              <Button type="submit" className="w-full" disabled={loading || authLoading}><UserPlus className="mr-2 h-4 w-4"/> Criar Conta com E-mail</Button>
+                              <Button type="submit" className="w-full" disabled={loading || authLoading}><UserPlus className="mr-2 h-4 w-4"/> Criar Conta Gratuita</Button>
                           </form>
                         </Form>
                     </TabsContent>
@@ -238,8 +263,60 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Pricing Section */}
+       <section id="precos" className="py-20">
+        <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl md:text-4xl font-headline mb-4">Planos Simples e Flexíveis</h2>
+            <p className="text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">
+                Use seus créditos como quiser. Cada análise completa custa 1 crédito. Para o Script Doctor, 1 crédito libera 20 mensagens no chat. Sem mensalidades, sem compromisso.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {creditPackages.map(pkg => (
+                    <Card key={pkg.name} className={`flex flex-col ${pkg.isPopular ? 'border-primary ring-2 ring-primary' : ''}`}>
+                         {pkg.isPopular && <div className="absolute top-0 right-4 -mt-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1"><Star className="w-4 h-4" /> Mais Popular</div>}
+                        <CardHeader>
+                            <CardTitle>{pkg.name}</CardTitle>
+                            <CardDescription>{pkg.description}</CardDescription>
+                             <div className="text-4xl font-bold pt-4">R$ {pkg.price}</div>
+                             <p className="text-lg text-primary font-semibold flex items-center justify-center gap-2"><Sparkles className="w-5 h-5"/> {pkg.credits} Créditos</p>
+                        </CardHeader>
+                        <CardContent className="flex-grow">
+                            <ul className="space-y-2">
+                                {pkg.features.map(feature => (
+                                    <li key={feature} className="flex items-center gap-2 text-sm">
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                        <span className="text-muted-foreground">{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </CardContent>
+                        <CardFooter>
+                            <Button className="w-full" onClick={() => router.push('/comprar-creditos')} variant={pkg.isPopular ? 'default' : 'secondary'}>
+                                Comprar Agora
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                ))}
+            </div>
+             <Card className="mt-12 max-w-4xl mx-auto text-center border-dashed">
+                <CardHeader>
+                    <CardTitle className="flex items-center justify-center gap-3"><Building/><School/> Pacotes para Produtoras e Escolas</CardTitle>
+                    <CardDescription>Precisa de um volume maior de créditos ou uma solução personalizada para sua equipe?</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground mb-4">Oferecemos planos corporativos flexíveis para produtoras, emissoras, escolas de cinema e grandes equipes. Entre em contato para uma proposta personalizada de acordo com a sua necessidade.</p>
+                    <a href="mailto:atendimento@cmkfilmes.com">
+                        <Button variant="outline">
+                            <Mail className="mr-2 h-4 w-4"/> Fale Conosco
+                        </Button>
+                    </a>
+                </CardContent>
+            </Card>
+        </div>
+      </section>
+
       {/* Creator Section */}
-      <section id="criador" className="py-20">
+      <section id="criador" className="py-20 bg-primary/5">
         <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="relative aspect-[4/5] md:aspect-auto md:h-full w-full rounded-lg overflow-hidden shadow-lg min-h-[400px]">
@@ -258,7 +335,7 @@ export default function LandingPage() {
       </section>
 
       {/* Book Section */}
-      <section id="livro" className="py-20 bg-primary/5">
+      <section id="livro" className="py-20">
         <div className="container mx-auto px-4">
              <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="order-2 md:order-1 space-y-6">
@@ -284,7 +361,7 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20">
+      <section id="faq" className="py-20 bg-primary/5">
         <div className="container mx-auto px-4 max-w-4xl">
              <div className="text-center">
                 <h2 className="text-3xl md:text-4xl font-headline mb-4">Perguntas Frequentes</h2>
