@@ -1,21 +1,25 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Regras para a coleção 'users'
-    match /users/{userId} {
-      // Qualquer usuário autenticado pode criar seu próprio documento de perfil.
-      // Um usuário só pode ler, atualizar ou excluir seu próprio documento.
-      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-      allow create: if request.auth != null;
+    // Helper function to check for admin status
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // Regras para a subcoleção 'scripts' de cada usuário
+    match /users/{userId} {
+      // Admins can list all users.
+      // Individual users can read, create, and update their own document.
+      allow list, get: if isAdmin();
+      allow read, create, update: if request.auth != null && request.auth.uid == userId;
+      
+      // Admins can update any user document.
+      allow update: if isAdmin();
+    }
+
     match /users/{userId}/scripts/{scriptId} {
-      // Um usuário autenticado só pode ler, escrever ou excluir roteiros
-      // que estão dentro de seu próprio documento de usuário.
+      // Users can manage their own scripts.
       allow read, write, delete: if request.auth != null && request.auth.uid == userId;
     }
   }
