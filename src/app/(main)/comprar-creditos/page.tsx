@@ -9,7 +9,9 @@ import { CheckCircle, Mail, Star, Sparkles, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
 
-// Substitua pelos URLs dos seus Links de Pagamento do Stripe
+// Carrega a chave publicável do Stripe. Garanta que ela esteja no seu .env.local
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
 const creditPackages = [
     {
         name: "Pacote Básico",
