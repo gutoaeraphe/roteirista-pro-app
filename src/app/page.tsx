@@ -53,16 +53,16 @@ const advantages = [
 
 const faqItems = [
     {
-      question: "Como funciona a assinatura do Roteirista Pro?",
-      answer: "O Roteirista Pro opera com um modelo de assinatura que te dá acesso a todas as ferramentas de análise e criação. Oferecemos planos flexíveis para atender às suas necessidades."
+      question: "Qual o principal diferencial do Roteirista Pro?",
+      answer: "O grande diferencial é a metodologia Lean Film Design, que une a arte da dramaturgia com a estratégia do design thinking. O aplicativo não apenas 'analisa' seu roteiro, mas o faz com o olhar de um produtor e roteirista experiente, focando em estrutura, viabilidade de mercado e potencial narrativo de forma integrada."
     },
     {
       question: "Meus roteiros estão seguros na plataforma?",
-      answer: "Sim. A segurança dos seus projetos é nossa prioridade máxima. Seus roteiros são armazenados de forma privada e criptografada, acessíveis apenas por você. Não utilizamos seus textos para treinar nossos modelos de IA."
+      answer: "Sim. A segurança dos seus projetos é nossa prioridade máxima. Seus roteiros são armazenados de forma privada e criptografada na sua própria conta, acessíveis apenas por você. Não utilizamos seus textos para treinar nossos modelos de IA, garantindo total confidencialidade do seu trabalho criativo."
     },
     {
-      question: "Posso cancelar minha assinatura a qualquer momento?",
-      answer: "Sim, você tem total liberdade para cancelar sua assinatura quando quiser, sem burocracia. Você continuará com acesso a todos os recursos até o final do seu ciclo de faturamento atual."
+      question: "O Gerador de Argumento é para quem não tem uma ideia pronta?",
+      answer: "Exatamente! Ele é a ferramenta ideal para o começo de tudo. Se você tem apenas um sentimento, um gênero ou um conflito em mente, o Gerador de Argumento o guia passo a passo, ajudando a definir tema, personagens e estrutura narrativa para transformar uma faísca de inspiração em um argumento de história completo."
     },
     {
       question: "O Roteirista Pro substitui a necessidade de um roteirista humano?",
