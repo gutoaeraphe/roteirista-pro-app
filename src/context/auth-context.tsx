@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             uid: user.uid,
             email: user.email,
             name: user.displayName,
-            photoURL: user.photoURL || undefined,
+            photoURL: user.photoURL || '',
             credits: 3, // Novos usuários começam com 3 créditos
             scriptDoctorMessagesRemaining: 0,
             isAdmin: ADMIN_EMAILS.includes(user.email || ''),
