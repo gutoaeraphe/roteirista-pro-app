@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
@@ -6,6 +7,7 @@ import { onAuthStateChanged, type User } from 'firebase/auth';
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { usePathname } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -23,6 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -36,11 +39,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    let unsubscribeSnapshot: () => void = () => {};
+
     if (user) {
       const userDocRef = doc(db, "users", user.uid);
-      const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      unsubscribeSnapshot = onSnapshot(userDocRef, (docSnap) => {
         if (docSnap.exists()) {
-          setUserProfile(docSnap.data() as UserProfile);
+          const newProfile = docSnap.data() as UserProfile;
+          
+          // Se a compra foi bem-sucedida, mostre um toast na atualização de créditos
+          if (pathname === '/compra-sucesso' && userProfile && newProfile.credits > userProfile.credits) {
+             toast({
+                title: "Créditos Adicionados!",
+                description: `Seu novo saldo é de ${newProfile.credits} créditos.`,
+             });
+          }
+          setUserProfile(newProfile);
+
         } else {
           const newUserProfile: UserProfile = {
             uid: user.uid,
@@ -61,11 +76,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       });
 
-      return () => unsubscribe();
     } else {
         setLoading(false);
     }
-  }, [user]);
+     return () => unsubscribeSnapshot();
+  }, [user, toast, pathname, userProfile]);
 
   const updateUserProfile = useCallback(async (data: Partial<UserProfile>) => {
     if (!user) {
