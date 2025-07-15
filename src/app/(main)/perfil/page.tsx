@@ -2,113 +2,208 @@
 // src/app/(main)/perfil/page.tsx
 "use client";
 
+import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserCircle, Mail, KeyRound, User, CreditCard, Crown, MessageSquare } from "lucide-react";
-import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { User, KeyRound, Trash2, Save, Loader2 } from "lucide-react";
+import { auth, db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { updatePassword, EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "firebase/auth";
+import { doc, deleteDoc, collection, getDocs, writeBatch } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 export default function PerfilPage() {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, updateUserProfile } = useAuth();
   const { toast } = useToast();
-
-  const handlePasswordReset = async () => {
-    if (!user || !user.email) {
-      toast({
-        title: "Erro",
-        description: "Usuário não encontrado para redefinir a senha.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const router = useRouter();
+  
+  const [name, setName] = useState(userProfile?.name || "");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  
+  const handleNameUpdate = async () => {
+    if (!user || name === userProfile?.name) return;
+    setLoading(prev => ({ ...prev, name: true }));
     try {
-      await sendPasswordResetEmail(auth, user.email);
-      toast({
-        title: "E-mail enviado!",
-        description: "Verifique sua caixa de entrada para o link de redefinição de senha.",
-      });
+      await updateUserProfile({ name });
+      toast({ title: "Sucesso!", description: "Seu nome foi atualizado." });
     } catch (error) {
-      console.error("Erro ao enviar e-mail de redefinição de senha:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível enviar o e-mail de redefinição. Tente novamente mais tarde.",
-        variant: "destructive",
-      });
+      toast({ title: "Erro", description: "Não foi possível atualizar o nome.", variant: "destructive" });
+    } finally {
+      setLoading(prev => ({ ...prev, name: false }));
     }
   };
+
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !user.email) return;
+
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Erro", description: "As novas senhas não coincidem.", variant: "destructive" });
+      return;
+    }
+    if (newPassword.length < 6) {
+        toast({ title: "Erro", description: "A nova senha deve ter pelo menos 6 caracteres.", variant: "destructive" });
+        return;
+    }
+
+    setLoading(prev => ({ ...prev, password: true }));
+    try {
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPassword);
+      toast({ title: "Sucesso!", description: "Sua senha foi alterada." });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+        let description = "Não foi possível alterar a senha. Tente novamente mais tarde.";
+        if (error.code === 'auth/wrong-password') {
+            description = "A senha atual está incorreta.";
+        }
+        console.error("Erro ao alterar senha:", error);
+        toast({ title: "Erro na alteração de senha", description, variant: "destructive" });
+    } finally {
+        setLoading(prev => ({ ...prev, password: false }));
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    setLoading(prev => ({ ...prev, delete: true }));
+    try {
+        // Excluir subcoleção de roteiros
+        const scriptsCollectionRef = collection(db, "users", user.uid, "scripts");
+        const scriptsSnapshot = await getDocs(scriptsCollectionRef);
+        const batch = writeBatch(db);
+        scriptsSnapshot.forEach((doc) => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
+
+        // Excluir documento do usuário no Firestore
+        await deleteDoc(doc(db, "users", user.uid));
+
+        // Excluir usuário do Auth
+        await deleteUser(user);
+
+        toast({ title: "Conta Excluída", description: "Sua conta e todos os seus dados foram removidos." });
+        router.push('/');
+
+    } catch (error: any) {
+        console.error("Erro ao excluir conta:", error);
+        toast({ title: "Erro", description: "Não foi possível excluir sua conta. Faça login novamente e tente de novo.", variant: "destructive" });
+        setLoading(prev => ({ ...prev, delete: false }));
+    }
+  };
+
 
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-3xl font-headline font-bold flex items-center gap-2">
-          <UserCircle className="w-8 h-8" />
-          Meu Perfil
-        </h1>
-        <p className="text-muted-foreground">Gerencie as informações da sua conta e créditos.</p>
+        <h1 className="text-3xl font-headline font-bold">Meu Perfil</h1>
+        <p className="text-muted-foreground">Gerencie as informações da sua conta e segurança.</p>
       </header>
 
       <Card>
         <CardHeader>
           <CardTitle>Informações da Conta</CardTitle>
-          <CardDescription>Estes são os detalhes associados à sua conta.</CardDescription>
+          <CardDescription>Altere seu nome de exibição.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
            <div className="space-y-2">
             <Label htmlFor="displayName">Nome</Label>
-            <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="displayName" value={userProfile?.name || "Não informado"} readOnly className="pl-9" />
+            <div className="flex gap-2">
+                <Input id="displayName" value={name} onChange={(e) => setName(e.target.value)} icon={User} />
+                <Button onClick={handleNameUpdate} disabled={loading.name || name === userProfile?.name}>
+                    {loading.name ? <Loader2 className="animate-spin" /> : <Save />}
+                    <span className="ml-2 hidden sm:inline">Salvar</span>
+                </Button>
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">E-mail</Label>
-            <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="email" value={userProfile?.email || ""} readOnly className="pl-9" />
-            </div>
-          </div>
-           <div className="space-y-2">
-            <Label>Saldo</Label>
-             <div className="relative">
-                {userProfile?.isAdmin ? (
-                    <>
-                        <Crown className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input id="credits" value="Acesso Ilimitado (Admin)" readOnly className="pl-9" />
-                    </>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="relative">
-                            <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input id="credits" value={`${userProfile?.credits || 0} créditos`} readOnly className="pl-9" />
-                        </div>
-                        <div className="relative">
-                             <MessageSquare className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input id="messages" value={`${userProfile?.scriptDoctorMessagesRemaining || 0} mensagens no Doutor`} readOnly className="pl-9" />
-                        </div>
-                    </div>
-                )}
-            </div>
+            <Input id="email" value={userProfile?.email || ""} readOnly disabled />
           </div>
         </CardContent>
-        <Separator className="my-4" />
+      </Card>
+
+        {user?.providerData.some(p => p.providerId === 'password') && (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Alterar Senha</CardTitle>
+                    <CardDescription>Para sua segurança, você precisa fornecer sua senha atual.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handlePasswordUpdate} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="current-password">Senha Atual</Label>
+                            <Input id="current-password" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required icon={KeyRound}/>
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="new-password">Nova Senha</Label>
+                            <Input id="new-password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required icon={KeyRound}/>
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
+                            <Input id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required icon={KeyRound}/>
+                        </div>
+                        <Button type="submit" disabled={loading.password}>
+                            {loading.password ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
+                            Alterar Senha
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
+        )}
+
+      <Card className="border-destructive">
         <CardHeader>
-            <CardTitle>Segurança</CardTitle>
-            <CardDescription>Altere sua senha de acesso.</CardDescription>
+          <CardTitle className="text-destructive">Área de Perigo</CardTitle>
+           <CardDescription>Esta ação é irreversível. Por favor, tenha certeza absoluta.</CardDescription>
         </CardHeader>
         <CardContent>
-             <p className="text-sm text-muted-foreground mb-4">
-               Se você faz login com e-mail e senha, pode solicitar um link para redefini-la. Este recurso não se aplica ao login com Google.
-            </p>
-            <Button onClick={handlePasswordReset} variant="outline" disabled={!user?.providerData.some(p => p.providerId === 'password')}>
-                <KeyRound className="mr-2"/>
-                Enviar e-mail para redefinir senha
-            </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button variant="destructive" disabled={loading.delete}>
+                    {loading.delete ? <Loader2 className="animate-spin mr-2" /> : <Trash2 className="mr-2" />}
+                    Excluir minha conta
+                </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação não pode ser desfeita. Isso irá excluir permanentemente sua conta,
+                  junto com todos os seus roteiros, análises e créditos restantes.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90">
+                    Sim, excluir minha conta
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
     </div>
