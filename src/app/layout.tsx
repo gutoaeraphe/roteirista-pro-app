@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className="dark">
+    <html lang="pt-BR" className="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.png" sizes="any" />
       </head>
@@ -35,6 +35,7 @@ export default function RootLayout({
           "min-h-screen bg-background font-body antialiased",
           fontBody.variable
         )}
+        suppressHydrationWarning
       >
         <AuthProvider>
           <ScriptProvider>
