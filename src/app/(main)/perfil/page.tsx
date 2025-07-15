@@ -106,8 +106,11 @@ export default function PerfilPage() {
      if (!user) return;
      setLoading(prev => ({ ...prev, delete: true }));
      try {
+        // **CORREÇÃO: Apagar dados do Firestore PRIMEIRO, enquanto o usuário ainda está logado.**
+        await deleteAccountData(); 
+        // **DEPOIS, apagar o usuário da autenticação.**
         await deleteUser(user);
-        await deleteAccountData(); // Delete data after auth user is deleted
+
         toast({ title: "Conta Excluída", description: "Sua conta e todos os seus dados foram removidos." });
         router.push('/');
     } catch (error: any) {
@@ -140,7 +143,7 @@ export default function PerfilPage() {
     } finally {
       setIsReauthDialogOpen(false);
       setDeleteConfirmationPassword('');
-      setLoading(prev => ({ ...prev, delete: false }));
+      // Não definimos loading como false aqui porque handleDeleteAccount cuidará disso ou redirecionará
     }
   }
 
