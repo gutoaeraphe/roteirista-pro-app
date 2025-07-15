@@ -94,26 +94,34 @@ export default function PerfilPage() {
   };
 
   const deleteAccountData = async () => {
-     if (!user) return;
-    // Excluir subcoleção de roteiros
-    const scriptsCollectionRef = collection(db, "users", user.uid, "scripts");
-    const scriptsSnapshot = await getDocs(scriptsCollectionRef);
-    const batch = writeBatch(db);
-    scriptsSnapshot.forEach((doc) => {
-        batch.delete(doc.ref);
-    });
-    await batch.commit();
-    // Excluir documento do usuário no Firestore
-    await deleteDoc(doc(db, "users", user.uid));
+    if (!user) return;
+    try {
+      // Excluir subcoleção de roteiros
+      const scriptsCollectionRef = collection(db, "users", user.uid, "scripts");
+      const scriptsSnapshot = await getDocs(scriptsCollectionRef);
+      const batch = writeBatch(db);
+      scriptsSnapshot.forEach((doc) => {
+          batch.delete(doc.ref);
+      });
+      
+      // Excluir documento principal do usuário
+      const userDocRef = doc(db, "users", user.uid);
+      batch.delete(userDocRef);
+      
+      await batch.commit();
+      
+    } catch (dbError) {
+      console.error("Erro ao apagar dados do Firestore:", dbError);
+      toast({ title: "Erro Crítico", description: "Não foi possível apagar os dados do banco de dados. Contate o suporte.", variant: "destructive" });
+      throw dbError; // Interrompe o processo se os dados não puderem ser apagados
+    }
   }
 
   const handleDeleteAccount = async () => {
      if (!user) return;
      setLoading(prev => ({ ...prev, delete: true }));
      try {
-        // **CORREÇÃO: Apagar dados do Firestore PRIMEIRO, enquanto o usuário ainda está logado.**
         await deleteAccountData(); 
-        // **DEPOIS, apagar o usuário da autenticação.**
         await deleteUser(user);
 
         toast({ title: "Conta Excluída", description: "Sua conta e todos os seus dados foram removidos." });
