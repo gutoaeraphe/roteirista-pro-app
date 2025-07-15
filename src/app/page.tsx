@@ -330,7 +330,7 @@ export default function LandingPage() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {creditPackages.map(pkg => (
-                    <Card key={pkg.name} className={`flex flex-col ${pkg.isPopular ? 'border-primary ring-2 ring-primary' : ''}`}>
+                    <Card key={pkg.name} className={`relative flex flex-col ${pkg.isPopular ? 'border-primary ring-2 ring-primary' : ''}`}>
                          {pkg.isPopular && <div className="absolute top-0 right-4 -mt-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1"><Star className="w-4 h-4" /> Mais Popular</div>}
                         <CardHeader>
                             <CardTitle>{pkg.name}</CardTitle>
