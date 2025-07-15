@@ -76,14 +76,14 @@ const creditPackages = [
         credits: 10,
         price: "19,90",
         description: "Ideal para análises pontuais em seus projetos.",
-        features: ["10 créditos de análise", "Ou 200 mensagens no Script Doctor", "Acesso a todas as ferramentas"],
+        features: ["10 créditos de análise", "Acesso a todas as ferramentas"],
     },
     {
         name: "Pacote Creator",
         credits: 25,
         price: "39,90",
         description: "O mais popular para roteiristas ativos.",
-        features: ["25 créditos de análise", "Ou 500 mensagens no Script Doctor", "Melhor custo-benefício", "Acesso a todas as ferramentas"],
+        features: ["25 créditos de análise", "Melhor custo-benefício", "Acesso a todas as ferramentas"],
         isPopular: true,
     },
     {
@@ -91,7 +91,7 @@ const creditPackages = [
         credits: 50,
         price: "69,90",
         description: "Perfeito para uso intensivo e múltiplos projetos.",
-        features: ["50 créditos de análise", "Ou 1000 mensagens no Script Doctor", "O menor preço por crédito", "Acesso a todas as ferramentas"],
+        features: ["50 créditos de análise", "O menor preço por crédito", "Acesso a todas as ferramentas"],
     },
 ];
 
