@@ -10,10 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { FilePlus2, Trash2, CheckCircle, Upload } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { FilePlus2, Trash2, CheckCircle, Upload, ShieldAlert } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const scriptSchema = z.object({
   name: z.string().min(1, "O nome do roteiro é obrigatório."),
@@ -156,6 +157,26 @@ export default function PainelDeRoteirosPage() {
             </DialogContent>
         </Dialog>
       </header>
+
+       <Accordion type="single" collapsible>
+        <AccordionItem value="item-1">
+            <AccordionTrigger className="text-base font-semibold flex items-center gap-2 text-amber-500 hover:no-underline">
+                <ShieldAlert /> Aviso Legal sobre o Uso de Inteligência Artificial (IA)
+            </AccordionTrigger>
+            <AccordionContent className="space-y-4 text-muted-foreground prose prose-sm dark:prose-invert max-w-none">
+                <h4 className="font-semibold text-foreground/90">1. Transparência no Uso da Tecnologia:</h4>
+                <p>Para proporcionar uma experiência mais dinâmica e interativa, informamos que algumas das funcionalidades deste site/aplicativo, incluindo, mas não se limitando a, geração de respostas, análises e interações, são assistidas por sistemas de Inteligência Artificial.</p>
+                <h4 className="font-semibold text-foreground/90">2. Natureza e Limitações da IA:</h4>
+                <p>A Inteligência Artificial é uma tecnologia em desenvolvimento que, apesar de seus avanços, pode apresentar falhas e gerar conteúdos imprecisos, incompletos ou inconsistentes. As respostas fornecidas são baseadas em padrões de dados e algoritmos, e não substituem o discernimento, a análise crítica e a validação de um ser humano.</p>
+                <h4 className="font-semibold text-foreground/90">3. Necessidade de Revisão Humana:</h4>
+                <p>É imprescindível que todo e qualquer conteúdo, resposta ou interação gerada pela IA seja tratado como preliminar e sujeito a uma rigorosa revisão humana. Antes de tomar qualquer decisão ou ação com base nas informações fornecidas, o usuário deve validá-las de forma independente.</p>
+                <h4 className="font-semibold text-foreground/90">4. Isenção de Responsabilidade:</h4>
+                <p>Ao utilizar as funcionalidades de IA desta plataforma, o usuário reconhece e concorda que o faz por sua conta e risco. Isentamo-nos de qualquer responsabilidade por danos diretos ou indiretos, perdas ou inconvenientes que possam surgir do uso de informações geradas pela IA que não tenham sido devidamente verificadas por um humano. A responsabilidade final pelo uso do conteúdo gerado é integralmente do usuário.</p>
+                <h4 className="font-semibold text-foreground/90">5. Conformidade e Legislação:</h4>
+                <p>Este aviso está em conformidade com os princípios de transparência e informação, em linha com as discussões atuais sobre a regulamentação da Inteligência Artificial no Brasil e com o Código de Defesa do Consumidor, que preza pela clareza na prestação de serviços.</p>
+            </AccordionContent>
+        </AccordionItem>
+      </Accordion>
       
       <Card>
           <CardHeader>
