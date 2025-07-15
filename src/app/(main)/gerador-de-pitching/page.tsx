@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { generatePitchingDocument } from "@/ai/flows/generate-pitching-document";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, Copy, FileText, Target, Milestone, Users, Palette, BarChart3, TrendingUp, Handshake, Rocket, AlertTriangle } from "lucide-react";
+import { Sparkles, Copy, FileText, Target, Milestone, Users, Palette, BarChart3, TrendingUp, Handshake, Rocket, AlertTriangle, Download } from "lucide-react";
 import type { GeneratePitchingDocumentOutput } from "@/ai/flows/generate-pitching-document";
 import ReactMarkdown from 'react-markdown';
 import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
@@ -119,6 +119,22 @@ ${docData.marketingPotential}
     `.trim();
   }
 
+  const handleDownload = () => {
+    const docToCopy = document || activeScript?.analysis.pitchingDocument;
+    if (docToCopy && activeScript) {
+        const plainText = createPlainTextDocument(docToCopy);
+        const blob = new Blob([plainText], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `pitching_${activeScript.name.replace(/\s+/g, '_').toLowerCase()}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+  }
+
   const handleCopy = () => {
     const docToCopy = document || activeScript?.analysis.pitchingDocument;
     if (docToCopy) {
@@ -150,6 +166,9 @@ ${docData.marketingPotential}
         <div className="flex gap-2">
             <Button onClick={handleCopy} variant="outline" disabled={!hasBeenGenerated || loading}>
                 <Copy className="mr-2 h-4 w-4" /> Copiar Texto
+            </Button>
+            <Button onClick={handleDownload} variant="outline" disabled={!hasBeenGenerated || loading}>
+                <Download className="mr-2 h-4 w-4" /> Baixar TXT
             </Button>
             <Button onClick={handleGeneration} disabled={loading}>
                 {loading ? "Gerando..." : hasBeenGenerated ? "Gerar Novamente (-1 crédito)" : "Gerar Documento (-1 crédito)"}

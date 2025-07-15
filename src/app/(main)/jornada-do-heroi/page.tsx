@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptHeroJourney } from "@/ai/flows/analyze-script-hero-journey";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, GitCommitHorizontal, AlertTriangle, BookCheck } from "lucide-react";
+import { Sparkles, GitCommitHorizontal, AlertTriangle, BookCheck, Download } from "lucide-react";
 import type { AnalyzeScriptHeroJourneyOutput, HeroJourneyStep } from "@/ai/flows/analyze-script-hero-journey";
 import { IntensityChart } from "@/components/charts/intensity-chart";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -80,6 +80,49 @@ export default function JornadaDoHeroiPage() {
     }
   };
 
+  const handleDownload = () => {
+    if (!analysisResult || !activeScript) return;
+
+    let content = `Análise da Jornada do Herói para: ${activeScript.name}\n`;
+    content += "==================================================\n\n";
+
+    content += `Análise Dramatúrgica Geral (Nota: ${analysisResult.overallAnalysis.score}/10)\n`;
+    content += `--------------------------------------------------\n`;
+    content += `${analysisResult.overallAnalysis.summary}\n`;
+    if (analysisResult.overallAnalysis.suggestions) {
+      content += `\nSugestão Geral: ${analysisResult.overallAnalysis.suggestions}\n`;
+    }
+    content += "\n";
+
+    content += "Análise de 3 Atos\n";
+    content += `--------------------------------------------------\n`;
+    content += `Primeiro Ato (Apresentação):\n${analysisResult.threeActAnalysis.actOne}\n\n`;
+    content += `Segundo Ato (Confronto):\n${analysisResult.threeActAnalysis.actTwo}\n\n`;
+    content += `Terceiro Ato (Resolução):\n${analysisResult.threeActAnalysis.actThree}\n\n`;
+
+    content += "Passos da Jornada Identificados\n";
+    content += `--------------------------------------------------\n\n`;
+    analysisResult.identifiedSteps.forEach((step, index) => {
+      content += `${index + 1}. ${step.stepName} (Nota: ${step.score}/10, Intensidade: ${step.intensity}/100)\n`;
+      content += `Análise: ${step.analysis}\n`;
+      if (step.suggestions) {
+        content += `Sugestão: ${step.suggestions}\n`;
+      }
+      content += "\n";
+    });
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `analise_jornada_heroi_${activeScript.name.replace(/\s+/g, '_').toLowerCase()}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+
   const hasBeenAnalyzed = !!analysisResult;
   const chartData = analysisResult
     ? analysisResult.identifiedSteps.map((step, index) => ({
@@ -104,10 +147,15 @@ export default function JornadaDoHeroiPage() {
           <h1 className="text-3xl font-headline font-bold">Análise da Jornada do Herói</h1>
           <p className="text-muted-foreground">Identifique os passos da jornada do herói e visualize a intensidade dramática.</p>
         </div>
-        <Button onClick={handleAnalysis} disabled={loading}>
-          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar (-1 crédito)" : "Analisar (-1 crédito)"}
-          <Sparkles className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+            <Button onClick={handleDownload} variant="outline" disabled={!hasBeenAnalyzed || loading}>
+                <Download className="mr-2 h-4 w-4" /> Baixar TXT
+            </Button>
+            <Button onClick={handleAnalysis} disabled={loading}>
+                {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar (-1 crédito)" : "Analisar (-1 crédito)"}
+                <Sparkles className="ml-2 h-4 w-4" />
+            </Button>
+        </div>
       </header>
       
       <Alert variant="warning">

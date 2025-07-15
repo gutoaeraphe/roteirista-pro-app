@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptRepresentation } from "@/ai/flows/analyze-script-representation";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, CheckCircle2, XCircle, Users, AlertCircle, Award, AlertTriangle } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, Users, AlertCircle, Award, AlertTriangle, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { AnalyzeScriptRepresentationOutput } from "@/ai/flows/analyze-script-representation";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -142,6 +142,47 @@ export default function TesteDeRepresentatividadePage() {
       }
     };
 
+    const handleDownload = () => {
+        if (!analysisResult || !activeScript) return;
+    
+        const formatTestResult = (result: TestResult) => {
+            const status = getTestStatus(result);
+            let text = `${result.testName} - ${status.label}\n`;
+            text += "---------------------------------\n";
+            text += `Resumo: ${result.summary}\n\n`;
+            result.criteria.forEach(c => {
+                text += `Critério: ${c.criterion}\n`;
+                text += `Resultado: ${c.passed ? "Aprovado" : "Reprovado"}\n`;
+                text += `Justificativa: ${c.reasoning}\n\n`;
+            });
+            return text;
+        };
+
+        const content = `
+Teste de Representatividade para: ${activeScript.name}
+==================================================
+
+${formatTestResult(analysisResult.bechdelTest)}
+==================================================
+
+${formatTestResult(analysisResult.vitoRussoTest)}
+==================================================
+
+${formatTestResult(analysisResult.duVernayTest)}
+        `.trim();
+
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `teste_representatividade_${activeScript.name.replace(/\s+/g, '_').toLowerCase()}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+
     const hasBeenAnalyzed = !!analysisResult;
   
     if (!activeScript) {
@@ -159,10 +200,15 @@ export default function TesteDeRepresentatividadePage() {
           <h1 className="text-3xl font-headline font-bold">Teste de Representatividade</h1>
           <p className="text-muted-foreground">Avalie a diversidade do roteiro com os testes de Bechdel, Vito Russo e DuVernay.</p>
         </div>
-        <Button onClick={handleAnalysis} disabled={loading}>
-          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar (-1 crédito)" : "Analisar (-1 crédito)"}
-          <Sparkles className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+            <Button onClick={handleDownload} variant="outline" disabled={!hasBeenAnalyzed || loading}>
+                <Download className="mr-2 h-4 w-4" /> Baixar TXT
+            </Button>
+            <Button onClick={handleAnalysis} disabled={loading}>
+                {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar (-1 crédito)" : "Analisar (-1 crédito)"}
+                <Sparkles className="ml-2 h-4 w-4" />
+            </Button>
+        </div>
       </header>
       
       <Alert variant="warning">

@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptStructure } from "@/ai/flows/analyze-script-structure";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, FileText, BrainCircuit, TrendingUp, Lightbulb, BookOpen, Award, AlertTriangle } from "lucide-react";
+import { Sparkles, FileText, BrainCircuit, TrendingUp, Lightbulb, BookOpen, Award, AlertTriangle, Download } from "lucide-react";
 import type { AnalyzeScriptStructureOutput, Metric, DramaticElement } from "@/ai/flows/analyze-script-structure";
 import { StructureRadarChart } from "@/components/charts/structure-radar-chart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -92,6 +92,54 @@ export default function EstruturaDeRoteiroPage() {
       setLoading(false);
     }
   };
+
+  const formatMetricToText = (title: string, metric: Metric) => {
+    let text = `${title} (Nota: ${metric.score}/10)\n`;
+    text += '---------------------------------\n';
+    text += `${metric.analysis}\n`;
+    if (metric.suggestions) {
+      text += `\nSugestão: ${metric.suggestions}\n`;
+    }
+    return text;
+  };
+
+  const handleDownload = () => {
+    if (!analysisResult || !activeScript) return;
+
+    let content = `Análise de Estrutura de Roteiro: ${activeScript.name}\n`;
+    content += "========================================\n\n";
+
+    content += `Resumo da Trama\n---------------------------------\n${analysisResult.plotSummary}\n\n`;
+
+    content += "Métricas Principais\n========================================\n";
+    content += `${formatMetricToText('Estrutura Narrativa', analysisResult.mainMetrics.narrativeStructure)}\n`;
+    content += `${formatMetricToText('Desenvolvimento de Personagens', analysisResult.mainMetrics.characterDevelopment)}\n`;
+    content += `${formatMetricToText('Potencial Comercial', analysisResult.mainMetrics.commercialPotential)}\n`;
+    content += `${formatMetricToText('Originalidade', analysisResult.mainMetrics.originality)}\n\n`;
+
+    content += "Elementos Dramáticos Centrais\n========================================\n";
+    analysisResult.dramaticElements.forEach(el => {
+      content += `${el.name}\n`;
+      content += `Trecho: "${el.identifiedExcerpt}"\n`;
+      content += `Análise: ${el.effectivenessAnalysis}\n\n`;
+    });
+
+    content += "Análise Detalhada da Estrutura\n========================================\n";
+    Object.entries(analysisResult.structureCriteria).forEach(([key, metric]) => {
+      const title = key.charAt(0).toUpperCase() + key.slice(1);
+      content += `${formatMetricToText(title, metric)}\n`;
+    });
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `analise_estrutura_${activeScript.name.replace(/\s+/g, '_').toLowerCase()}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
   
   const hasBeenAnalyzed = !!analysisResult;
   const chartData = analysisResult
@@ -128,10 +176,15 @@ export default function EstruturaDeRoteiroPage() {
           <h1 className="text-3xl font-headline font-bold">Estrutura de Roteiro</h1>
           <p className="text-muted-foreground">Obtenha um dashboard completo sobre a estrutura e potencial do seu roteiro.</p>
         </div>
-        <Button onClick={handleAnalysis} disabled={loading}>
-          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Estrutura (-1 crédito)" : "Analisar Estrutura (-1 crédito)"}
-          <Sparkles className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+            <Button onClick={handleDownload} variant="outline" disabled={!hasBeenAnalyzed || loading}>
+                <Download className="mr-2 h-4 w-4" /> Baixar TXT
+            </Button>
+            <Button onClick={handleAnalysis} disabled={loading}>
+            {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Estrutura (-1 crédito)" : "Analisar Estrutura (-1 crédito)"}
+            <Sparkles className="ml-2 h-4 w-4" />
+            </Button>
+        </div>
       </header>
       
       <Alert variant="warning">

@@ -11,8 +11,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptCharacters } from "@/ai/flows/analyze-script-characters";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb, UserCheck, AlertTriangle, Users } from "lucide-react";
-import type { AnalyzeScriptCharactersOutput } from "@/ai/flows/analyze-script-characters";
+import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb, UserCheck, AlertTriangle, Users, Download } from "lucide-react";
+import type { AnalyzeScriptCharactersOutput, CharacterProfile } from "@/ai/flows/analyze-script-characters";
 import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -80,6 +80,78 @@ export default function AnaliseDePersonagensPage() {
     }
   };
 
+  const formatCharacterProfileToText = (profile: CharacterProfile) => {
+    return `
+Análise Geral
+--------------------
+${profile.generalAnalysis}
+
+Perfil Psicológico
+--------------------
+${profile.psychologicalProfile}
+
+Forças
+--------------------
+${profile.strengths}
+
+Fraquezas
+--------------------
+${profile.weaknesses}
+
+Motivações Internas
+--------------------
+${profile.internalMotivations}
+
+Motivações Externas
+--------------------
+${profile.externalMotivations}
+
+Arco do Personagem
+--------------------
+${profile.arc}
+
+Sugestões para Melhorar
+--------------------
+${profile.improvementSuggestions}
+    `.trim();
+  };
+
+  const handleDownload = () => {
+    if (!analysisResult || !activeScript) return;
+    
+    const content = `
+Análise de Personagens para: ${activeScript.name}
+==================================================
+
+Relação Protagonista vs. Antagonista
+--------------------------------------------------
+${analysisResult.protagonistAntagonistRelationship}
+
+
+==================================================
+Análise do Protagonista
+==================================================
+${formatCharacterProfileToText(analysisResult.protagonistAnalysis)}
+
+
+==================================================
+Análise do Antagonista
+==================================================
+${formatCharacterProfileToText(analysisResult.antagonistAnalysis)}
+    `.trim();
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `analise_personagens_${activeScript.name.replace(/\s+/g, '_').toLowerCase()}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+
   const hasBeenAnalyzed = !!analysisResult;
 
   if (!activeScript) {
@@ -121,10 +193,15 @@ export default function AnaliseDePersonagensPage() {
           <h1 className="text-3xl font-headline font-bold">Análise de Personagens</h1>
           <p className="text-muted-foreground">Avalie o perfil psicológico, motivações e arco do protagonista e antagonista.</p>
         </div>
-        <Button onClick={handleAnalysis} disabled={loading}>
-          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Personagens (-1 crédito)" : "Analisar Personagens (-1 crédito)"}
-          <Sparkles className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+            <Button onClick={handleDownload} variant="outline" disabled={!hasBeenAnalyzed || loading}>
+                <Download className="mr-2 h-4 w-4" /> Baixar TXT
+            </Button>
+            <Button onClick={handleAnalysis} disabled={loading}>
+            {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Personagens (-1 crédito)" : "Analisar Personagens (-1 crédito)"}
+            <Sparkles className="ml-2 h-4 w-4" />
+            </Button>
+        </div>
       </header>
 
       <Alert variant="warning">

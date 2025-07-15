@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptMarket } from "@/ai/flows/analyze-script-market";
 import { analyzeScriptStructure } from "@/ai/flows/analyze-script-structure";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, Target, TrendingUp, Lightbulb, BookCopy, Tv, BarChartBig, Users, Briefcase, Gift, Globe, Shuffle, AlertTriangle } from "lucide-react";
+import { Sparkles, Target, TrendingUp, Lightbulb, BookCopy, Tv, BarChartBig, Users, Briefcase, Gift, Globe, Shuffle, AlertTriangle, Download } from "lucide-react";
 import type { AnalyzeScriptMarketOutput } from "@/ai/flows/analyze-script-market";
 import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -86,6 +86,64 @@ export default function AnaliseDeMercadoPage() {
       }
     };
   
+    const handleDownload = () => {
+      if (!analysisResult || !activeScript) return;
+      const { commercialPotential, ...rest } = analysisResult;
+
+      const content = `
+Análise de Mercado para: ${activeScript.name}
+Gênero: ${activeScript.genre}
+==================================================
+
+Potencial Comercial (Nota: ${commercialPotential.score}/10)
+--------------------------------------------------
+${commercialPotential.description}
+
+Público-alvo
+--------------------------------------------------
+${rest.targetAudience}
+
+Potencial de Mercado (Brasil)
+--------------------------------------------------
+${rest.marketPotential}
+
+Tendências de Conteúdo
+--------------------------------------------------
+${rest.contentTrends}
+
+Originalidade e Diferenciação
+--------------------------------------------------
+${rest.originalityAndDifferentiation}
+
+Potencial de Marketing e Venda
+--------------------------------------------------
+${rest.marketingAndSalesPotential}
+
+Produtos Complementares
+--------------------------------------------------
+${rest.complementaryProducts}
+
+Obras de Referência
+--------------------------------------------------
+${rest.referenceWorks}
+
+Canais de Distribuição
+--------------------------------------------------
+${rest.distributionChannels}
+      `.trim();
+      
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `analise_mercado_${activeScript.name.replace(/\s+/g, '_').toLowerCase()}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
+
+
     const hasBeenAnalyzed = !!analysisResult;
   
     if (!activeScript) {
@@ -103,10 +161,15 @@ export default function AnaliseDeMercadoPage() {
           <h1 className="text-3xl font-headline font-bold">Análise de Mercado</h1>
           <p className="text-muted-foreground">Obtenha insights comerciais e estratégicos sobre o seu roteiro.</p>
         </div>
-        <Button onClick={handleAnalysis} disabled={loading}>
-          {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Mercado (-1 crédito)" : "Analisar Mercado (-1 crédito)"}
-          <Sparkles className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+            <Button onClick={handleDownload} variant="outline" disabled={!hasBeenAnalyzed || loading}>
+                <Download className="mr-2 h-4 w-4" /> Baixar TXT
+            </Button>
+            <Button onClick={handleAnalysis} disabled={loading}>
+              {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Mercado (-1 crédito)" : "Analisar Mercado (-1 crédito)"}
+              <Sparkles className="ml-2 h-4 w-4" />
+            </Button>
+        </div>
       </header>
       
       <Alert variant="warning">
