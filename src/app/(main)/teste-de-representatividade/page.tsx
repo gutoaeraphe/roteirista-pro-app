@@ -16,6 +16,7 @@ import type { AnalyzeScriptRepresentationOutput } from "@/ai/flows/analyze-scrip
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 type TestResult = AnalyzeScriptRepresentationOutput['bechdelTest'];
 
@@ -25,12 +26,24 @@ const getTestStatus = (result: TestResult) => {
     const percentage = totalCount > 0 ? (passedCount / totalCount) * 100 : 0;
 
     if (percentage === 100) {
-        return { label: "Aprovado", variant: "default", icon: CheckCircle2 } as const;
+        return { 
+            label: "Aprovado", 
+            className: "bg-green-600/80 text-white hover:bg-green-600", 
+            icon: CheckCircle2 
+        } as const;
     }
     if (percentage >= 50) {
-        return { label: "Aprovado com Ressalvas", variant: "secondary", icon: AlertCircle } as const;
+        return { 
+            label: "Aprovado com Ressalvas", 
+            className: "bg-amber-500/80 text-white hover:bg-amber-500", 
+            icon: AlertCircle 
+        } as const;
     }
-    return { label: "Reprovado", variant: "destructive", icon: XCircle } as const;
+    return { 
+        label: "Reprovado", 
+        className: "bg-red-600/80 text-white hover:bg-red-600", 
+        icon: XCircle 
+    } as const;
 }
 
 const TestResultCard = ({ result, description }: { result: TestResult, description: string }) => {
@@ -42,11 +55,11 @@ const TestResultCard = ({ result, description }: { result: TestResult, descripti
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle>{result.testName}</CardTitle>
+                        <CardTitle className="text-xl">{result.testName}</CardTitle>
                         <CardDescription>{description}</CardDescription>
                     </div>
-                    <Badge variant={status.variant} className="bg-opacity-80">
-                        <StatusIcon className="mr-1 h-4 w-4" />
+                    <Badge className={cn("text-base px-4 py-1", status.className)}>
+                        <StatusIcon className="mr-2 h-5 w-5" />
                         {status.label}
                     </Badge>
                 </div>
@@ -79,7 +92,7 @@ const TestResultSkeleton = () => (
                     <Skeleton className="h-6 w-32" />
                     <Skeleton className="h-4 w-48" />
                 </div>
-                <Skeleton className="h-6 w-24 rounded-full" />
+                <Skeleton className="h-8 w-32 rounded-full" />
             </div>
         </CardHeader>
         <CardContent>
