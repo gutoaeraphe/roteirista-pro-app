@@ -10,11 +10,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptRepresentation } from "@/ai/flows/analyze-script-representation";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, CheckCircle2, XCircle, Users, AlertCircle, Award } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, Users, AlertCircle, Award, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { AnalyzeScriptRepresentationOutput } from "@/ai/flows/analyze-script-representation";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type TestResult = AnalyzeScriptRepresentationOutput['bechdelTest'];
 
@@ -150,6 +151,14 @@ export default function TesteDeRepresentatividadePage() {
           <Sparkles className="ml-2 h-4 w-4" />
         </Button>
       </header>
+      
+      <Alert variant="destructive">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Aviso de IA</AlertTitle>
+        <AlertDescription>
+            As respostas e interações desta página são geradas por Inteligência Artificial. Esta tecnologia pode cometer erros e produzir informações inconsistentes. Recomendamos a revisão humana de todo o conteúdo.
+        </AlertDescription>
+      </Alert>
 
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">

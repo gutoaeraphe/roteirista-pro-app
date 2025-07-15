@@ -11,9 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptCharacters } from "@/ai/flows/analyze-script-characters";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb, UserCheck } from "lucide-react";
+import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb, UserCheck, AlertTriangle } from "lucide-react";
 import type { AnalyzeScriptCharactersOutput } from "@/ai/flows/analyze-script-characters";
 import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const CharacterAnalysisCard = ({ title, content, icon: Icon }: { title: string; content: string; icon: React.ElementType }) => (
   <Card>
@@ -122,6 +123,14 @@ export default function AnaliseDePersonagensPage() {
           <Sparkles className="ml-2 h-4 w-4" />
         </Button>
       </header>
+
+      <Alert variant="destructive">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Aviso de IA</AlertTitle>
+        <AlertDescription>
+            As respostas e interações desta página são geradas por Inteligência Artificial. Esta tecnologia pode cometer erros e produzir informações inconsistentes. Recomendamos a revisão humana de todo o conteúdo.
+        </AlertDescription>
+      </Alert>
         
         <Tabs defaultValue="protagonist" className="w-full">
           <TabsList className="grid w-full grid-cols-2">

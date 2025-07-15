@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { scriptDoctorConsultant } from "@/ai/flows/script-doctor-consultant";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Stethoscope, Send, User, Bot, Sparkles, CreditCard, AlertCircle } from "lucide-react";
+import { Stethoscope, Send, User, Bot, Sparkles, CreditCard, AlertCircle, AlertTriangle } from "lucide-react";
 import { ChatMessage } from "@/lib/types";
 import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 import Link from "next/link";
@@ -25,6 +25,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 export default function ScriptDoctorPage() {
   const { activeScript, updateScript } = useScript();
@@ -145,6 +147,14 @@ export default function ScriptDoctorPage() {
         <h1 className="text-3xl font-headline font-bold">Script Doctor</h1>
         <p className="text-muted-foreground">Converse com um consultor de IA para obter feedback em tempo real sobre seu roteiro.</p>
       </header>
+
+      <Alert variant="destructive">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Aviso de IA</AlertTitle>
+        <AlertDescription>
+            As respostas e interações desta página são geradas por Inteligência Artificial. Esta tecnologia pode cometer erros e produzir informações inconsistentes. Recomendamos a revisão humana de todo o conteúdo.
+        </AlertDescription>
+      </Alert>
 
       <Card className="h-[600px] flex flex-col">
         <CardHeader>

@@ -10,10 +10,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { generatePitchingDocument } from "@/ai/flows/generate-pitching-document";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, Copy, FileText, Target, Milestone, Users, Palette, BarChart3, TrendingUp, Handshake, Rocket } from "lucide-react";
+import { Sparkles, Copy, FileText, Target, Milestone, Users, Palette, BarChart3, TrendingUp, Handshake, Rocket, AlertTriangle } from "lucide-react";
 import type { GeneratePitchingDocumentOutput } from "@/ai/flows/generate-pitching-document";
 import ReactMarkdown from 'react-markdown';
 import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const InfoCard = ({ title, content, icon: Icon, className }: { title: string; content: string; icon: React.ElementType; className?: string }) => (
     <Card className={className}>
@@ -157,6 +158,14 @@ ${docData.marketingPotential}
         </div>
       </header>
       
+      <Alert variant="destructive">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Aviso de IA</AlertTitle>
+        <AlertDescription>
+            As respostas e interações desta página são geradas por Inteligência Artificial. Esta tecnologia pode cometer erros e produzir informações inconsistentes. Recomendamos a revisão humana de todo o conteúdo.
+        </AlertDescription>
+      </Alert>
+
       {loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Skeleton className="h-32 w-full md:col-span-2" />

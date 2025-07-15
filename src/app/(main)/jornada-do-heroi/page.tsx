@@ -110,6 +110,14 @@ export default function JornadaDoHeroiPage() {
         </Button>
       </header>
       
+      <Alert variant="destructive">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Aviso de IA</AlertTitle>
+        <AlertDescription>
+            As respostas e interações desta página são geradas por Inteligência Artificial. Esta tecnologia pode cometer erros e produzir informações inconsistentes. Recomendamos a revisão humana de todo o conteúdo.
+        </AlertDescription>
+      </Alert>
+      
       {loading && (
         <div className="space-y-6">
             <Skeleton className="h-48 w-full" />

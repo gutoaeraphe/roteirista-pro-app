@@ -12,11 +12,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, RefreshCcw, ThumbsUp, FileText } from "lucide-react";
+import { Sparkles, RefreshCcw, ThumbsUp, FileText, AlertTriangle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import TextareaAutosize from 'react-textarea-autosize';
 import { useRouter } from "next/navigation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { refineTheme } from '@/ai/flows/refine-theme-flow';
 import { generateThemeSuggestions } from '@/ai/flows/generate-theme-suggestions-flow';
@@ -479,6 +480,14 @@ export default function GeradorDeArgumentoPage() {
         <h1 className="text-3xl font-headline font-bold">Gerador de Argumento</h1>
         <p className="text-muted-foreground">Um guia estruturado para auxiliar você na criação da base de sua história.</p>
       </header>
+
+      <Alert variant="destructive">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Aviso de IA</AlertTitle>
+        <AlertDescription>
+            As respostas e interações desta página são geradas por Inteligência Artificial. Esta tecnologia pode cometer erros e produzir informações inconsistentes. Recomendamos a revisão humana de todo o conteúdo.
+        </AlertDescription>
+      </Alert>
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

@@ -11,9 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptMarket } from "@/ai/flows/analyze-script-market";
 import { analyzeScriptStructure } from "@/ai/flows/analyze-script-structure";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, Target, TrendingUp, Lightbulb, BookCopy, Tv, BarChartBig, Users, Briefcase, Gift, Globe, Shuffle } from "lucide-react";
+import { Sparkles, Target, TrendingUp, Lightbulb, BookCopy, Tv, BarChartBig, Users, Briefcase, Gift, Globe, Shuffle, AlertTriangle } from "lucide-react";
 import type { AnalyzeScriptMarketOutput } from "@/ai/flows/analyze-script-market";
 import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const InfoCard = ({ title, content, icon: Icon }: { title: string; content: string; icon: React.ElementType }) => (
     <Card>
@@ -107,6 +108,14 @@ export default function AnaliseDeMercadoPage() {
           <Sparkles className="ml-2 h-4 w-4" />
         </Button>
       </header>
+      
+      <Alert variant="destructive">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Aviso de IA</AlertTitle>
+        <AlertDescription>
+            As respostas e interações desta página são geradas por Inteligência Artificial. Esta tecnologia pode cometer erros e produzir informações inconsistentes. Recomendamos a revisão humana de todo o conteúdo.
+        </AlertDescription>
+      </Alert>
 
       {loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
