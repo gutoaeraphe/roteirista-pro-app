@@ -37,7 +37,9 @@ export default function PerfilPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [deleteConfirmationPassword, setDeleteConfirmationPassword] = useState("");
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  const [requiresReauth, setRequiresReauth] = useState(false);
   
   const handleNameUpdate = async () => {
     if (!user || name === userProfile?.name) return;
@@ -86,10 +88,10 @@ export default function PerfilPage() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!user) return;
-    setLoading(prev => ({ ...prev, delete: true }));
-    try {
+  const performDeletion = async () => {
+     if (!user) return;
+     setLoading(prev => ({ ...prev, delete: true }));
+     try {
         // Excluir subcoleção de roteiros
         const scriptsCollectionRef = collection(db, "users", user.uid, "scripts");
         const scriptsSnapshot = await getDocs(scriptsCollectionRef);
@@ -110,10 +112,34 @@ export default function PerfilPage() {
 
     } catch (error: any) {
         console.error("Erro ao excluir conta:", error);
-        toast({ title: "Erro", description: "Não foi possível excluir sua conta. Faça login novamente e tente de novo.", variant: "destructive" });
+        if (error.code === 'auth/requires-recent-login') {
+            setRequiresReauth(true);
+            toast({ title: "Sessão Expirada", description: "Para sua segurança, por favor, insira sua senha para confirmar a exclusão da conta.", variant: "destructive" });
+        } else {
+             toast({ title: "Erro", description: "Não foi possível excluir sua conta. Faça login novamente e tente de novo.", variant: "destructive" });
+        }
         setLoading(prev => ({ ...prev, delete: false }));
     }
-  };
+  }
+
+  const handleReauthenticateAndDelete = async () => {
+    if (!user || !user.email || !deleteConfirmationPassword) {
+      toast({ title: "Erro", description: "Por favor, insira sua senha.", variant: "destructive" });
+      return;
+    }
+
+    setLoading(prev => ({ ...prev, delete: true }));
+    try {
+      const credential = EmailAuthProvider.credential(user.email, deleteConfirmationPassword);
+      await reauthenticateWithCredential(user, credential);
+      // Após reautenticação bem-sucedida, tente a exclusão novamente.
+      await performDeletion();
+    } catch (error: any) {
+      console.error("Erro na reautenticação:", error);
+      toast({ title: "Senha Incorreta", description: "A senha fornecida está incorreta. Tente novamente.", variant: "destructive" });
+      setLoading(prev => ({ ...prev, delete: false }));
+    }
+  }
 
 
   return (
@@ -181,7 +207,7 @@ export default function PerfilPage() {
            <CardDescription>Esta ação é irreversível. Por favor, tenha certeza absoluta.</CardDescription>
         </CardHeader>
         <CardContent>
-          <AlertDialog>
+          <AlertDialog onOpenChange={() => setRequiresReauth(false)}>
             <AlertDialogTrigger asChild>
                 <Button variant="destructive" disabled={loading.delete}>
                     {loading.delete ? <Loader2 className="animate-spin mr-2" /> : <Trash2 className="mr-2" />}
@@ -192,14 +218,29 @@ export default function PerfilPage() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Esta ação não pode ser desfeita. Isso irá excluir permanentemente sua conta,
-                  junto com todos os seus roteiros, análises e créditos restantes.
+                   {requiresReauth
+                    ? "Sua sessão de login é muito antiga. Para confirmar que é realmente você, por favor, insira sua senha para prosseguir com a exclusão da conta."
+                    : "Esta ação não pode ser desfeita. Isso irá excluir permanentemente sua conta, junto com todos os seus roteiros, análises e créditos restantes."
+                    }
                 </AlertDialogDescription>
+                 {requiresReauth && (
+                    <div className="space-y-2 pt-2">
+                        <Label htmlFor="delete-password">Sua Senha</Label>
+                        <Input
+                            id="delete-password"
+                            type="password"
+                            value={deleteConfirmationPassword}
+                            onChange={(e) => setDeleteConfirmationPassword(e.target.value)}
+                            placeholder="Digite sua senha para confirmar"
+                            icon={KeyRound}
+                        />
+                    </div>
+                 )}
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90">
-                    Sim, excluir minha conta
+                <AlertDialogCancel onClick={() => setDeleteConfirmationPassword('')}>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={requiresReauth ? handleReauthenticateAndDelete : performDeletion} className="bg-destructive hover:bg-destructive/90" disabled={loading.delete}>
+                  {loading.delete ? <Loader2 className="animate-spin" /> : 'Sim, excluir minha conta'}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
