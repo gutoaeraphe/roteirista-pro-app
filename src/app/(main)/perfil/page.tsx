@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, KeyRound, Trash2, Save, Loader2 } from "lucide-react";
+import { User, KeyRound, Trash2, Save, Loader2, Eye, EyeOff } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
@@ -38,6 +38,11 @@ export default function PerfilPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [deleteConfirmationPassword, setDeleteConfirmationPassword] = useState("");
+  
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
   const [isReauthDialogOpen, setIsReauthDialogOpen] = useState(false);
   
@@ -188,15 +193,42 @@ export default function PerfilPage() {
                     <form onSubmit={handlePasswordUpdate} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="current-password">Senha Atual</Label>
-                            <Input id="current-password" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required icon={KeyRound}/>
+                            <Input 
+                                id="current-password" 
+                                type={showCurrentPassword ? "text" : "password"} 
+                                value={currentPassword} 
+                                onChange={(e) => setCurrentPassword(e.target.value)} 
+                                required 
+                                icon={KeyRound}
+                                iconRight={showCurrentPassword ? EyeOff : Eye}
+                                onIconRightClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                            />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="new-password">Nova Senha</Label>
-                            <Input id="new-password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required icon={KeyRound}/>
+                            <Input 
+                                id="new-password" 
+                                type={showNewPassword ? "text" : "password"}
+                                value={newPassword} 
+                                onChange={(e) => setNewPassword(e.target.value)} 
+                                required 
+                                icon={KeyRound}
+                                iconRight={showNewPassword ? EyeOff : Eye}
+                                onIconRightClick={() => setShowNewPassword(!showNewPassword)}
+                            />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
-                            <Input id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required icon={KeyRound}/>
+                            <Input 
+                                id="confirm-password"
+                                type={showConfirmPassword ? "text" : "password"}
+                                value={confirmPassword} 
+                                onChange={(e) => setConfirmPassword(e.target.value)} 
+                                required 
+                                icon={KeyRound}
+                                iconRight={showConfirmPassword ? EyeOff : Eye}
+                                onIconRightClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            />
                         </div>
                         <Button type="submit" disabled={loading.password}>
                             {loading.password ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
