@@ -39,48 +39,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    let unsubscribeSnapshot: () => void = () => {};
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-    if (user) {
-      const userDocRef = doc(db, "users", user.uid);
-      unsubscribeSnapshot = onSnapshot(userDocRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const newProfile = docSnap.data() as UserProfile;
-          
+    const userDocRef = doc(db, "users", user.uid);
+    const unsubscribeSnapshot = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const newProfile = docSnap.data() as UserProfile;
+        
+        setUserProfile(currentProfile => {
           // Se a compra foi bem-sucedida, mostre um toast na atualização de créditos
-          if (pathname === '/compra-sucesso' && userProfile && newProfile.credits > userProfile.credits) {
+          if (pathname === '/compra-sucesso' && currentProfile && newProfile.credits > currentProfile.credits) {
              toast({
                 title: "Créditos Adicionados!",
                 description: `Seu novo saldo é de ${newProfile.credits} créditos.`,
              });
           }
-          setUserProfile(newProfile);
+          return newProfile;
+        });
 
-        } else {
-          const newUserProfile: UserProfile = {
-            uid: user.uid,
-            email: user.email,
-            name: user.displayName,
-            photoURL: user.photoURL || '',
-            credits: 3, // Novos usuários começam com 3 créditos
-            scriptDoctorMessagesRemaining: 0,
-            isAdmin: ADMIN_EMAILS.includes(user.email || ''),
-          };
-          setDoc(userDocRef, newUserProfile).then(() => {
-            setUserProfile(newUserProfile);
-          });
-        }
-        setLoading(false);
-      }, (error) => {
-        console.error("Error fetching user profile:", error);
-        setLoading(false);
-      });
+      } else {
+        const newUserProfile: UserProfile = {
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName,
+          photoURL: user.photoURL || '',
+          credits: 3, // Novos usuários começam com 3 créditos
+          scriptDoctorMessagesRemaining: 0,
+          isAdmin: ADMIN_EMAILS.includes(user.email || ''),
+        };
+        setDoc(userDocRef, newUserProfile).then(() => {
+          setUserProfile(newUserProfile);
+        });
+      }
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching user profile:", error);
+      setLoading(false);
+    });
 
-    } else {
-        setLoading(false);
-    }
-     return () => unsubscribeSnapshot();
-  }, [user, toast, pathname, userProfile]);
+    return () => unsubscribeSnapshot();
+  }, [user, toast, pathname]);
 
   const updateUserProfile = useCallback(async (data: Partial<UserProfile>) => {
     if (!user) {
