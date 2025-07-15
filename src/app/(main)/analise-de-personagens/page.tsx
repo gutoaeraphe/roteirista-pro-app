@@ -11,13 +11,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptCharacters } from "@/ai/flows/analyze-script-characters";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb, UserCheck, AlertTriangle } from "lucide-react";
+import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb, UserCheck, AlertTriangle, Users } from "lucide-react";
 import type { AnalyzeScriptCharactersOutput } from "@/ai/flows/analyze-script-characters";
 import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-const CharacterAnalysisCard = ({ title, content, icon: Icon }: { title: string; content: string; icon: React.ElementType }) => (
-  <Card>
+const CharacterAnalysisCard = ({ title, content, icon: Icon, className }: { title: string; content: string; icon: React.ElementType, className?: string }) => (
+  <Card className={className}>
     <CardHeader>
       <CardTitle className="flex items-center gap-2 text-lg font-semibold"><Icon className="w-5 h-5 text-primary"/> {title}</CardTitle>
     </CardHeader>
@@ -28,13 +28,16 @@ const CharacterAnalysisCard = ({ title, content, icon: Icon }: { title: string; 
 );
 
 const CharacterAnalysisSkeleton = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        {[...Array(8)].map((_, i) => (
-            <Card key={i}>
-                <CardHeader><Skeleton className="h-5 w-1/3" /></CardHeader>
-                <CardContent><Skeleton className="h-24 w-full" /></CardContent>
-            </Card>
-        ))}
+    <div className="space-y-4">
+        <Skeleton className="h-48 w-full" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            {[...Array(8)].map((_, i) => (
+                <Card key={i}>
+                    <CardHeader><Skeleton className="h-5 w-1/3" /></CardHeader>
+                    <CardContent><Skeleton className="h-24 w-full" /></CardContent>
+                </Card>
+            ))}
+        </div>
     </div>
 );
 
@@ -132,27 +135,33 @@ export default function AnaliseDePersonagensPage() {
         </AlertDescription>
       </Alert>
         
-        <Tabs defaultValue="protagonist" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="protagonist"><User className="mr-2 h-4 w-4"/> Protagonista</TabsTrigger>
-            <TabsTrigger value="antagonist"><Bot className="mr-2 h-4 w-4"/> Antagonista</TabsTrigger>
-          </TabsList>
+      {loading && (
+          <CharacterAnalysisSkeleton />
+      )}
+      
+      {analysisResult && !loading && (
+        <div className="space-y-8">
+            <CharacterAnalysisCard
+                title="Relação Protagonista vs. Antagonista"
+                content={analysisResult.protagonistAntagonistRelationship}
+                icon={Users}
+                className="bg-muted/50"
+            />
+            <Tabs defaultValue="protagonist" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="protagonist"><User className="mr-2 h-4 w-4"/> Protagonista</TabsTrigger>
+                    <TabsTrigger value="antagonist"><Bot className="mr-2 h-4 w-4"/> Antagonista</TabsTrigger>
+                </TabsList>
 
-          {loading && (
-              <TabsContent value="protagonist"><CharacterAnalysisSkeleton /></TabsContent>
-          )}
-
-          {analysisResult && !loading && (
-            <>
                 <TabsContent value="protagonist" className="mt-6">
                     {renderCharacterAnalysis(analysisResult.protagonistAnalysis)}
                 </TabsContent>
                 <TabsContent value="antagonist" className="mt-6">
                     {renderCharacterAnalysis(analysisResult.antagonistAnalysis)}
                 </TabsContent>
-            </>
-          )}
-        </Tabs>
+            </Tabs>
+        </div>
+      )}
     </div>
   );
 }

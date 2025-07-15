@@ -55,6 +55,7 @@ const CharacterProfileSchema = z.object({
 });
 
 const AnalyzeScriptCharactersOutputSchema = z.object({
+  protagonistAntagonistRelationship: z.string().describe('Uma análise da dinâmica, conflito e evolução da relação entre o protagonista e o antagonista, explicando como essa interação move a trama.'),
   protagonistAnalysis: CharacterProfileSchema,
   antagonistAnalysis: CharacterProfileSchema,
 });
@@ -74,7 +75,10 @@ const prompt = ai.definePrompt({
   output: {schema: AnalyzeScriptCharactersOutputSchema},
   prompt: `Você é um consultor de roteiros e especialista em desenvolvimento de personagens. Sua análise deve ser profunda, crítica e construtiva, focada em identificar fraquezas e oportunidades de aprofundamento. Aja como um "script doctor" que não tem medo de dar feedback direto para melhorar a história. Responda inteiramente em português.
 
-Para cada personagem principal (protagonista e antagonista), forneça a seguinte análise crítica:
+**Primeiro e mais importante: Analise a Relação Protagonista vs. Antagonista.**
+Descreva a dinâmica central entre o protagonista e o antagonista. Eles são opostos, reflexos um do outro, ou algo mais complexo? Como o conflito entre eles evolui ao longo da história? Essa relação é o verdadeiro motor da trama? Aponte a força dessa dinâmica e como ela poderia ser ainda mais explorada para aumentar a tensão e o significado temático da história.
+
+**Em seguida, para cada personagem principal (protagonista e antagonista), forneça a seguinte análise crítica:**
 1.  **Análise Geral**: Resuma o papel do personagem na história, avaliando sua eficácia em cumprir essa função.
 2.  **Perfil Psicológico**: Vá além da superfície. Analise as possíveis contradições, complexidades e falhas no perfil psicológico apresentado.
 3.  **Forças**: Liste as qualidades do personagem, mas questione se elas são usadas de forma interessante ou se o tornam previsível.
