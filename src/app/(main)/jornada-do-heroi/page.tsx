@@ -110,7 +110,7 @@ export default function JornadaDoHeroiPage() {
         </Button>
       </header>
       
-      <Alert variant="destructive">
+      <Alert variant="warning">
         <AlertTriangle className="h-4 w-4" />
         <AlertTitle>Aviso de IA</AlertTitle>
         <AlertDescription>

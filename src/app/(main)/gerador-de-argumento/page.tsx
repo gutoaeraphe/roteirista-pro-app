@@ -481,7 +481,7 @@ export default function GeradorDeArgumentoPage() {
         <p className="text-muted-foreground">Um guia estruturado para auxiliar você na criação da base de sua história.</p>
       </header>
 
-      <Alert variant="destructive">
+      <Alert variant="warning">
         <AlertTriangle className="h-4 w-4" />
         <AlertTitle>Aviso de IA</AlertTitle>
         <AlertDescription>
