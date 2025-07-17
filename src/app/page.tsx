@@ -199,6 +199,13 @@ export default function LandingPage() {
                               <Button type="submit" className="w-full" disabled={loading || authLoading}><Mail className="mr-2 h-4 w-4"/> Entrar com E-mail</Button>
                           </form>
                         </Form>
+                         <div className="text-center mt-4">
+                            <Button variant="link" asChild className="text-xs">
+                                <Link href="/recuperar-senha">
+                                    Esqueci minha senha
+                                </Link>
+                            </Button>
+                        </div>
                     </TabsContent>
                     <TabsContent value="signup" className="pt-4">
                         <Form {...signupForm}>
