@@ -14,7 +14,6 @@ import { Sparkles, CheckCircle2, XCircle, Users, AlertCircle, Award, AlertTriang
 import { Badge } from "@/components/ui/badge";
 import type { AnalyzeScriptRepresentationOutput } from "@/ai/flows/analyze-script-representation";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
@@ -107,7 +106,6 @@ const TestResultSkeleton = () => (
 
 export default function TesteDeRepresentatividadePage() {
     const { activeScript, updateScript } = useScript();
-    const { userProfile, updateUserProfile } = useAuth();
     const [loading, setLoading] = useState(false);
     const [analysisResult, setAnalysisResult] = useState<AnalyzeScriptRepresentationOutput | undefined>(
       activeScript?.analysis.representation
@@ -119,21 +117,13 @@ export default function TesteDeRepresentatividadePage() {
         toast({ title: "Erro", description: "Nenhum roteiro ativo selecionado.", variant: "destructive" });
         return;
       }
-      if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
-        toast({ title: "Créditos Insuficientes", description: "Você precisa de créditos para realizar esta análise.", variant: "destructive" });
-        return;
-      }
       setLoading(true);
       try {
         const result = await analyzeScriptRepresentation({ scriptContent: activeScript.content });
         setAnalysisResult(result);
         updateScript({ ...activeScript, analysis: { ...activeScript.analysis, representation: result } });
         
-        if (!userProfile?.isAdmin) {
-          await updateUserProfile({ credits: (userProfile?.credits ?? 0) - 1 });
-        }
-
-        toast({ title: "Análise Concluída", description: "O teste de representatividade foi concluído. 1 crédito foi consumido." });
+        toast({ title: "Análise Concluída", description: "O teste de representatividade foi concluído." });
       } catch (error) {
         console.error(error);
         toast({ title: "Erro na Análise", description: "Não foi possível realizar o teste.", variant: "destructive" });
@@ -189,10 +179,6 @@ ${formatTestResult(analysisResult.duVernayTest)}
       return <PagePlaceholder title="Teste de Representatividade" description="Para avaliar a diversidade do seu roteiro, primeiro selecione um roteiro ativo." />;
     }
 
-    if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
-      return <NoCreditsPlaceholder title="Teste de Representatividade" />;
-    }
-
   return (
     <div className="space-y-8">
       <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -205,7 +191,7 @@ ${formatTestResult(analysisResult.duVernayTest)}
                 <Download className="mr-2 h-4 w-4" /> Baixar TXT
             </Button>
             <Button onClick={handleAnalysis} disabled={loading}>
-                {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar (-1 crédito)" : "Analisar (-1 crédito)"}
+                {loading ? "Analisando..." : hasBeenAnalyzed ? "Analisar Novamente" : "Analisar"}
                 <Sparkles className="ml-2 h-4 w-4" />
             </Button>
         </div>

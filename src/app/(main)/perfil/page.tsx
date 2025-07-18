@@ -264,7 +264,7 @@ export default function PerfilPage() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
                 <AlertDialogDescription>
-                   Esta ação não pode ser desfeita. Isso irá excluir permanentemente sua conta, junto com todos os seus roteiros, análises e créditos restantes.
+                   Esta ação não pode ser desfeita. Isso irá excluir permanentemente sua conta, junto com todos os seus roteiros e análises.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

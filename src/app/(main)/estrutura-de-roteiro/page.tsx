@@ -16,7 +16,6 @@ import type { AnalyzeScriptStructureOutput, Metric, DramaticElement } from "@/ai
 import { StructureRadarChart } from "@/components/charts/structure-radar-chart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Clapperboard } from "lucide-react";
-import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 
 const MetricCard = ({ title, metric, icon: Icon }: { title: string; metric: Metric; icon: React.ElementType }) => (
     <Card>
@@ -56,7 +55,6 @@ const DramaticElementCard = ({ element }: { element: DramaticElement }) => (
 
 export default function EstruturaDeRoteiroPage() {
   const { activeScript, updateScript } = useScript();
-  const { userProfile, updateUserProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalyzeScriptStructureOutput | undefined>(
     activeScript?.analysis.structure
@@ -68,10 +66,6 @@ export default function EstruturaDeRoteiroPage() {
       toast({ title: "Erro", description: "Nenhum roteiro ativo selecionado.", variant: "destructive" });
       return;
     }
-    if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
-      toast({ title: "Créditos Insuficientes", description: "Você precisa de créditos para realizar esta análise.", variant: "destructive" });
-      return;
-    }
 
     setLoading(true);
     setAnalysisResult(undefined);
@@ -80,11 +74,7 @@ export default function EstruturaDeRoteiroPage() {
       setAnalysisResult(result);
       updateScript({ ...activeScript, analysis: { ...activeScript.analysis, structure: result } });
       
-      if (!userProfile?.isAdmin) {
-          await updateUserProfile({ credits: (userProfile?.credits ?? 0) - 1 });
-      }
-
-      toast({ title: "Análise Concluída", description: "A análise da estrutura do roteiro foi gerada. 1 crédito foi consumido." });
+      toast({ title: "Análise Concluída", description: "A análise da estrutura do roteiro foi gerada." });
     } catch (error) {
       console.error(error);
       toast({ title: "Erro na Análise", description: "Não foi possível analisar a estrutura. Tente novamente.", variant: "destructive" });
@@ -164,10 +154,6 @@ export default function EstruturaDeRoteiroPage() {
   if (!activeScript) {
     return <PagePlaceholder title="Estrutura de Roteiro" description="Para analisar a estrutura do seu roteiro, primeiro selecione um roteiro ativo." />;
   }
-  
-  if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
-    return <NoCreditsPlaceholder title="Estrutura de Roteiro" />;
-  }
 
   return (
     <div className="space-y-8">
@@ -181,7 +167,7 @@ export default function EstruturaDeRoteiroPage() {
                 <Download className="mr-2 h-4 w-4" /> Baixar TXT
             </Button>
             <Button onClick={handleAnalysis} disabled={loading}>
-            {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Estrutura (-1 crédito)" : "Analisar Estrutura (-1 crédito)"}
+            {loading ? "Analisando..." : hasBeenAnalyzed ? "Analisar Novamente" : "Analisar Estrutura"}
             <Sparkles className="ml-2 h-4 w-4" />
             </Button>
         </div>

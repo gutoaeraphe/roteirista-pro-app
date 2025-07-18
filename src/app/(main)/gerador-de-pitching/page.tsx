@@ -13,7 +13,6 @@ import { PagePlaceholder } from "@/components/layout/page-placeholder";
 import { Sparkles, Copy, FileText, Target, Milestone, Users, Palette, BarChart3, TrendingUp, Handshake, Rocket, AlertTriangle, Download } from "lucide-react";
 import type { GeneratePitchingDocumentOutput } from "@/ai/flows/generate-pitching-document";
 import ReactMarkdown from 'react-markdown';
-import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const InfoCard = ({ title, content, icon: Icon, className }: { title: string; content: string; icon: React.ElementType; className?: string }) => (
@@ -38,7 +37,6 @@ const InfoCardSkeleton = () => (
 
 export default function GeradorDePitchingPage() {
   const { activeScript, updateScript } = useScript();
-  const { userProfile, updateUserProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [document, setDocument] = useState<GeneratePitchingDocumentOutput | undefined>(
     activeScript?.analysis.pitchingDocument
@@ -50,11 +48,6 @@ export default function GeradorDePitchingPage() {
       toast({ title: "Erro", description: "Por favor, selecione um roteiro ativo antes de gerar o documento.", variant: "destructive" });
       return;
     }
-     if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
-      toast({ title: "Créditos Insuficientes", description: "Você precisa de créditos para realizar esta análise.", variant: "destructive" });
-      return;
-    }
-
     setLoading(true);
     setDocument(undefined);
     try {
@@ -66,11 +59,7 @@ export default function GeradorDePitchingPage() {
       setDocument(result);
       updateScript({ ...activeScript, analysis: { ...activeScript.analysis, pitchingDocument: result } });
       
-      if (!userProfile?.isAdmin) {
-        await updateUserProfile({ credits: (userProfile?.credits ?? 0) - 1 });
-      }
-
-      toast({ title: "Documento Gerado", description: "Seu documento de pitching está pronto. 1 crédito foi consumido." });
+      toast({ title: "Documento Gerado", description: "Seu documento de pitching está pronto." });
     } catch (error) {
       console.error(error);
       toast({ title: "Erro na Geração", description: "Não foi possível gerar o documento.", variant: "destructive" });
@@ -150,10 +139,6 @@ ${docData.marketingPotential}
     return <PagePlaceholder title="Gerador de Pitching" description="Para criar um documento de pitching, primeiro selecione um roteiro ativo." />;
   }
 
-  if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
-    return <NoCreditsPlaceholder title="Gerador de Pitching" />;
-  }
-
   const currentDocument = document || activeScript?.analysis.pitchingDocument;
 
   return (
@@ -171,7 +156,7 @@ ${docData.marketingPotential}
                 <Download className="mr-2 h-4 w-4" /> Baixar TXT
             </Button>
             <Button onClick={handleGeneration} disabled={loading}>
-                {loading ? "Gerando..." : hasBeenGenerated ? "Gerar Novamente (-1 crédito)" : "Gerar Documento (-1 crédito)"}
+                {loading ? "Gerando..." : hasBeenGenerated ? "Gerar Novamente" : "Gerar Documento"}
                 <Sparkles className="ml-2 h-4 w-4" />
             </Button>
         </div>

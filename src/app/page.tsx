@@ -10,7 +10,7 @@ import { auth, googleProvider, handleEmailSignUp } from '@/lib/firebase';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Clapperboard, Mail, KeyRound, User, UserPlus, BrainCircuit, GitCommitHorizontal, BarChart3, Scale, Lightbulb, Presentation, Stethoscope, PenSquare, Youtube, CheckCircle, Star, Sparkles, Building, School, Rocket } from 'lucide-react';
+import { Clapperboard, Mail, KeyRound, User, UserPlus, BrainCircuit, GitCommitHorizontal, BarChart3, Scale, Lightbulb, Presentation, Stethoscope, PenSquare, Youtube, Rocket } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,12 +53,12 @@ const advantages = [
 
 const faqItems = [
     {
-        question: "Como funciona o sistema de créditos?",
-        answer: "É simples: 1 crédito equivale a 1 análise completa (Estrutura, Jornada do Herói, Personagens, etc.). Para o Script Doctor, 1 crédito desbloqueia um pacote de 20 mensagens para você usar no chat com a IA. Você pode comprar pacotes de créditos para usar como precisar."
+        question: "Como funciona o Roteirista Pro?",
+        answer: "É simples: você sobe seu roteiro em formato .txt e utiliza nossas ferramentas de IA para receber análises detalhadas sobre estrutura, personagens, potencial de mercado e muito mais. Você também pode usar nossas ferramentas criativas, como o Gerador de Argumento, para começar uma nova história do zero."
     },
     {
-        question: "Preciso pagar para testar a plataforma?",
-        answer: "Não! Ao criar sua conta, você ganha 3 créditos gratuitos para testar todas as funcionalidades da plataforma imediatamente. Queremos que você experimente o poder do Roteirista Pro sem nenhum compromisso inicial."
+        question: "Preciso pagar para usar a plataforma?",
+        answer: "Não! O uso da plataforma é totalmente gratuito e ilimitado. Queremos que você experimente todo o poder do Roteirista Pro sem barreiras."
     },
     {
         question: "Meus roteiros e ideias estão seguros?",
@@ -68,31 +68,6 @@ const faqItems = [
         question: "O Roteirista Pro substitui um roteirista humano?",
         answer: "De forma alguma. O Roteirista Pro é o seu copiloto criativo. Ele foi projetado para potencializar seu talento, automatizar análises complexas, gerar insights e ajudar a superar bloqueios, mas a genialidade, a emoção e a voz da história serão sempre suas."
     }
-];
-
-const creditPackages = [
-    {
-        name: "Pacote Básico",
-        credits: 10,
-        price: "19,90",
-        description: "Ideal para análises pontuais em seus projetos.",
-        features: ["10 créditos de análise", "Acesso a todas as ferramentas"],
-    },
-    {
-        name: "Pacote Creator",
-        credits: 25,
-        price: "39,90",
-        description: "O mais popular para roteiristas ativos.",
-        features: ["25 créditos de análise", "Melhor custo-benefício", "Acesso a todas as ferramentas"],
-        isPopular: true,
-    },
-    {
-        name: "Pacote Pro",
-        credits: 50,
-        price: "69,90",
-        description: "Perfeito para uso intensivo e múltiplos projetos.",
-        features: ["50 créditos de análise", "O menor preço por crédito", "Acesso a todas as ferramentas"],
-    },
 ];
 
 export default function LandingPage() {
@@ -178,7 +153,7 @@ export default function LandingPage() {
           <div className="space-y-6">
             <Image src="/logo.png" alt="Roteirista Pro" width={400} height={100} className="w-64 md:w-96 h-auto" />
             <p className="text-xl md:text-2xl text-muted-foreground font-body">Sua sala de roteiristas com inteligência artificial.</p>
-            <p className="font-body">Sua história tem potencial. Nossa IA tem as ferramentas. Obtenha análises instantâneas de estrutura, mercado e personagens para transformar sua visão em um roteiro pronto para produção. **Comece gratuitamente e receba 3 créditos para destravar seu próximo grande projeto.**</p>
+            <p className="font-body">Sua história tem potencial. Nossa IA tem as ferramentas. Obtenha análises instantâneas de estrutura, mercado e personagens para transformar sua visão em um roteiro pronto para produção. **Crie sua conta e comece a usar gratuitamente.**</p>
           </div>
           <div>
             <Card className="w-full max-w-md mx-auto">
@@ -301,7 +276,7 @@ export default function LandingPage() {
           <h2 className="text-3xl md:text-4xl font-headline mb-4">Pronto para Elevar seu Roteiro?</h2>
           <p className="text-lg text-accent-foreground/80 mb-8 max-w-3xl mx-auto">
             Chega de incertezas. Valide suas ideias, aprimore sua estrutura e ganhe a confiança para levar seu projeto ao próximo nível. 
-            **Cadastre-se agora e ganhe 3 créditos gratuitos** para testar todas as nossas ferramentas de IA.
+            **Cadastre-se agora e comece a usar gratuitamente.**
           </p>
           <Button asChild size="lg" variant="secondary" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
             <a href="#inicio">Criar Minha Conta Gratuita</a>
@@ -327,59 +302,7 @@ export default function LandingPage() {
             </div>
         </div>
       </section>
-
-      {/* Pricing Section */}
-       <section id="precos" className="py-20">
-        <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-headline mb-4">Planos Simples e Flexíveis</h2>
-            <p className="text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">
-                Use seus créditos como quiser. Cada análise completa custa 1 crédito. Sem mensalidades, sem compromisso.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {creditPackages.map(pkg => (
-                    <Card key={pkg.name} className={`relative flex flex-col ${pkg.isPopular ? 'border-primary ring-2 ring-primary' : ''}`}>
-                         {pkg.isPopular && <div className="absolute top-0 right-4 -mt-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1"><Star className="w-4 h-4" /> Mais Popular</div>}
-                        <CardHeader>
-                            <CardTitle>{pkg.name}</CardTitle>
-                            <CardDescription>{pkg.description}</CardDescription>
-                             <div className="text-4xl font-bold pt-4">R$ {pkg.price}</div>
-                             <p className="text-lg text-primary font-semibold flex items-center justify-center gap-2"><Sparkles className="w-5 h-5"/> {pkg.credits} Créditos</p>
-                        </CardHeader>
-                        <CardContent className="flex-grow">
-                            <ul className="space-y-2">
-                                {pkg.features.map(feature => (
-                                    <li key={feature} className="flex items-center gap-2 text-sm">
-                                        <CheckCircle className="w-4 h-4 text-green-500" />
-                                        <span className="text-muted-foreground">{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                        <CardFooter>
-                            <Button className="w-full" onClick={() => router.push('/comprar-creditos')} variant={pkg.isPopular ? 'default' : 'secondary'}>
-                                Comprar Agora
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                ))}
-            </div>
-             <Card className="mt-12 max-w-4xl mx-auto text-center border-dashed">
-                <CardHeader>
-                    <CardTitle className="flex items-center justify-center gap-3"><Building/><School/> Pacotes para Produtoras e Escolas</CardTitle>
-                    <CardDescription>Precisa de um volume maior de créditos ou uma solução personalizada para sua equipe?</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground mb-4">Oferecemos planos corporativos flexíveis para produtoras, emissoras, escolas de cinema e grandes equipes. Entre em contato para uma proposta personalizada de acordo com a sua necessidade.</p>
-                    <a href="mailto:atendimento@cmkfilmes.com">
-                        <Button variant="outline">
-                            <Mail className="mr-2 h-4 w-4"/> Fale Conosco
-                        </Button>
-                    </a>
-                </CardContent>
-            </Card>
-        </div>
-      </section>
-
+      
       {/* Book Section */}
       <section id="livro" className="py-20">
         <div className="container mx-auto px-4">

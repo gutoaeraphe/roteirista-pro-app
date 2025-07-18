@@ -1,3 +1,4 @@
+
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
@@ -39,8 +40,6 @@ export const handleEmailSignUp = async (name: string, email: string, password: s
       email: user.email,
       name: name,
       photoURL: user.photoURL || '',
-      credits: 3,
-      scriptDoctorMessagesRemaining: 0,
       isAdmin: ADMIN_EMAILS.includes(email),
   });
 

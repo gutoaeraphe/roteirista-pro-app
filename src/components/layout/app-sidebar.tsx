@@ -167,25 +167,18 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
     return "?";
   }
 
-  const hasCredits = userProfile?.isAdmin || (userProfile?.credits ?? 0) > 0;
-  const hasMessages = userProfile?.isAdmin || (userProfile?.scriptDoctorMessagesRemaining ?? 0) > 0;
   const isAnalysisToolDisabled = !activeScript;
-  const isScriptDoctorDisabled = !activeScript || (!hasMessages && !hasCredits);
-  const isPitchingDisabled = !activeScript || !hasCredits;
 
   const getIsDisabled = (href: string) => {
-    if (userProfile?.isAdmin) return false;
     switch(href) {
         case '/estrutura-de-roteiro':
         case '/jornada-do-heroi':
         case '/analise-de-personagens':
         case '/teste-de-representatividade':
         case '/analise-de-mercado':
-            return isAnalysisToolDisabled || !hasCredits;
         case '/script-doctor':
-            return isScriptDoctorDisabled;
         case '/gerador-de-pitching':
-            return isPitchingDisabled;
+            return isAnalysisToolDisabled;
         case '/gerador-de-argumento':
              return false; // Sempre habilitado
         default:
@@ -252,16 +245,6 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
                     {item.title}
                 </NavLink>
             ))}
-             {!userProfile?.isAdmin && (
-                <div className="px-3 py-2">
-                  <Button asChild className="w-full animate-pulse">
-                    <Link href="/comprar-creditos">
-                        <CreditCard className="mr-2 h-4 w-4" />
-                        Comprar Créditos
-                    </Link>
-                  </Button>
-                </div>
-            )}
              {userProfile?.isAdmin && (
                 <div className="my-2">
                     <h3 className="mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase">Admin</h3>
@@ -308,15 +291,10 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
                     <div className="flex-1 text-left overflow-hidden">
                       <p className="text-sm font-medium truncate">{user.displayName || user.email}</p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        {userProfile.isAdmin ? (
+                        {userProfile.isAdmin && (
                           <>
                            <Crown className="w-3 h-3 text-amber-400" /> 
                            <span>Admin</span>
-                          </>
-                        ) : (
-                          <>
-                            <CreditCard className="w-3 h-3" />
-                            <span>{userProfile.credits} créditos</span>
                           </>
                         )}
                       </div>
@@ -330,12 +308,6 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
                   <Link href="/perfil">
                     <UserCircle className="mr-2 h-4 w-4" />
                     <span>Gerenciar Perfil</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/comprar-creditos">
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    <span>Comprar Créditos</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

@@ -11,36 +11,25 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { scriptDoctorConsultant } from "@/ai/flows/script-doctor-consultant";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Stethoscope, Send, User, Bot, Sparkles, CreditCard, AlertCircle, AlertTriangle } from "lucide-react";
+import { Stethoscope, Send, User, Bot, Sparkles, AlertTriangle } from "lucide-react";
 import { ChatMessage } from "@/lib/types";
-import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
-import Link from "next/link";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 
 export default function ScriptDoctorPage() {
   const { activeScript, updateScript } = useScript();
-  const { userProfile, updateUserProfile } = useAuth();
+  const { userProfile } = useAuth();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
-  const [showCreditDialog, setShowCreditDialog] = useState(false);
   const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     if (activeScript) {
         setChatHistory(activeScript.analysis.scriptDoctor || []);
+    } else {
+        setChatHistory([]);
     }
   }, [activeScript]);
 
@@ -49,34 +38,6 @@ export default function ScriptDoctorPage() {
         scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [chatHistory, loading]);
-
-  const hasMessages = userProfile?.isAdmin || (userProfile?.scriptDoctorMessagesRemaining ?? 0) > 0;
-  const hasCredits = userProfile?.isAdmin || (userProfile?.credits ?? 0) > 0;
-
-  const handleActivateSession = async () => {
-    if (!userProfile) return;
-
-    if (!hasCredits) {
-      toast({
-        title: "Créditos Insuficientes",
-        description: "Você não tem créditos para iniciar uma nova sessão.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    await updateUserProfile({
-      credits: (userProfile.credits ?? 0) - 1,
-      scriptDoctorMessagesRemaining: (userProfile.scriptDoctorMessagesRemaining ?? 0) + 20
-    });
-    
-    toast({
-      title: "Sessão Ativada!",
-      description: "Você tem 20 novas mensagens para usar com o Script Doctor. 1 crédito foi consumido."
-    });
-    
-    setShowCreditDialog(false);
-  };
 
   const handleQuery = async () => {
     if (!activeScript) {
@@ -88,10 +49,6 @@ export default function ScriptDoctorPage() {
       return;
     }
     if (!userProfile) return;
-    if (!hasMessages) {
-        setShowCreditDialog(true);
-        return;
-    }
 
     const userMessage: ChatMessage = { role: 'user', content: query };
     const newHistory = [...chatHistory, userMessage];
@@ -100,8 +57,6 @@ export default function ScriptDoctorPage() {
     setLoading(true);
 
     try {
-      await updateUserProfile({ scriptDoctorMessagesRemaining: (userProfile.scriptDoctorMessagesRemaining ?? 0) - 1 });
-
       const result = await scriptDoctorConsultant({ scriptContent: activeScript.content, query });
       const aiMessage: ChatMessage = { role: 'assistant', content: result.feedback };
       const finalHistory = [...newHistory, aiMessage];
@@ -136,12 +91,7 @@ export default function ScriptDoctorPage() {
     return <PagePlaceholder title="Script Doctor" description="Para conversar com o consultor de IA, primeiro selecione um roteiro ativo." />;
   }
   
-  if (!userProfile?.isAdmin && !hasCredits && !hasMessages) {
-    return <NoCreditsPlaceholder title="Script Doctor" />;
-  }
-
   return (
-    <>
     <div className="space-y-8">
       <header>
         <h1 className="text-3xl font-headline font-bold">Script Doctor</h1>
@@ -164,13 +114,10 @@ export default function ScriptDoctorPage() {
                 <Stethoscope />
                 Sessão para: <span className="text-primary">{activeScript.name}</span>
               </CardTitle>
-              <CardDescription>
-                {userProfile?.isAdmin ? "Acesso ilimitado como Admin." : `Você tem ${userProfile?.scriptDoctorMessagesRemaining || 0} mensagens restantes.`}
-              </CardDescription>
+               <CardDescription>
+                 Converse com a IA para aprimorar seu roteiro.
+               </CardDescription>
             </div>
-            {!hasMessages && hasCredits && (
-              <Button onClick={() => setShowCreditDialog(true)}>Ativar Sessão (-1 crédito)</Button>
-            )}
           </div>
         </CardHeader>
         <CardContent className="flex-1 overflow-hidden">
@@ -206,7 +153,7 @@ export default function ScriptDoctorPage() {
         <CardFooter>
           <div className="flex w-full items-center space-x-2">
             <Textarea
-              placeholder={hasMessages ? "Digite sua pergunta aqui..." : "Ative uma sessão para enviar mensagens."}
+              placeholder={"Digite sua pergunta aqui..."}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -217,36 +164,14 @@ export default function ScriptDoctorPage() {
               }}
               rows={1}
               className="min-h-0"
-              disabled={loading || !hasMessages}
+              disabled={loading}
             />
-            <Button onClick={handleQuery} disabled={loading || !hasMessages}>
+            <Button onClick={handleQuery} disabled={loading}>
               <Send className="h-4 w-4" />
             </Button>
           </div>
         </CardFooter>
       </Card>
     </div>
-    
-     <AlertDialog open={showCreditDialog} onOpenChange={setShowCreditDialog}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2">
-              <AlertCircle className="text-amber-500"/>
-              Ativar Sessão do Script Doctor?
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            Você não tem mais mensagens para usar no chat. Deseja usar 1 crédito para obter mais 20 mensagens?
-            Seu saldo atual é de {userProfile?.credits || 0} créditos.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={handleActivateSession} disabled={!hasCredits}>
-             Sim, usar 1 crédito
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-    </>
   );
 }

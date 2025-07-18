@@ -1,3 +1,4 @@
+
 import type {
   AnalyzeScriptStructureOutput,
 } from '@/ai/flows/analyze-script-structure';
@@ -22,8 +23,6 @@ export type UserProfile = {
     email: string | null;
     name: string | null;
     photoURL?: string;
-    credits: number;
-    scriptDoctorMessagesRemaining: number;
     isAdmin: boolean;
 };
 

@@ -7,7 +7,6 @@ import { onAuthStateChanged, type User } from 'firebase/auth';
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { usePathname } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -25,7 +24,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -48,17 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribeSnapshot = onSnapshot(userDocRef, (docSnap) => {
       if (docSnap.exists()) {
         const newProfile = docSnap.data() as UserProfile;
-        
-        setUserProfile(currentProfile => {
-          // Se a compra foi bem-sucedida, mostre um toast na atualização de créditos
-          if (pathname === '/compra-sucesso' && currentProfile && newProfile.credits > currentProfile.credits) {
-             toast({
-                title: "Créditos Adicionados!",
-                description: `Seu novo saldo é de ${newProfile.credits} créditos.`,
-             });
-          }
-          return newProfile;
-        });
+        setUserProfile(newProfile);
 
       } else {
         const newUserProfile: UserProfile = {
@@ -66,8 +54,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           email: user.email,
           name: user.displayName,
           photoURL: user.photoURL || '',
-          credits: 3, // Novos usuários começam com 3 créditos
-          scriptDoctorMessagesRemaining: 0,
           isAdmin: ADMIN_EMAILS.includes(user.email || ''),
         };
         setDoc(userDocRef, newUserProfile).then(() => {
@@ -81,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => unsubscribeSnapshot();
-  }, [user, toast, pathname]);
+  }, [user]);
 
   const updateUserProfile = useCallback(async (data: Partial<UserProfile>) => {
     if (!user) {

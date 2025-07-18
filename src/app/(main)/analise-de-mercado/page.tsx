@@ -13,7 +13,6 @@ import { analyzeScriptStructure } from "@/ai/flows/analyze-script-structure";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
 import { Sparkles, Target, TrendingUp, Lightbulb, BookCopy, Tv, BarChartBig, Users, Briefcase, Gift, Globe, Shuffle, AlertTriangle, Download } from "lucide-react";
 import type { AnalyzeScriptMarketOutput } from "@/ai/flows/analyze-script-market";
-import { NoCreditsPlaceholder } from "@/components/layout/no-credits-placeholder";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const InfoCard = ({ title, content, icon: Icon }: { title: string; content: string; icon: React.ElementType }) => (
@@ -36,7 +35,7 @@ const InfoCardSkeleton = () => (
 
 export default function AnaliseDeMercadoPage() {
     const { activeScript, updateScript } = useScript();
-    const { userProfile, updateUserProfile } = useAuth();
+    const { userProfile } = useAuth();
     const [loading, setLoading] = useState(false);
     const [analysisResult, setAnalysisResult] = useState<AnalyzeScriptMarketOutput | undefined>(
       activeScript?.analysis.market
@@ -46,10 +45,6 @@ export default function AnaliseDeMercadoPage() {
     const handleAnalysis = async () => {
       if (!activeScript) {
         toast({ title: "Erro", description: "Nenhum roteiro ativo selecionado.", variant: "destructive" });
-        return;
-      }
-      if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
-        toast({ title: "Créditos Insuficientes", description: "Você precisa de créditos para realizar esta análise.", variant: "destructive" });
         return;
       }
 
@@ -72,11 +67,7 @@ export default function AnaliseDeMercadoPage() {
         scriptToUpdate.analysis.market = result;
         updateScript(scriptToUpdate);
         
-        if (!userProfile?.isAdmin) {
-            await updateUserProfile({ credits: (userProfile?.credits ?? 0) - 1 });
-        }
-
-        toast({ title: "Análise Concluída", description: "A análise de mercado foi gerada e salva. 1 crédito foi consumido." });
+        toast({ title: "Análise Concluída", description: "A análise de mercado foi gerada e salva." });
 
       } catch (error) {
         console.error(error);
@@ -150,10 +141,6 @@ ${rest.distributionChannels}
       return <PagePlaceholder title="Análise de Mercado" description="Para analisar o potencial de mercado do seu roteiro, primeiro selecione um roteiro ativo." />;
     }
 
-    if (!userProfile?.isAdmin && (userProfile?.credits ?? 0) <= 0) {
-        return <NoCreditsPlaceholder title="Análise de Mercado" />;
-    }
-
   return (
     <div className="space-y-8">
       <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -166,7 +153,7 @@ ${rest.distributionChannels}
                 <Download className="mr-2 h-4 w-4" /> Baixar TXT
             </Button>
             <Button onClick={handleAnalysis} disabled={loading}>
-              {loading ? "Analisando..." : hasBeenAnalyzed ? "Reanalisar Mercado (-1 crédito)" : "Analisar Mercado (-1 crédito)"}
+              {loading ? "Analisando..." : hasBeenAnalyzed ? "Analisar Novamente" : "Analisar Mercado"}
               <Sparkles className="ml-2 h-4 w-4" />
             </Button>
         </div>

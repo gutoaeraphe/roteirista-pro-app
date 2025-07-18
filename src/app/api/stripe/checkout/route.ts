@@ -1,49 +1,9 @@
 
+// This API route is deprecated and no longer in use.
+// The payment logic has been migrated to use Stripe Payment Links directly on the client-side.
+// This file is kept for historical reference but can be safely removed.
 import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-});
-
-// Este endpoint não é mais utilizado pela página de compra de créditos,
-// mas é mantido para referência ou uso futuro.
-// A lógica foi movida para usar Links de Pagamento diretamente no frontend.
 export async function POST(request: Request) {
-  try {
-    const { priceId, userId } = await request.json();
-
-    if (!priceId || !userId) {
-      return NextResponse.json({ error: 'ID do Preço e ID do Usuário são obrigatórios.' }, { status: 400 });
-    }
-
-    const YOUR_DOMAIN = process.env.NEXT_PUBLIC_DOMAIN_URL || 'http://localhost:3000';
-    const SUCCESS_URL = "https://roteiristapro.com/painel-de-roteiros";
-
-    const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: SUCCESS_URL,
-      cancel_url: `${YOUR_DOMAIN}/comprar-creditos`, // Redireciona de volta para a página de compra
-      client_reference_id: userId, // Passa o UID do usuário do Firebase
-      metadata: {
-        userId: userId,
-      }
-    });
-
-    if (!session.id) {
-        throw new Error('Não foi possível criar a sessão do Stripe.');
-    }
-    
-    return NextResponse.json({ sessionId: session.id });
-
-  } catch (err: any) {
-    console.error('Erro ao criar sessão de checkout do Stripe:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
-  }
+  return NextResponse.json({ error: 'This endpoint is deprecated.' }, { status: 410 });
 }

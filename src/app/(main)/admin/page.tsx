@@ -34,7 +34,6 @@ export default function AdminPage() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [creditsToUpdate, setCreditsToUpdate] = useState<{ [uid: string]: number | string }>({});
   const { toast } = useToast();
   const [stats, setStats] = useState({ totalScripts: 0, totalAnalyses: 0 });
 
@@ -83,35 +82,6 @@ export default function AdminPage() {
     }
   }, [userProfile, toast]);
 
-  const handleCreditChange = (uid: string, value: string) => {
-    const numericValue = value === '' ? '' : parseInt(value, 10);
-    if (!isNaN(numericValue) || value === '') {
-        setCreditsToUpdate(prev => ({ ...prev, [uid]: numericValue }));
-    }
-  };
-
-  const handleUpdateCredits = async (uid: string) => {
-    const newCredits = creditsToUpdate[uid];
-    if (typeof newCredits !== 'number' || newCredits < 0) {
-      toast({ title: "Valor Inválido", description: "Por favor, insira um número de créditos válido.", variant: "destructive" });
-      return;
-    }
-    
-    try {
-      const userDocRef = doc(db, "users", uid);
-      await updateDoc(userDocRef, { credits: newCredits });
-      setUsers(users.map(u => u.uid === uid ? { ...u, credits: newCredits } : u));
-      setCreditsToUpdate(prev => {
-        const newState = { ...prev };
-        delete newState[uid];
-        return newState;
-      });
-      toast({ title: "Sucesso!", description: "Créditos atualizados." });
-    } catch (error) {
-      console.error("Erro ao atualizar créditos:", error);
-      toast({ title: "Erro", description: "Não foi possível atualizar os créditos.", variant: "destructive" });
-    }
-  };
 
   const filteredUsers = users.filter(user =>
     user.email?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -154,7 +124,7 @@ export default function AdminPage() {
       <Card>
           <CardHeader>
               <CardTitle>Gerenciamento de Usuários</CardTitle>
-              <CardDescription>Visualize e edite os créditos de cada usuário.</CardDescription>
+              <CardDescription>Visualize os usuários cadastrados.</CardDescription>
               <div className="relative pt-4">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground mt-2" />
                   <Input 
@@ -171,8 +141,7 @@ export default function AdminPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Usuário</TableHead>
-                            <TableHead className="w-[150px]">Créditos</TableHead>
-                            <TableHead className="w-[120px]">Ações</TableHead>
+                            <TableHead>Status</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -186,24 +155,7 @@ export default function AdminPage() {
                                     {user.isAdmin ? (
                                         <span className="text-primary font-semibold">Admin</span>
                                     ) : (
-                                        <Input 
-                                            type="number" 
-                                            value={creditsToUpdate[user.uid] ?? user.credits} 
-                                            onChange={(e) => handleCreditChange(user.uid, e.target.value)}
-                                            className="h-8 w-24"
-                                        />
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    {!user.isAdmin && (
-                                        <Button 
-                                            size="sm" 
-                                            onClick={() => handleUpdateCredits(user.uid)} 
-                                            disabled={creditsToUpdate[user.uid] === undefined}
-                                        >
-                                            <Save className="mr-2 h-4 w-4"/>
-                                            Salvar
-                                        </Button>
+                                        <span className="text-muted-foreground">Usuário</span>
                                     )}
                                 </TableCell>
                             </TableRow>
