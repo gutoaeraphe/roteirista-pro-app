@@ -40,9 +40,9 @@ const faqItems = [
         answer: "Diferente das outras ferramentas, o Gerador de Argumento não precisa de um roteiro pronto. Ele é uma ferramenta de criação que guia você passo a passo (definindo tom, gênero, tema, personagens e narrativa) para construir a base de uma nova história do zero, compilando tudo em um argumento final."
     },
     {
-        question: "O que é a Masterclass?",
-        answer: "A Masterclass é uma área de aprendizado contínuo. Ela exibe uma playlist de vídeos selecionados do YouTube sobre roteiro e produção audiovisual. Você pode assistir aos vídeos e navegar pela playlist diretamente dentro do aplicativo."
-    }
+        question: "Como funciona o Teste de Público?",
+        answer: "Esta ferramenta permite que você simule a reação de um espectador ao seu roteiro. Primeiro, você descreve seu público-alvo. Com base nisso, a IA cria uma persona fictícia detalhada. Em seguida, essa persona 'lê' seu roteiro ativo e fornece uma análise crítica do ponto de vista dela, avaliando a trama, os personagens e os diálogos."
+    },
 ];
 
 export default function AjudaPage() {
