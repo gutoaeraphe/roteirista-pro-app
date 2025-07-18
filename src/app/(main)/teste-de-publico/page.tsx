@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, User, BrainCircuit, Bot, FileText, AlertTriangle, Download, ChevronRight } from "lucide-react";
+import { Sparkles, User, BrainCircuit, Bot, FileText, AlertTriangle, Download, ChevronRight, RefreshCw } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,17 +32,6 @@ type AudienceAnalysis = {
     persona: GenerateAudiencePersonaOutput;
     analysis: AnalyzeScriptFromPersonaOutput;
 };
-
-const PersonaCard = ({ title, content, icon: Icon }: { title: string, content: string, icon: React.ElementType }) => (
-    <Card>
-        <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg"><Icon className="w-5 h-5 text-primary"/>{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{content}</p>
-        </CardContent>
-    </Card>
-);
 
 const AnalysisSection = ({ title, content }: { title: string, content: string }) => (
     <div>
@@ -124,10 +113,7 @@ export default function TesteDePublicoPage() {
         content += "==================================================\n\n";
 
         content += `# Persona: ${persona.name}\n\n`;
-        content += `## Descrição\n${persona.description}\n\n`;
-        content += `## Comportamento\n${persona.behavior}\n\n`;
-        content += `## Obstáculos\n${persona.obstacles}\n\n`;
-        content += `## Expectativas\n${persona.expectations}\n\n`;
+        content += `## Resumo da Persona\n${persona.summary}\n\n`;
 
         content += "==================================================\n";
         content += `# Análise da Persona sobre o Roteiro\n\n`;
@@ -210,10 +196,16 @@ export default function TesteDePublicoPage() {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" disabled={loading.persona || loading.analysis}>
-                                {loading.persona ? "Gerando Persona..." : "Gerar Persona com IA"}
-                                <Sparkles className="ml-2 h-4 w-4" />
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button type="submit" disabled={loading.persona || loading.analysis}>
+                                    {loading.persona ? "Gerando..." : "Gerar Persona com IA"}
+                                    <Sparkles className="ml-2 h-4 w-4" />
+                                </Button>
+                                <Button type="submit" variant="outline" disabled={loading.persona || loading.analysis} onClick={form.handleSubmit(handleGeneratePersona)}>
+                                    <RefreshCw className="mr-2 h-4 w-4" />
+                                    Refazer
+                                </Button>
+                            </div>
                         </form>
                     </Form>
                 </CardContent>
@@ -222,14 +214,14 @@ export default function TesteDePublicoPage() {
             {loading.persona && (
                  <Card>
                     <CardHeader>
-                        <Skeleton className="h-6 w-1/3" />
-                        <Skeleton className="h-4 w-2/3" />
+                        <Skeleton className="h-8 w-1/3" />
                     </CardHeader>
-                    <CardContent className="grid md:grid-cols-2 gap-4">
-                       <Skeleton className="h-48" />
-                       <Skeleton className="h-48" />
-                       <Skeleton className="h-48" />
-                       <Skeleton className="h-48" />
+                    <CardContent className="space-y-2">
+                       <Skeleton className="h-4 w-full" />
+                       <Skeleton className="h-4 w-full" />
+                       <Skeleton className="h-4 w-5/6" />
+                       <Skeleton className="h-4 w-full mt-4" />
+                       <Skeleton className="h-4 w-4/5" />
                     </CardContent>
                 </Card>
             )}
@@ -246,12 +238,14 @@ export default function TesteDePublicoPage() {
                         <div className="text-center bg-muted p-4 rounded-lg">
                             <h3 className="text-2xl font-bold text-primary">{currentPersona.name}</h3>
                         </div>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <PersonaCard title="Descrição" content={currentPersona.description} icon={FileText} />
-                            <PersonaCard title="Comportamento" content={currentPersona.behavior} icon={BrainCircuit} />
-                            <PersonaCard title="Obstáculos" content={currentPersona.obstacles} icon={AlertTriangle} />
-                            <PersonaCard title="Expectativas" content={currentPersona.expectations} icon={Sparkles} />
-                        </div>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-lg"><FileText className="w-5 h-5 text-primary"/>Resumo da Persona</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{currentPersona.summary}</p>
+                            </CardContent>
+                        </Card>
                          <div className="flex justify-center pt-4">
                             <Button onClick={handleAnalyzeFromPersona} disabled={loading.analysis || loading.persona || !!currentAnalysis?.finalVerdict}>
                                 {loading.analysis ? 'Analisando Roteiro...' : 'Analisar Roteiro com esta Persona'}
@@ -307,4 +301,3 @@ export default function TesteDePublicoPage() {
         </div>
     );
 }
-
