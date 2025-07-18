@@ -17,6 +17,13 @@ import type {
 import type {
   GeneratePitchingDocumentOutput
 } from '@/ai/flows/generate-pitching-document';
+import type {
+  GenerateAudiencePersonaOutput
+} from '@/ai/flows/generate-audience-persona';
+import type {
+    AnalyzeScriptFromPersonaOutput
+} from '@/ai/flows/analyze-script-from-persona';
+
 
 export type UserProfile = {
     uid: string;
@@ -40,6 +47,10 @@ export type Script = {
     market?: AnalyzeScriptMarketOutput;
     pitchingDocument?: GeneratePitchingDocumentOutput;
     scriptDoctor?: ChatMessage[];
+    audienceTest?: {
+        persona: GenerateAudiencePersonaOutput;
+        analysis: AnalyzeScriptFromPersonaOutput;
+    }
   };
 };
 

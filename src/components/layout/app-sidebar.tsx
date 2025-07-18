@@ -15,12 +15,12 @@ import {
   Presentation,
   PenSquare,
   HelpCircle,
-  Film,
   LogOut,
   UserCircle,
   FileText,
   Crown,
-  ShieldCheck
+  ShieldCheck,
+  UserCheck as UserCheckIcon
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -73,6 +73,11 @@ const navItems = [
         title: "Análise de Mercado",
         href: "/analise-de-mercado",
         icon: Lightbulb,
+      },
+       {
+        title: "Teste de Público",
+        href: "/teste-de-publico",
+        icon: UserCheckIcon,
       },
     ],
   },
@@ -170,6 +175,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
         case '/analise-de-mercado':
         case '/script-doctor':
         case '/gerador-de-pitching':
+        case '/teste-de-publico':
             return isAnalysisToolDisabled;
         case '/gerador-de-argumento':
              return false; // Sempre habilitado
@@ -257,7 +263,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
           <div className="p-3 rounded-lg bg-muted">
             <p className="text-xs text-muted-foreground mb-1">Roteiro Ativo</p>
             <div className="flex items-center gap-3">
-              <Film className="w-5 h-5 text-primary flex-shrink-0" />
+              <FileText className="w-5 h-5 text-primary flex-shrink-0" />
               <div className="flex-grow overflow-hidden">
                 <p className="font-semibold truncate text-sm">{activeScript.name}</p>
                 <p className="text-xs text-muted-foreground">{activeScript.format} • {activeScript.genre}</p>

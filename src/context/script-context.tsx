@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
@@ -130,6 +131,7 @@ export const ScriptProvider = ({ children }: { children: ReactNode }) => {
             setActiveScriptState(newActive);
             setActiveScriptIdInLocalStorage(newActive?.id || null);
         }
+        toast({ title: "Sucesso!", description: "Roteiro excluído." });
     } catch(error) {
         console.error("Error deleting script from Firestore", error);
         toast({ title: "Erro", description: "Não foi possível excluir o roteiro.", variant: "destructive" });
