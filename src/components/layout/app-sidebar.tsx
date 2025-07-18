@@ -2,6 +2,8 @@
 
 "use client";
 
+import React, "use client";
+
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -15,13 +17,11 @@ import {
   Stethoscope,
   Presentation,
   PenSquare,
-  Youtube,
   HelpCircle,
   Film,
   LogOut,
   UserCircle,
   FileText,
-  CreditCard,
   Crown,
   ShieldCheck
 } from "lucide-react";
@@ -102,11 +102,6 @@ const navItems = [
 ];
 
 const learnMoreItems = [
-    {
-      title: "Masterclass",
-      href: "/masterclass",
-      icon: Youtube,
-    },
     {
       title: "Ajuda",
       href: "/ajuda",
