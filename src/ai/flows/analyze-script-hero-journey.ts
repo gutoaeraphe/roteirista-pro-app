@@ -62,18 +62,19 @@ const prompt = ai.definePrompt({
 
 1.  **Análise Completa:** Analise o roteiro em busca de manifestações de **TODOS os 12 passos** da Jornada do Herói. Para cada um dos 12 passos, você deve fornecer uma análise.
 2.  **Identificação e Avaliação:** Se um passo for identificado, descreva como ele se manifesta e avalie sua eficácia. Se um passo **não for encontrado**, sua análise deve explicar a ausência e o impacto narrativo disso. Atribua uma pontuação de 0 se o passo estiver ausente.
-3.  **Avaliação Exigente:** Seja rigoroso nas pontuações. Uma nota 10 deve ser reservada para execuções exemplares. Qualquer nota 7 ou inferior exige uma sugestão de melhoria clara e construtiva.
+3.  **Avaliação Exigente:** Seja rigoroso nas pontuações. Uma nota 10 deve ser reservada para execuções exemplares.
+4.  **Sugestões Contextualizadas:** Qualquer nota 7 ou inferior exige uma sugestão de melhoria clara, construtiva e **contextualizada**. Não dê sugestões genéricas. Baseie sua sugestão nos personagens e eventos do roteiro. Por exemplo, em vez de "Torne o chamado à aventura mais forte", sugira "O chamado à aventura poderia ser mais impactante se o protagonista perdesse seu emprego *como consequência direta* da oferta misteriosa, forçando-o a aceitar o desafio".
 
 **Tarefas de Análise:**
 
 1.  **Análise Geral (overallAnalysis):**
     *   'summary': Escreva um resumo crítico sobre como a Jornada do Herói é utilizada. Aponte se a estrutura é bem-sucedida ou se parece subdesenvolvida.
     *   'score': Atribua uma nota geral de 1 a 10, refletindo a eficácia geral da estrutura.
-    *   'suggestions': Se a nota for 7 ou menos, forneça sugestões estratégicas para fortalecer a estrutura geral.
+    *   'suggestions': Se a nota for 7 ou menos, forneça sugestões estratégicas e contextualizadas para fortalecer a estrutura geral.
 
 2.  **Passos da Jornada (identifiedSteps):**
     *   Liste **TODOS os 12 passos** na ordem teórica.
-    *   Para cada passo, forneça: 'stepName', 'analysis' (crítica e concisa, explicando a presença ou ausência), 'score' (0-10), 'intensity' (0-100), e 'suggestions' (obrigatoriamente se a nota for <= 7).
+    *   Para cada passo, forneça: 'stepName', 'analysis' (crítica e concisa, explicando a presença ou ausência), 'score' (0-10), 'intensity' (0-100), e 'suggestions' (obrigatoriamente se a nota for <= 7). As sugestões devem ser específicas e acionáveis, como descrito nos princípios acima.
 
 3.  **Estrutura de 3 Atos (threeActAnalysis):**
     *   Forneça uma análise crítica e concisa de cada ato, focando em seu funcionamento (ou falhas) dentro da narrativa. Aponte problemas de ritmo, clareza e desenvolvimento.
