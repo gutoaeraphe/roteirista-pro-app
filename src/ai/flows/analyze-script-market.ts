@@ -75,17 +75,28 @@ export type AnalyzeScriptMarketOutput = z.infer<
   typeof AnalyzeScriptMarketOutputSchema
 >;
 
+// O schema de análise não tem sugestões diretas, então usaremos o output completo como base.
+// As sugestões estão implícitas nos campos como 'marketPotential' e 'marketingAndSalesPotential'.
+// Para manter a consistência, vamos criar um segundo prompt para refinar essas seções com uma temperatura mais alta.
+
+const RefinedMarketInsightsSchema = z.object({
+    marketPotential: z.string().describe('Sugestões REFINADAS e CRIATIVAS de adaptações para o mercado local.'),
+    marketingAndSalesPotential: z.string().describe('Ideias CRIATIVAS e específicas para marketing e product placement.'),
+    complementaryProducts: z.string().describe('Sugestões CRIATIVAS e com real potencial de mercado para produtos derivados.'),
+});
+
 export async function analyzeScriptMarket(
   input: AnalyzeScriptMarketInput
 ): Promise<AnalyzeScriptMarketOutput> {
   return analyzeScriptMarketFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'analyzeScriptMarketPrompt',
+const analysisPrompt = ai.definePrompt({
+  name: 'analyzeScriptMarketAnalysisPrompt',
   input: {schema: AnalyzeScriptMarketInputSchema},
   output: {schema: AnalyzeScriptMarketOutputSchema},
-  prompt: `Você é um analista de mercado e estrategista de conteúdo para um grande estúdio de cinema, com foco especial no mercado audiovisual brasileiro. Sua análise deve ser pragmática, crítica e orientada a negócios. A meta é avaliar a viabilidade comercial do projeto, identificando riscos e oportunidades de forma direta. Responda inteiramente em português.
+  config: { temperature: 0.2 },
+  prompt: `Você é um analista de mercado e estrategista de conteúdo para um grande estúdio de cinema, com foco especial no mercado audiovisual brasileiro. Sua análise deve ser pragmática, técnica e orientada a negócios. A meta é avaliar a viabilidade comercial do projeto de forma direta. Responda inteiramente em português.
 
 **Gênero:** {{{genre}}}
 **Resumo do Roteiro:** {{{scriptSummary}}}
@@ -94,16 +105,37 @@ const prompt = ai.definePrompt({
 Analise o projeto e gere insights estratégicos para cada um dos seguintes campos. Seja realista e não hesite em apontar pontos fracos.
 
 1.  **commercialPotential**: Avalie o potencial comercial de forma realista. Forneça uma 'description' que justifique a nota e os riscos, e atribua um 'score' de 1 a 10.
-2.  **targetAudience**: Descreva o público-alvo principal e secundário. Seja específico sobre nichos e o tamanho potencial desses públicos. Avalie o quão fácil ou difícil será atingi-los.
-3.  **marketPotential**: Avalie o potencial no mercado brasileiro. O tema tem apelo local? Há barreiras culturais? Sugira adaptações necessárias para aumentar a viabilidade no Brasil.
-4.  **contentTrends**: O projeto surfa uma onda ou vai na contramão das tendências? Analise os prós e contras da abordagem em relação ao momento atual do mercado.
-5.  **originalityAndDifferentiation**: Avalie a originalidade de forma crítica. É genuinamente original ou uma mistura de conceitos existentes? Quais são seus diferenciais competitivos REAIS contra outros conteúdos?
-6.  **marketingAndSalesPotential**: Descreva oportunidades de marketing e product placement. As inserções de marcas seriam orgânicas ou forçadas? Qual o apelo para patrocinadores?
-7.  **complementaryProducts**: Sugira produtos derivados com real potencial de mercado, não apenas ideias genéricas. Há uma base de fãs potencial que consumiria esses produtos?
-8.  **referenceWorks**: Liste obras de referência (filmes, séries) e use-as para fazer uma análise comparativa honesta (benchmarking). A comparação é favorável? O que se pode aprender com o sucesso ou fracasso delas?
-9.  **distributionChannels**: Recomende os canais de distribuição mais adequados e justifique com base em custos, alcance e perfil do público. Seja realista sobre as chances de uma janela de cinema, por exemplo.
+2.  **targetAudience**: Descreva o público-alvo principal e secundário.
+3.  **marketPotential**: Avalie o potencial no mercado brasileiro e as barreiras culturais.
+4.  **contentTrends**: Analise se o projeto está alinhado com as tendências atuais.
+5.  **originalityAndDifferentiation**: Avalie a originalidade e os diferenciais competitivos.
+6.  **marketingAndSalesPotential**: Descreva oportunidades de marketing e product placement de forma técnica.
+7.  **complementaryProducts**: Sugira produtos derivados com potencial de mercado.
+8.  **referenceWorks**: Liste obras de referência e faça uma análise comparativa (benchmarking).
+9.  **distributionChannels**: Recomende os canais de distribuição mais adequados e justifique.
 
-Seu tom é o de um executivo experiente apresentando uma análise interna. A clareza e a honestidade são mais importantes do que o otimismo.`,
+Seu tom é o de um executivo experiente apresentando uma análise interna. A clareza e a honestidade são mais importantes que o otimismo.`,
+});
+
+const creativeSuggestionsPrompt = ai.definePrompt({
+    name: 'generateMarketSuggestionsPrompt',
+    input: { schema: AnalyzeScriptMarketOutputSchema },
+    output: { schema: RefinedMarketInsightsSchema },
+    config: { temperature: 0.9 },
+    prompt: `Você é um estrategista de marketing de conteúdo extremamente criativo. Com base na análise de mercado técnica fornecida, sua tarefa é refinar três seções com ideias inovadoras, "fora da caixa" e específicas.
+
+**Análise Técnica para Referência:**
+\`\`\`json
+{{{json this}}}
+\`\`\`
+
+**Sua Missão Criativa:**
+
+1.  **marketPotential:** Pegue a análise de potencial de mercado e transforme-a em sugestões de adaptação *criativas* e *ousadas* para o mercado brasileiro, que talvez o analista técnico não tenha pensado.
+2.  **marketingAndSalesPotential:** Vá além do óbvio. Pense em campanhas virais, parcerias inusitadas e formas de product placement que sejam sutis e inteligentes, elevando a história.
+3.  **complementaryProducts:** Brainstorm de produtos derivados que criem um universo expandido. Pense em webséries, podcasts narrativos, jogos de realidade alternativa (ARGs) ou linhas de produtos conceituais.
+
+Seja inspirador e mostre o potencial oculto do projeto.`
 });
 
 const analyzeScriptMarketFlow = ai.defineFlow(
@@ -113,7 +145,26 @@ const analyzeScriptMarketFlow = ai.defineFlow(
     outputSchema: AnalyzeScriptMarketOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    // 1. Análise técnica com baixa temperatura
+    const { output: analysis } = await analysisPrompt(input);
+    if (!analysis) {
+        throw new Error("A fase de análise de mercado falhou.");
+    }
+
+    // 2. Geração de sugestões criativas com alta temperatura
+    const { output: suggestions } = await creativeSuggestionsPrompt(analysis);
+    if (!suggestions) {
+        throw new Error("A fase de geração de sugestões de mercado falhou.");
+    }
+
+    // 3. Combinar os resultados, substituindo os campos com as sugestões criativas
+    const finalResult: AnalyzeScriptMarketOutput = {
+      ...analysis,
+      marketPotential: suggestions.marketPotential,
+      marketingAndSalesPotential: suggestions.marketingAndSalesPotential,
+      complementaryProducts: suggestions.complementaryProducts,
+    };
+
+    return finalResult;
   }
 );

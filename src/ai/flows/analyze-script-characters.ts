@@ -63,36 +63,67 @@ export type AnalyzeScriptCharactersOutput = z.infer<
   typeof AnalyzeScriptCharactersOutputSchema
 >;
 
+const AnalysisOnlySchema = AnalyzeScriptCharactersOutputSchema.deepPartial().extend({
+    protagonistAntagonistRelationship: z.string(),
+    protagonistAnalysis: CharacterProfileSchema.omit({ improvementSuggestions: true }),
+    antagonistAnalysis: CharacterProfileSchema.omit({ improvementSuggestions: true }),
+});
+
+const SuggestionsOnlySchema = z.object({
+    protagonist: z.string().describe("Sugestões para o protagonista."),
+    antagonist: z.string().describe("Sugestões para o antagonista."),
+});
+
+
 export async function analyzeScriptCharacters(
   input: AnalyzeScriptCharactersInput
 ): Promise<AnalyzeScriptCharactersOutput> {
   return analyzeScriptCharactersFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'analyzeScriptCharactersPrompt',
+const analysisPrompt = ai.definePrompt({
+  name: 'analyzeCharactersAnalysisPrompt',
   input: {schema: AnalyzeScriptCharactersInputSchema},
-  output: {schema: AnalyzeScriptCharactersOutputSchema},
-  prompt: `Você é um consultor de roteiros e especialista em desenvolvimento de personagens. Sua análise deve ser profunda, crítica e construtiva, focada em identificar fraquezas e oportunidades de aprofundamento. Aja como um "script doctor" que não tem medo de dar feedback direto para melhorar a história. Responda inteiramente em português.
+  output: {schema: AnalysisOnlySchema},
+  config: { temperature: 0.2 },
+  prompt: `Você é um consultor de roteiros e especialista em desenvolvimento de personagens. Sua análise deve ser profunda e crítica. **NÃO GERE SUGESTÕES DE MELHORIA**. Apenas faça a análise. Responda inteiramente em português.
 
 **Primeiro e mais importante: Analise a Relação Protagonista vs. Antagonista.**
-Descreva a dinâmica central entre o protagonista e o antagonista. Eles são opostos, reflexos um do outro, ou algo mais complexo? Como o conflito entre eles evolui ao longo da história? Essa relação é o verdadeiro motor da trama? Aponte a força dessa dinâmica e como ela poderia ser ainda mais explorada para aumentar a tensão e o significado temático da história.
+Descreva a dinâmica central entre eles. Como o conflito evolui? Essa relação é o motor da trama?
 
-**Em seguida, para cada personagem principal (protagonista e antagonista), forneça a seguinte análise crítica:**
-1.  **Análise Geral**: Resuma o papel do personagem na história, avaliando sua eficácia em cumprir essa função.
-2.  **Perfil Psicológico**: Vá além da superfície. Analise as possíveis contradições, complexidades e falhas no perfil psicológico apresentado.
-3.  **Forças**: Liste as qualidades do personagem, mas questione se elas são usadas de forma interessante ou se o tornam previsível.
-4.  **Fraquezas**: Identifique as vulnerabilidades e falhas de caráter. São elas que geram conflito e humanizam o personagem? Elas são exploradas de forma significativa na trama?
-5.  **Motivações Internas**: Avalie a clareza e a força das motivações internas. São elas convincentes e fortes o suficiente para sustentar as ações do personagem?
-6.  **Motivações Externas**: Analise como os fatores externos impactam o personagem. A relação entre motivação interna e externa é bem construída?
-7.  **Arco de Personagem**: Descreva a jornada de transformação. O arco é claro e significativo? A mudança (ou a falta dela) é earned (conquistada) ou parece arbitrária? Aponte os pontos altos e baixos do arco.
-8.  **Sugestões para Melhorar**: Esta é a seção mais importante. Forneça insights e recomendações claras, diretas e acionáveis para aprofundar o personagem. Sugira maneiras de torná-lo mais complexo, imprevisível e cativante. Não hesite em apontar clichês ou superficialidades.
-
-Seja detalhado e forneça uma análise que desafie o roteirista a pensar criticamente sobre seus personagens.
+**Em seguida, para cada personagem principal (protagonista e antagonista), forneça a seguinte análise crítica (SEM SUGESTÕES):**
+1.  **Análise Geral**: Resuma o papel do personagem.
+2.  **Perfil Psicológico**: Analise as contradições e complexidades.
+3.  **Forças**: Liste as qualidades do personagem.
+4.  **Fraquezas**: Identifique as vulnerabilidades e falhas.
+5.  **Motivações Internas**: Avalie a clareza e a força das motivações.
+6.  **Motivações Externas**: Analise os fatores externos.
+7.  **Arco de Personagem**: Descreva a jornada de transformação.
 
 Conteúdo do Roteiro:
 {{{scriptContent}}}
   `,
+});
+
+const suggestionsPrompt = ai.definePrompt({
+    name: 'generateCharacterSuggestionsPrompt',
+    input: { schema: AnalysisOnlySchema },
+    output: { schema: SuggestionsOnlySchema },
+    config: { temperature: 0.9 },
+    prompt: `Você é um roteirista criativo e especialista em personagens. Com base na análise técnica fornecida, gere **sugestões claras, diretas e acionáveis** para aprofundar o protagonista e o antagonista.
+
+**Instruções para as Sugestões:**
+- Suas sugestões devem ser criativas e desafiar o roteirista a pensar criticamente.
+- Sugira maneiras de tornar os personagens mais complexos, imprevisíveis e cativantes.
+- Não hesite em apontar clichês ou superficialidades e oferecer alternativas.
+- Seja específico e use o contexto da análise para embasar suas ideias.
+
+**Análise Técnica para Referência:**
+\`\`\`json
+{{{json this}}}
+\`\`\`
+
+Gere sugestões para o campo 'protagonist' e 'antagonist' com base em suas respectivas análises.`
 });
 
 const analyzeScriptCharactersFlow = ai.defineFlow(
@@ -102,7 +133,31 @@ const analyzeScriptCharactersFlow = ai.defineFlow(
     outputSchema: AnalyzeScriptCharactersOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    // 1. Análise técnica
+    const { output: analysis } = await analysisPrompt(input);
+    if (!analysis) {
+        throw new Error("A fase de análise de personagens falhou.");
+    }
+
+    // 2. Geração de sugestões
+    const { output: suggestions } = await suggestionsPrompt(analysis);
+    if (!suggestions) {
+        throw new Error("A fase de geração de sugestões de personagens falhou.");
+    }
+    
+    // 3. Combinar resultados
+    const finalResult: AnalyzeScriptCharactersOutput = {
+      protagonistAntagonistRelationship: analysis.protagonistAntagonistRelationship,
+      protagonistAnalysis: {
+        ...analysis.protagonistAnalysis,
+        improvementSuggestions: suggestions.protagonist,
+      },
+      antagonistAnalysis: {
+        ...analysis.antagonistAnalysis,
+        improvementSuggestions: suggestions.antagonist,
+      },
+    };
+
+    return finalResult;
   }
 );
