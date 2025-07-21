@@ -14,15 +14,24 @@ import { Sparkles, GitCommitHorizontal, AlertTriangle, BookCheck, Download } fro
 import type { AnalyzeScriptHeroJourneyOutput, HeroJourneyStep } from "@/ai/flows/analyze-script-hero-journey";
 import { IntensityChart } from "@/components/charts/intensity-chart";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 const StepCard = ({ step, index }: { step: HeroJourneyStep; index: number }) => (
     <AccordionItem value={`item-${index}`} key={index}>
         <AccordionTrigger>
             <div className="flex items-center justify-between w-full pr-4">
                 <div className="flex items-center text-left">
-                    <span className="text-primary font-bold mr-2">{index + 1}.</span> {step.stepName}
+                    <span className={cn(
+                        "font-bold mr-2",
+                        step.score === 0 ? "text-destructive" : "text-primary"
+                    )}>
+                        {index + 1}.
+                    </span> {step.stepName}
                 </div>
-                 <span className={`font-bold text-lg ${step.score <= 7 ? 'text-amber-500' : 'text-green-500'}`}>
+                 <span className={cn(
+                    "font-bold text-lg",
+                    step.score === 0 ? "text-destructive" : (step.score <= 7 ? "text-amber-500" : "text-green-500")
+                )}>
                     {step.score}/10
                 </span>
             </div>
