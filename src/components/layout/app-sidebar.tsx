@@ -23,7 +23,8 @@ import {
   UserCheck as UserCheckIcon,
   Swords,
   CheckSquare,
-  ThumbsUp
+  ThumbsUp,
+  Crosshair
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -71,6 +72,11 @@ const navItems = [
         title: "Análise SWOT",
         href: "/analise-swot",
         icon: Swords,
+      },
+      {
+        title: "Mapeamento de Conflitos",
+        href: "/mapeamento-de-conflitos",
+        icon: Crosshair,
       },
       {
         title: "Teste de Representatividade",
@@ -197,6 +203,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
         case '/analise-swot':
         case '/checklist-de-tchekhov':
         case '/analise-de-recepcao':
+        case '/mapeamento-de-conflitos':
             return isAnalysisToolDisabled;
         case '/gerador-de-argumento':
              return false; // Sempre habilitado

@@ -20,3 +20,4 @@ import '@/ai/flows/analyze-script-from-persona.ts';
 import '@/ai/flows/analyze-script-swot.ts';
 import '@/ai/flows/analyze-script-tchekhov.ts';
 import '@/ai/flows/analyze-reception-engagement.ts';
+import '@/ai/flows/analyze-script-conflicts.ts';

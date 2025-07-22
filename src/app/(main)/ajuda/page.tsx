@@ -24,6 +24,10 @@ const faqItems = [
         question: "Como funciona a Análise SWOT?",
         answer: "Esta ferramenta aplica a clássica matriz SWOT ao seu roteiro, oferecendo uma visão 360º. Ela identifica as Forças e Fraquezas internas da sua história (trama, personagens) e as Oportunidades e Ameaças externas (mercado, tendências, concorrência)."
     },
+    {
+        question: "O que é o Mapeamento de Conflitos?",
+        answer: "Esta análise identifica e categoriza os principais conflitos (internos e externos) que o protagonista enfrenta. Ela ajuda a visualizar o motor da dramaturgia, garantindo que o personagem seja constantemente desafiado e que seu arco de transformação seja bem construído."
+    },
      {
         question: "O que é o Checklist de Tchekhov?",
         answer: "Inspirada no dramaturgo Anton Tchekhov, esta análise verifica a 'economia narrativa' do seu roteiro. Ela avalia se cada elemento chave (personagem, cena, diálogo) tem um propósito claro e funcional, ajudando a eliminar o que é desnecessário e a fortalecer o impacto da história."

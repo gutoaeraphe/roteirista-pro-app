@@ -32,6 +32,9 @@ import type {
 import type {
     AnalyzeReceptionAndEngagementOutput
 } from '@/ai/flows/analyze-reception-engagement';
+import type {
+    AnalyzeScriptConflictsOutput
+} from '@/ai/flows/analyze-script-conflicts';
 
 
 export type UserProfile = {
@@ -63,6 +66,7 @@ export type Script = {
     swot?: AnalyzeScriptSwotOutput;
     tchekhov?: AnalyzeScriptTchekhovOutput;
     receptionAndEngagement?: AnalyzeReceptionAndEngagementOutput;
+    conflicts?: AnalyzeScriptConflictsOutput;
   };
 };
 
