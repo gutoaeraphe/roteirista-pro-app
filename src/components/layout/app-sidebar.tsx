@@ -25,7 +25,8 @@ import {
   CheckSquare,
   ThumbsUp,
   Crosshair,
-  DollarSign
+  DollarSign,
+  Award
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -54,6 +55,11 @@ const navItems = [
   {
     title: "Análises",
     items: [
+       {
+        title: "Análise de Proposta de Valor",
+        href: "/analise-de-proposta-de-valor",
+        icon: Award,
+      },
       {
         title: "Estrutura de Roteiro",
         href: "/estrutura-de-roteiro",
@@ -198,6 +204,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
 
   const getIsDisabled = (href: string) => {
     switch(href) {
+        case '/analise-de-proposta-de-valor':
         case '/estrutura-de-roteiro':
         case '/analise-de-viabilidade':
         case '/jornada-do-heroi':

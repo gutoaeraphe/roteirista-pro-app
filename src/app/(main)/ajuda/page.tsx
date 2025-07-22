@@ -9,8 +9,16 @@ const faqItems = [
         answer: "No Painel de Roteiros, você pode adicionar novos roteiros fazendo o upload de arquivos de texto (.txt). A lista de roteiros permite que você selecione um como 'ativo' (clicando sobre ele) para ser usado em todas as ferramentas de análise, além de excluí-los."
     },
     {
+        question: "O que é a Análise de Proposta de Valor (High Concept)?",
+        answer: "Esta é a primeira análise que você deve fazer. Ela avalia a força do conceito central do seu projeto em três pilares: 'The Book' (a qualidade do enredo), 'The Hook' (o gancho de marketing) e 'The Look' (o potencial visual). É uma ferramenta essencial para entender o potencial de mercado da sua ideia."
+    },
+    {
         question: "Para que serve a Análise de Estrutura de Roteiro?",
         answer: "Esta ferramenta realiza um diagnóstico completo do roteiro ativo. Ela fornece um resumo da trama, avalia métricas-chave como estrutura, personagens e originalidade, e identifica os elementos dramáticos centrais da sua história, oferecendo sugestões para aprimorá-los."
+    },
+    {
+        question: "O que é a Análise de Viabilidade (MCV)?",
+        answer: "A análise de Mínimo Conteúdo Viável (MCV) avalia a viabilidade técnica e financeira do seu roteiro. Ela identifica potenciais 'flags' de custo em áreas como logística, arte, elenco e pós-produção, dando uma noção realista da complexidade de produção do seu projeto."
     },
     {
         question: "O que a Análise da Jornada do Herói faz?",

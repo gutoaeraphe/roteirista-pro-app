@@ -38,6 +38,9 @@ import type {
 import type {
     AnalyzeScriptMCVOutput
 } from '@/ai/flows/analyze-script-mcv';
+import type {
+    AnalyzeScriptHighConceptOutput
+} from '@/ai/flows/analyze-script-high-concept';
 
 
 export type UserProfile = {
@@ -55,6 +58,7 @@ export type Script = {
   genre: string;
   content: string;
   analysis: {
+    highConcept?: AnalyzeScriptHighConceptOutput;
     structure?: AnalyzeScriptStructureOutput;
     heroJourney?: AnalyzeScriptHeroJourneyOutput;
     characters?: AnalyzeScriptCharactersOutput;
