@@ -142,7 +142,7 @@ export default function EstruturaDeRoteiroPage() {
     ]
   : [];
 
-  const criteriaKeyMap: { [key: string]: keyof typeof analysisResult.structureCriteria } = {
+  const criteriaKeyMap: { [key: string]: keyof AnalyzeScriptStructureOutput['structureCriteria'] } = {
     "Equilíbrio": "balance",
     "Tensão": "tension",
     "Unidade": "unity",

@@ -22,14 +22,14 @@ interface IntensityChartProps {
     data: { step: string; intensity: number; label: string }[];
 }
 
-export function IntensityChart({ data }: IntensityChartProps) {
-  const chartConfig = {
+const chartConfig = {
     intensity: {
       label: "Intensidade",
       color: "hsl(var(--accent))",
     },
-  }
+};
 
+export function IntensityChart({ data }: IntensityChartProps) {
   return (
     <Card>
       <CardHeader>

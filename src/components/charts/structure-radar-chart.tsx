@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Award } from "lucide-react"
@@ -20,13 +21,14 @@ interface StructureRadarChartProps {
     data: { criteria: string; score: number }[];
 }
 
-export function StructureRadarChart({ data }: StructureRadarChartProps) {
-  const chartConfig = {
+const chartConfig = {
     score: {
       label: "Pontuação",
       color: "hsl(var(--primary))",
     },
-  }
+};
+
+export function StructureRadarChart({ data }: StructureRadarChartProps) {
 
   return (
     <Card>
@@ -61,6 +63,7 @@ export function StructureRadarChart({ data }: StructureRadarChartProps) {
               fill="var(--color-score)"
               fillOpacity={0.6}
               stroke="var(--color-score)"
+              domain={[0, 10]}
             />
           </RadarChart>
         </ChartContainer>
