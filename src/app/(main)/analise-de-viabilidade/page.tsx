@@ -13,7 +13,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { analyzeScriptMCV } from "@/ai/flows/analyze-script-mcv";
 import type { AnalyzeScriptMCVOutput, ViabilityFactor } from "@/ai/flows/analyze-script-mcv";
-import { MCVBarChart } from "@/components/charts/mcv-bar-chart";
 
 const FactorItem = ({ factor }: { factor: ViabilityFactor }) => (
     <div className="border-t pt-4">
@@ -38,21 +37,14 @@ const AnalysisSkeleton = () => (
             <CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader>
             <CardContent><Skeleton className="h-6 w-full" /></CardContent>
         </Card>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            <div className="lg:col-span-3">
-                 <Card>
-                    <CardHeader><Skeleton className="h-6 w-1/4" /></CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                            {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-            <div className="lg:col-span-2">
-                <Skeleton className="h-[450px] w-full" />
-            </div>
-        </div>
+        <Card>
+            <CardHeader><Skeleton className="h-6 w-1/4" /></CardHeader>
+            <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                    {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
+                </div>
+            </CardContent>
+        </Card>
     </div>
 );
 
@@ -125,8 +117,6 @@ export default function AnaliseDeViabilidadePage() {
   };
   
   const hasBeenAnalyzed = !!analysisResult;
-  const chartData = analysisResult ? analysisResult.factors.map(f => ({ factorName: f.factorName, score: f.score })) : [];
-
 
   if (!activeScript) {
     return <PagePlaceholder title="Análise de Viabilidade" description="Para analisar a viabilidade do seu roteiro, primeiro selecione um roteiro ativo." />;
@@ -183,25 +173,18 @@ export default function AnaliseDeViabilidadePage() {
                 </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-                <div className="lg:col-span-3">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><Settings /> Análise dos Fatores</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                                {analysisResult.factors.map((factor, index) => (
-                                <FactorItem factor={factor} key={index} />
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-                 <div className="lg:col-span-2">
-                    <MCVBarChart data={chartData} />
-                 </div>
-            </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Settings /> Análise dos Fatores</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                        {analysisResult.factors.map((factor, index) => (
+                        <FactorItem factor={factor} key={index} />
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
         </div>
       )}
     </div>
