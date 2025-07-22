@@ -1,3 +1,4 @@
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { HelpCircle, Mail } from "lucide-react";
@@ -19,7 +20,19 @@ const faqItems = [
         question: "O que é a Análise de Personagens?",
         answer: "Aqui, a IA mergulha no perfil psicológico do seu protagonista e antagonista. Ela analisa suas motivações, forças, fraquezas e, mais importante, descreve o arco de transformação de cada um ao longo da história, fornecendo sugestões para torná-los mais complexos."
     },
+    {
+        question: "Como funciona a Análise SWOT?",
+        answer: "Esta ferramenta aplica a clássica matriz SWOT ao seu roteiro, oferecendo uma visão 360º. Ela identifica as Forças e Fraquezas internas da sua história (trama, personagens) e as Oportunidades e Ameaças externas (mercado, tendências, concorrência)."
+    },
      {
+        question: "O que é o Checklist de Tchekhov?",
+        answer: "Inspirada no dramaturgo Anton Tchekhov, esta análise verifica a 'economia narrativa' do seu roteiro. Ela avalia se cada elemento chave (personagem, cena, diálogo) tem um propósito claro e funcional, ajudando a eliminar o que é desnecessário e a fortalecer o impacto da história."
+    },
+    {
+        question: "O que a Análise de Recepção e Engajamento avalia?",
+        answer: "Esta é uma análise preditiva avançada sobre como a audiência vai interpretar e sentir sua história. Ela diagnostica como o tema será percebido, os pontos de conexão cultural, o potencial de debate e a forma como o espectador se conectará emocionalmente com a narrativa e os personagens."
+    },
+    {
         question: "Como funciona o Teste de Representatividade?",
         answer: "Esta ferramenta avalia a diversidade e inclusão do seu roteiro usando três testes conhecidos: o Teste de Bechdel (representatividade feminina), o Teste de Vito Russo (LGBTQIA+) e o Teste de DuVernay (racial). Ele fornece um diagnóstico e a justificativa para cada critério."
     },
