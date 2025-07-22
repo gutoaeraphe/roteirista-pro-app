@@ -24,7 +24,8 @@ import {
   Swords,
   CheckSquare,
   ThumbsUp,
-  Crosshair
+  Crosshair,
+  DollarSign
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -57,6 +58,11 @@ const navItems = [
         title: "Estrutura de Roteiro",
         href: "/estrutura-de-roteiro",
         icon: BarChart3,
+      },
+      {
+        title: "Análise de Viabilidade",
+        href: "/analise-de-viabilidade",
+        icon: DollarSign,
       },
       {
         title: "Jornada do Herói",
@@ -193,6 +199,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
   const getIsDisabled = (href: string) => {
     switch(href) {
         case '/estrutura-de-roteiro':
+        case '/analise-de-viabilidade':
         case '/jornada-do-heroi':
         case '/analise-de-personagens':
         case '/teste-de-representatividade':

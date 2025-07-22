@@ -21,3 +21,4 @@ import '@/ai/flows/analyze-script-swot.ts';
 import '@/ai/flows/analyze-script-tchekhov.ts';
 import '@/ai/flows/analyze-reception-engagement.ts';
 import '@/ai/flows/analyze-script-conflicts.ts';
+import '@/ai/flows/analyze-script-mcv.ts';
