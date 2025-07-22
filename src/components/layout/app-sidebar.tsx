@@ -22,7 +22,8 @@ import {
   ShieldCheck,
   UserCheck as UserCheckIcon,
   Swords,
-  CheckSquare
+  CheckSquare,
+  ThumbsUp
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -90,6 +91,11 @@ const navItems = [
         title: "Checklist de Tchekhov",
         href: "/checklist-de-tchekhov",
         icon: CheckSquare,
+      },
+       {
+        title: "Análise de Recepção",
+        href: "/analise-de-recepcao",
+        icon: ThumbsUp,
       },
     ],
   },
@@ -190,6 +196,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
         case '/teste-de-publico':
         case '/analise-swot':
         case '/checklist-de-tchekhov':
+        case '/analise-de-recepcao':
             return isAnalysisToolDisabled;
         case '/gerador-de-argumento':
              return false; // Sempre habilitado
