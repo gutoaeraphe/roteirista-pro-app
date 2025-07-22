@@ -2,7 +2,7 @@
 "use client"
 
 import { Award } from "lucide-react"
-import { PolarGrid, PolarAngleAxis, Radar, RadarChart } from "recharts"
+import { PolarGrid, PolarAngleAxis, Radar, RadarChart, ResponsiveContainer } from "recharts"
 
 import {
   Card,
@@ -12,7 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
@@ -20,13 +19,6 @@ import {
 interface StructureRadarChartProps {
     data: { criteria: string; score: number }[];
 }
-
-const chartConfig = {
-    score: {
-      label: "Pontuação",
-      color: "hsl(var(--primary))",
-    },
-};
 
 export function StructureRadarChart({ data }: StructureRadarChartProps) {
 
@@ -39,10 +31,7 @@ export function StructureRadarChart({ data }: StructureRadarChartProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-8">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square h-[250px]"
-        >
+        <ResponsiveContainer width="100%" height={250}>
           <RadarChart
             data={data}
             margin={{
@@ -59,14 +48,15 @@ export function StructureRadarChart({ data }: StructureRadarChartProps) {
             <PolarGrid />
             <PolarAngleAxis dataKey="criteria" />
             <Radar
+              name="Pontuação"
               dataKey="score"
-              fill="var(--color-score)"
+              fill="hsl(var(--primary))"
               fillOpacity={0.6}
-              stroke="var(--color-score)"
+              stroke="hsl(var(--primary))"
               domain={[0, 10]}
             />
           </RadarChart>
-        </ChartContainer>
+        </ResponsiveContainer>
       </CardContent>
     </Card>
   )

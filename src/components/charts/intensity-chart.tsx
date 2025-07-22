@@ -2,7 +2,7 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip } from "recharts"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 
 import {
   Card,
@@ -12,22 +12,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
 
 interface IntensityChartProps {
     data: { step: string; intensity: number; label: string }[];
 }
-
-const chartConfig = {
-    intensity: {
-      label: "Intensidade",
-      color: "hsl(var(--accent))",
-    },
-};
 
 export function IntensityChart({ data }: IntensityChartProps) {
   return (
@@ -39,7 +27,7 @@ export function IntensityChart({ data }: IntensityChartProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ResponsiveContainer width="100%" height={300}>
           <LineChart
             accessibilityLayer
             data={data}
@@ -47,7 +35,7 @@ export function IntensityChart({ data }: IntensityChartProps) {
               left: 12,
               right: 12,
               top: 5,
-              bottom: 20
+              bottom: 80,
             }}
           >
             <CartesianGrid vertical={false} />
@@ -58,7 +46,6 @@ export function IntensityChart({ data }: IntensityChartProps) {
               tickMargin={8}
               angle={-45}
               textAnchor="end"
-              height={80}
               interval={0}
               tickFormatter={(value) => {
                 const stepName = value.split('. ').slice(1).join('. ');
@@ -87,13 +74,13 @@ export function IntensityChart({ data }: IntensityChartProps) {
             <Line
               dataKey="intensity"
               type="monotone"
-              stroke="var(--color-intensity)"
+              stroke="hsl(var(--primary))"
               strokeWidth={2}
               dot={true}
               name="Intensidade"
             />
           </LineChart>
-        </ChartContainer>
+        </ResponsiveContainer>
       </CardContent>
       <CardFooter>
         <div className="flex w-full items-start gap-2 text-sm">
