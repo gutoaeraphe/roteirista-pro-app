@@ -20,7 +20,8 @@ import {
   FileText,
   Crown,
   ShieldCheck,
-  UserCheck as UserCheckIcon
+  UserCheck as UserCheckIcon,
+  Swords,
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -78,6 +79,11 @@ const navItems = [
         title: "Teste de Público",
         href: "/teste-de-publico",
         icon: UserCheckIcon,
+      },
+      {
+        title: "Análise SWOT",
+        href: "/analise-swot",
+        icon: Swords,
       },
     ],
   },
@@ -176,6 +182,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
         case '/script-doctor':
         case '/gerador-de-pitching':
         case '/teste-de-publico':
+        case '/analise-swot':
             return isAnalysisToolDisabled;
         case '/gerador-de-argumento':
              return false; // Sempre habilitado

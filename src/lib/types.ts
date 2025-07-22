@@ -23,6 +23,9 @@ import type {
 import type {
     AnalyzeScriptFromPersonaOutput
 } from '@/ai/flows/analyze-script-from-persona';
+import type {
+    AnalyzeScriptSwotOutput
+} from '@/ai/flows/analyze-script-swot';
 
 
 export type UserProfile = {
@@ -50,7 +53,8 @@ export type Script = {
     audienceTest?: {
         persona: GenerateAudiencePersonaOutput;
         analysis: AnalyzeScriptFromPersonaOutput;
-    }
+    };
+    swot?: AnalyzeScriptSwotOutput;
   };
 };
 
