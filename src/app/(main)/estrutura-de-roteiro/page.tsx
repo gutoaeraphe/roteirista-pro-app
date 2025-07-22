@@ -13,7 +13,6 @@ import { analyzeScriptStructure } from "@/ai/flows/analyze-script-structure";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
 import { Sparkles, FileText, BrainCircuit, TrendingUp, Lightbulb, BookOpen, Award, AlertTriangle, Download } from "lucide-react";
 import type { AnalyzeScriptStructureOutput, Metric, DramaticElement } from "@/ai/flows/analyze-script-structure";
-import { StructureRadarChart } from "@/components/charts/structure-radar-chart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Clapperboard } from "lucide-react";
 
@@ -229,51 +228,44 @@ export default function EstruturaDeRoteiroPage() {
                 </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                <div className="lg:col-span-1">
-                    <StructureRadarChart data={chartData} />
-                </div>
-                <div className="lg:col-span-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><Award /> Análise da Estrutura</CardTitle>
-                            <CardDescription>Avaliação quantitativa e qualitativa dos critérios estruturais do roteiro.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                             <Accordion type="single" collapsible className="w-full">
-                                {chartData.map((item) => {
-                                    const key = criteriaKeyMap[item.criteria];
-                                    const metricData = key ? analysisResult.structureCriteria[key] : undefined;
-                                    
-                                    if (!metricData) return null;
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Award /> Análise da Estrutura</CardTitle>
+                    <CardDescription>Avaliação quantitativa e qualitativa dos critérios estruturais do roteiro.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                     <Accordion type="single" collapsible className="w-full">
+                        {chartData.map((item) => {
+                            const key = criteriaKeyMap[item.criteria];
+                            const metricData = key ? analysisResult.structureCriteria[key] : undefined;
+                            
+                            if (!metricData) return null;
 
-                                    return (
-                                        <AccordionItem value={item.criteria} key={item.criteria}>
-                                            <AccordionTrigger>
-                                                <div className="flex items-center justify-between w-full pr-4">
-                                                    <span>{item.criteria}</span>
-                                                    <span className={`font-bold text-lg ${metricData.score <= 7 ? 'text-amber-500' : 'text-green-500'}`}>
-                                                        {metricData.score}/10
-                                                    </span>
-                                                </div>
-                                            </AccordionTrigger>
-                                            <AccordionContent>
-                                                <p className="text-sm text-muted-foreground">{metricData.analysis}</p>
-                                                {metricData.score <= 7 && metricData.suggestions && (
-                                                    <div className="mt-3 text-xs border-l-2 border-amber-500 pl-3 text-amber-500/90">
-                                                        <p className="font-semibold">Sugestão:</p>
-                                                        <p>{metricData.suggestions}</p>
-                                                    </div>
-                                                )}
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    )
-                                })}
-                            </Accordion>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
+                            return (
+                                <AccordionItem value={item.criteria} key={item.criteria}>
+                                    <AccordionTrigger>
+                                        <div className="flex items-center justify-between w-full pr-4">
+                                            <span>{item.criteria}</span>
+                                            <span className={`font-bold text-lg ${metricData.score <= 7 ? 'text-amber-500' : 'text-green-500'}`}>
+                                                {metricData.score}/10
+                                            </span>
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                        <p className="text-sm text-muted-foreground">{metricData.analysis}</p>
+                                        {metricData.score <= 7 && metricData.suggestions && (
+                                            <div className="mt-3 text-xs border-l-2 border-amber-500 pl-3 text-amber-500/90">
+                                                <p className="font-semibold">Sugestão:</p>
+                                                <p>{metricData.suggestions}</p>
+                                            </div>
+                                        )}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            )
+                        })}
+                    </Accordion>
+                </CardContent>
+            </Card>
         </div>
       )}
     </div>

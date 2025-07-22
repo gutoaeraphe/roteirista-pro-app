@@ -12,7 +12,6 @@ import { analyzeScriptHeroJourney } from "@/ai/flows/analyze-script-hero-journey
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
 import { Sparkles, GitCommitHorizontal, AlertTriangle, BookCheck, Download } from "lucide-react";
 import type { AnalyzeScriptHeroJourneyOutput, HeroJourneyStep } from "@/ai/flows/analyze-script-hero-journey";
-import { IntensityChart } from "@/components/charts/intensity-chart";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
@@ -122,14 +121,7 @@ export default function JornadaDoHeroiPage() {
 
 
   const hasBeenAnalyzed = !!analysisResult;
-  const chartData = analysisResult
-    ? analysisResult.identifiedSteps.map((step, index) => ({
-        step: step.stepName,
-        intensity: step.intensity,
-        label: `${index + 1}. ${step.stepName}`
-      }))
-    : [];
-
+  
   if (!activeScript) {
     return <PagePlaceholder title="Análise da Jornada do Herói" description="Para mapear a jornada do herói, primeiro selecione um roteiro ativo no Painel de Roteiros." />;
   }
@@ -221,8 +213,6 @@ export default function JornadaDoHeroiPage() {
                     </div>
                 </CardContent>
             </Card>
-
-            <IntensityChart data={chartData} />
 
             <Card>
               <CardHeader>
