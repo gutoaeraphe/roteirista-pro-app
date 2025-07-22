@@ -17,3 +17,4 @@ import '@/ai/flows/compile-story-argument-flow.ts';
 import '@/ai/flows/generate-audience-persona.ts';
 import '@/ai/flows/analyze-script-from-persona.ts';
 import '@/ai/flows/analyze-script-swot.ts';
+import '@/ai/flows/analyze-script-tchekhov.ts';

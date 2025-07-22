@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   UserCheck as UserCheckIcon,
   Swords,
+  CheckSquare
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -65,6 +66,11 @@ const navItems = [
         href: "/analise-de-personagens",
         icon: Users,
       },
+       {
+        title: "Análise SWOT",
+        href: "/analise-swot",
+        icon: Swords,
+      },
       {
         title: "Teste de Representatividade",
         href: "/teste-de-representatividade",
@@ -81,9 +87,9 @@ const navItems = [
         icon: UserCheckIcon,
       },
       {
-        title: "Análise SWOT",
-        href: "/analise-swot",
-        icon: Swords,
+        title: "Checklist de Tchekhov",
+        href: "/checklist-de-tchekhov",
+        icon: CheckSquare,
       },
     ],
   },
@@ -183,6 +189,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
         case '/gerador-de-pitching':
         case '/teste-de-publico':
         case '/analise-swot':
+        case '/checklist-de-tchekhov':
             return isAnalysisToolDisabled;
         case '/gerador-de-argumento':
              return false; // Sempre habilitado

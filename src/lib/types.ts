@@ -26,6 +26,9 @@ import type {
 import type {
     AnalyzeScriptSwotOutput
 } from '@/ai/flows/analyze-script-swot';
+import type {
+    AnalyzeScriptTchekhovOutput
+} from '@/ai/flows/analyze-script-tchekhov';
 
 
 export type UserProfile = {
@@ -55,6 +58,7 @@ export type Script = {
         analysis: AnalyzeScriptFromPersonaOutput;
     };
     swot?: AnalyzeScriptSwotOutput;
+    tchekhov?: AnalyzeScriptTchekhovOutput;
   };
 };
 
