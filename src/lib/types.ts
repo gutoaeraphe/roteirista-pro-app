@@ -60,21 +60,21 @@ export type Script = {
   analysis: {
     highConcept?: AnalyzeScriptHighConceptOutput;
     structure?: AnalyzeScriptStructureOutput;
+    mcv?: AnalyzeScriptMCVOutput;
     heroJourney?: AnalyzeScriptHeroJourneyOutput;
     characters?: AnalyzeScriptCharactersOutput;
+    swot?: AnalyzeScriptSwotOutput;
+    conflicts?: AnalyzeScriptConflictsOutput;
     representation?: AnalyzeScriptRepresentationOutput;
     market?: AnalyzeScriptMarketOutput;
-    pitchingDocument?: GeneratePitchingDocumentOutput;
-    scriptDoctor?: ChatMessage[];
     audienceTest?: {
         persona: GenerateAudiencePersonaOutput;
         analysis: AnalyzeScriptFromPersonaOutput;
     };
-    swot?: AnalyzeScriptSwotOutput;
     tchekhov?: AnalyzeScriptTchekhovOutput;
     receptionAndEngagement?: AnalyzeReceptionAndEngagementOutput;
-    conflicts?: AnalyzeScriptConflictsOutput;
-    mcv?: AnalyzeScriptMCVOutput;
+    pitchingDocument?: GeneratePitchingDocumentOutput;
+    scriptDoctor?: ChatMessage[];
   };
 };
 

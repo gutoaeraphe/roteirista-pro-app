@@ -26,7 +26,8 @@ import {
   ThumbsUp,
   Crosshair,
   DollarSign,
-  Award
+  Award,
+  Video
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -56,7 +57,7 @@ const navItems = [
     title: "Análises",
     items: [
        {
-        title: "Análise de Proposta de Valor",
+        title: "Proposta de Valor",
         href: "/analise-de-proposta-de-valor",
         icon: Award,
       },
@@ -66,7 +67,7 @@ const navItems = [
         icon: BarChart3,
       },
       {
-        title: "Análise de Viabilidade",
+        title: "Viabilidade (MCV)",
         href: "/analise-de-viabilidade",
         icon: DollarSign,
       },
@@ -90,6 +91,16 @@ const navItems = [
         href: "/mapeamento-de-conflitos",
         icon: Crosshair,
       },
+       {
+        title: "Checklist de Tchekhov",
+        href: "/checklist-de-tchekhov",
+        icon: CheckSquare,
+      },
+      {
+        title: "Análise de Recepção",
+        href: "/analise-de-recepcao",
+        icon: ThumbsUp,
+      },
       {
         title: "Teste de Representatividade",
         href: "/teste-de-representatividade",
@@ -104,16 +115,6 @@ const navItems = [
         title: "Teste de Público",
         href: "/teste-de-publico",
         icon: UserCheckIcon,
-      },
-      {
-        title: "Checklist de Tchekhov",
-        href: "/checklist-de-tchekhov",
-        icon: CheckSquare,
-      },
-       {
-        title: "Análise de Recepção",
-        href: "/analise-de-recepcao",
-        icon: ThumbsUp,
       },
     ],
   },
@@ -140,6 +141,11 @@ const navItems = [
 ];
 
 const learnMoreItems = [
+     {
+      title: "Masterclass",
+      href: "/masterclass",
+      icon: Video,
+    },
     {
       title: "Ajuda",
       href: "/ajuda",

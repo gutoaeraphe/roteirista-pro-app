@@ -113,7 +113,7 @@ const suggestionsPrompt = ai.definePrompt({
 {{{json this}}}
 \`\`\`
 
-Gere uma sugestão para 'overallAnalysis' se a nota geral for <= 7. Para 'stepSuggestions', gere uma sugestão para cada um dos 12 passos cuja nota seja <= 7. Mantenha a ordem dos passos. Se a nota for maior que 7, deixe a sugestão como uma string vazia ("").`
+Gere uma sugestão para 'overallAnalysis' se a nota geral for menor ou igual a 7. Para 'stepSuggestions', gere uma sugestão para cada um dos 12 passos cuja nota seja menor ou igual a 7. Mantenha a ordem dos passos. Se a nota for maior que 7, deixe a sugestão como uma string vazia ("").`
 });
 
 

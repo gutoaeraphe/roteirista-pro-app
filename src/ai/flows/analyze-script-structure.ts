@@ -143,7 +143,7 @@ Seja específico! Use os elementos do roteiro para propor soluções.
 {{{json this}}}
 \`\`\`
 
-Gere sugestões apenas para os campos onde a pontuação for 7 ou menor. Se a pontuação for maior que 7, deixe o campo de sugestão em branco ou omita-o. As sugestões devem ser um texto (string).`
+Gere sugestões apenas para os campos onde a pontuação for menor ou igual a 7. Se a pontuação for maior que 7, deixe o campo de sugestão em branco ou omita-o. As sugestões devem ser um texto (string).`
 });
 
 
@@ -169,6 +169,7 @@ const analyzeScriptStructureFlow = ai.defineFlow(
     // 3. Combinar os resultados
     const finalResult: AnalyzeScriptStructureOutput = {
       ...analysis,
+      dramaticElements: analysis.dramaticElements || [],
       mainMetrics: {
         narrativeStructure: {
           ...analysis.mainMetrics.narrativeStructure,
