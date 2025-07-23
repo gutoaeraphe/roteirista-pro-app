@@ -27,7 +27,11 @@ import {
   Crosshair,
   DollarSign,
   Award,
-  Video
+  Video,
+  ShoppingBag,
+  Briefcase,
+  Target,
+  Search
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -67,11 +71,6 @@ const navItems = [
         icon: BarChart3,
       },
       {
-        title: "Viabilidade (MCV)",
-        href: "/analise-de-viabilidade",
-        icon: DollarSign,
-      },
-      {
         title: "Jornada do Herói",
         href: "/jornada-do-heroi",
         icon: GitCommitHorizontal,
@@ -81,25 +80,50 @@ const navItems = [
         href: "/analise-de-personagens",
         icon: Users,
       },
-       {
-        title: "Análise SWOT",
-        href: "/analise-swot",
-        icon: Swords,
-      },
       {
         title: "Mapeamento de Conflitos",
         href: "/mapeamento-de-conflitos",
         icon: Crosshair,
       },
-       {
-        title: "Checklist de Tchekhov",
-        href: "/checklist-de-tchekhov",
-        icon: CheckSquare,
+    ],
+  },
+   {
+    title: "Mercado",
+    items: [
+      {
+        title: "Análise SWOT",
+        href: "/analise-swot",
+        icon: Swords,
+      },
+      {
+        title: "Viabilidade (MCV)",
+        href: "/analise-de-viabilidade",
+        icon: DollarSign,
+      },
+      {
+        title: "Análise de Mercado",
+        href: "/analise-de-mercado",
+        icon: Lightbulb,
       },
       {
         title: "Análise de Recepção",
         href: "/analise-de-recepcao",
         icon: ThumbsUp,
+      },
+       {
+        title: "Gerador de Pitching",
+        href: "/gerador-de-pitching",
+        icon: Presentation,
+      },
+    ],
+  },
+  {
+    title: "Testes",
+    items: [
+       {
+        title: "Teste de Público",
+        href: "/teste-de-publico",
+        icon: UserCheckIcon,
       },
       {
         title: "Teste de Representatividade",
@@ -107,16 +131,11 @@ const navItems = [
         icon: Scale,
       },
       {
-        title: "Análise de Mercado",
-        href: "/analise-de-mercado",
-        icon: Lightbulb,
+        title: "Checklist de Tchekhov",
+        href: "/checklist-de-tchekhov",
+        icon: CheckSquare,
       },
-       {
-        title: "Teste de Público",
-        href: "/teste-de-publico",
-        icon: UserCheckIcon,
-      },
-    ],
+    ]
   },
   {
     title: "Ferramentas",
@@ -125,11 +144,6 @@ const navItems = [
         title: "Script Doctor",
         href: "/script-doctor",
         icon: Stethoscope,
-      },
-      {
-        title: "Gerador de Pitching",
-        href: "/gerador-de-pitching",
-        icon: Presentation,
       },
       {
         title: "Gerador de Argumento",
