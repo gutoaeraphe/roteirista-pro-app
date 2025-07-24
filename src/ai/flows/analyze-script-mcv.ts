@@ -24,13 +24,13 @@ export type AnalyzeScriptMCVInput = z.infer<
 const ViabilityFactorSchema = z.object({
     factorName: z.string().describe("O nome do fator de viabilidade avaliado (Logística, Arte, etc.)."),
     justification: z.string().describe("Justificativa da IA para a pontuação atribuída, com base no roteiro."),
-    score: z.number().min(1).max(5).describe("Pontuação de 1 (Baixo Custo/Complexidade) a 5 (Alto Custo/Complexidade)."),
+    score: z.number().min(0).max(10).describe("Pontuação de 0 (Baixo Custo/Complexidade) a 10 (Alto Custo/Complexidade)."),
 });
 export type ViabilityFactor = z.infer<typeof ViabilityFactorSchema>;
 
 const AnalyzeScriptMCVOutputSchema = z.object({
   factors: z.array(ViabilityFactorSchema).length(8).describe("Uma lista com a análise dos 8 fatores de viabilidade, na ordem correta."),
-  averageScore: z.number().min(1).max(5).describe("A pontuação média de todos os 8 fatores."),
+  averageScore: z.number().min(0).max(10).describe("A pontuação média de todos os 8 fatores."),
   strategicRecommendations: z.string().describe("Diagnóstico final com base na média e sugestões de otimização de custo, se a média for alta."),
 });
 export type AnalyzeScriptMCVOutput = z.infer<
@@ -53,13 +53,13 @@ const analyzeScriptMCVPrompt = ai.definePrompt({
 
 1.  **Análise dos Fatores (factors):**
     *   Avalie o roteiro em CADA UM dos 8 fatores abaixo.
-    *   Para cada fator, atribua uma pontuação de 1 (Baixo Custo/Complexidade) a 5 (Alto Custo/Complexidade).
+    *   Para cada fator, atribua uma pontuação de 0 (Baixíssimo Custo/Complexidade) a 10 (Altíssimo Custo/Complexidade).
     *   Forneça uma justificativa concisa para cada pontuação.
 
 2.  **Diagnóstico Final (averageScore e strategicRecommendations):**
     *   Calcule a média de todas as 8 pontuações.
     *   Com base na média, forneça um diagnóstico geral.
-    *   Se a média for 4 ou maior, sugira ajustes concretos no roteiro para reduzir custos sem sacrificar a essência da história. Se for menor que 4, apenas comente sobre a viabilidade.
+    *   Se a média for 7 ou maior, sugira ajustes concretos no roteiro para reduzir custos sem sacrificar a essência da história. Se for menor que 7, apenas comente sobre a viabilidade.
 
 ---
 

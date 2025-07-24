@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, AlertTriangle, Download, Award, CheckSquare, Star } from "lucide-react";
+import { Sparkles, AlertTriangle, Download, Award, CheckSquare, Star, Lightbulb } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -26,15 +26,15 @@ const CriterionCard = ({ criterion, index }: { criterion: TchekhovCriterion; ind
                 </div>
                 <div className="flex items-center gap-1 text-lg font-bold">
                     <span className={cn(
-                        criterion.score < 3 ? "text-amber-500" : "text-green-500"
+                        criterion.score <= 7 ? "text-amber-500" : "text-green-500"
                     )}>
                         {criterion.score}
                     </span>
-                    <span className="text-muted-foreground">/ 5</span>
+                    <span className="text-muted-foreground">/ 10</span>
                 </div>
             </div>
         </AccordionTrigger>
-        <AccordionContent className="space-y-3">
+        <AccordionContent className="space-y-4">
             <div>
                 <h4 className="font-semibold text-sm mb-1">Análise</h4>
                 <p className="text-sm text-muted-foreground">{criterion.analysis}</p>
@@ -43,6 +43,12 @@ const CriterionCard = ({ criterion, index }: { criterion: TchekhovCriterion; ind
                 <h4 className="font-semibold text-sm mb-1">Exemplos do Roteiro</h4>
                 <p className="text-sm text-muted-foreground border-l-2 pl-3 italic">"{criterion.examples}"</p>
             </div>
+            {criterion.score <= 7 && criterion.suggestions && (
+                <div className="mt-3 text-sm border-l-2 border-amber-500 pl-3">
+                    <p className="font-semibold text-amber-600 dark:text-amber-500 flex items-center gap-1"><Lightbulb className="w-4 h-4" /> Sugestão para Melhorar:</p>
+                    <p className="text-amber-600/90 dark:text-amber-500/90">{criterion.suggestions}</p>
+                </div>
+            )}
         </AccordionContent>
     </AccordionItem>
 );
@@ -100,7 +106,7 @@ export default function ChecklistDeTchekhovPage() {
     content += "==================================================\n\n";
 
     content += `RESUMO GERAL\n`;
-    content += `Pontuação Média: ${analysisResult.averageScore.toFixed(1)} / 5.0\n`;
+    content += `Pontuação Média: ${analysisResult.averageScore.toFixed(1)} / 10.0\n`;
     content += `--------------------------------------------------\n`;
     content += `${analysisResult.overallSummary}\n\n`;
     
@@ -108,9 +114,13 @@ export default function ChecklistDeTchekhovPage() {
     content += "==================================================\n\n";
 
     analysisResult.criteria.forEach((item, index) => {
-      content += `${index + 1}. ${item.criterionName} (Nota: ${item.score}/5)\n`;
+      content += `${index + 1}. ${item.criterionName} (Nota: ${item.score}/10)\n`;
       content += `   Análise: ${item.analysis}\n`;
-      content += `   Exemplos: "${item.examples}"\n\n`;
+      content += `   Exemplos: "${item.examples}"\n`;
+      if (item.suggestions) {
+        content += `   Sugestão: ${item.suggestions}\n`;
+      }
+      content += "\n";
     });
 
     return content.trim();
@@ -173,7 +183,7 @@ export default function ChecklistDeTchekhovPage() {
                         <div className="flex items-center gap-2"><Award /> Resumo Geral</div>
                         <div className="flex items-center gap-2 text-2xl font-bold">
                             <Star className="w-6 h-6 text-amber-400" />
-                             <span>{analysisResult.averageScore.toFixed(1)} / 5.0</span>
+                             <span>{analysisResult.averageScore.toFixed(1)} / 10.0</span>
                         </div>
                     </CardTitle>
                 </CardHeader>

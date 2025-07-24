@@ -20,11 +20,11 @@ const FactorItem = ({ factor }: { factor: ViabilityFactor }) => (
             <h4 className="font-semibold text-sm">{factor.factorName}</h4>
             <div className="flex items-center gap-1 text-base font-bold">
                 <span className={cn(
-                    factor.score >= 4 ? "text-red-500" : factor.score === 3 ? "text-amber-500" : "text-green-500"
+                    factor.score >= 7 ? "text-red-500" : factor.score >= 4 ? "text-amber-500" : "text-green-500"
                 )}>
                     {factor.score}
                 </span>
-                <span className="text-muted-foreground">/ 5</span>
+                <span className="text-muted-foreground">/ 10</span>
             </div>
         </div>
         <p className="text-sm text-muted-foreground">{factor.justification}</p>
@@ -86,7 +86,7 @@ export default function AnaliseDeViabilidadePage() {
     content += "==================================================\n\n";
 
     content += `DIAGNÓSTICO FINAL\n`;
-    content += `Média de Custo/Complexidade: ${analysisResult.averageScore.toFixed(1)} / 5.0\n`;
+    content += `Média de Custo/Complexidade: ${analysisResult.averageScore.toFixed(1)} / 10.0\n`;
     content += `--------------------------------------------------\n`;
     content += `${analysisResult.strategicRecommendations}\n\n`;
     
@@ -94,7 +94,7 @@ export default function AnaliseDeViabilidadePage() {
     content += "==================================================\n\n";
 
     analysisResult.factors.forEach((item) => {
-      content += `${item.factorName} (Nota: ${item.score}/5)\n`;
+      content += `${item.factorName} (Nota: ${item.score}/10)\n`;
       content += `   Justificativa: ${item.justification}\n\n`;
     });
 
@@ -142,9 +142,9 @@ export default function AnaliseDeViabilidadePage() {
       
       <Alert variant="warning">
         <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>Aviso de IA</AlertTitle>
+        <AlertTitle>Aviso Importante sobre a Pontuação</AlertTitle>
         <AlertDescription>
-            As respostas e interações desta página são geradas por Inteligência Artificial. Esta tecnologia pode cometer erros e produzir informações inconsistentes. Recomendamos a revisão humana de todo o conteúdo.
+            Nesta análise, a pontuação é <strong>inversamente proporcional</strong>. Notas mais <strong>baixas</strong> (0-3) indicam baixo custo e complexidade (bom), enquanto notas mais <strong>altas</strong> (7-10) indicam alto custo e risco para a produção (ruim).
         </AlertDescription>
       </Alert>
 
@@ -159,14 +159,14 @@ export default function AnaliseDeViabilidadePage() {
                         <div className="flex items-center gap-2 text-2xl font-bold">
                             <span className={cn(
                                 "flex items-center gap-2",
-                                analysisResult.averageScore >= 4 ? "text-red-500" : analysisResult.averageScore >= 2.5 ? "text-amber-500" : "text-green-500"
+                                analysisResult.averageScore >= 7 ? "text-red-500" : analysisResult.averageScore >= 4 ? "text-amber-500" : "text-green-500"
                             )}>
                                <Star className="w-6 h-6" />
-                                <span>{analysisResult.averageScore.toFixed(1)} / 5.0</span>
+                                <span>{analysisResult.averageScore.toFixed(1)} / 10.0</span>
                             </span>
                         </div>
                     </CardTitle>
-                    <CardDescription>Média de Custo/Complexidade</CardDescription>
+                    <CardDescription>Média de Custo/Complexidade (quanto menor, melhor)</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <p className="text-foreground/90 whitespace-pre-wrap">{analysisResult.strategicRecommendations}</p>

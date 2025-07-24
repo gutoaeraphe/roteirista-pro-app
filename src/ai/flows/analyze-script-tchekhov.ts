@@ -25,18 +25,30 @@ const TchekhovCriterionSchema = z.object({
     criterionName: z.string().describe("O nome do critério do checklist de Tchekhov."),
     analysis: z.string().describe("Análise qualitativa sobre se o roteiro cumpre o critério."),
     examples: z.string().describe("Exemplos específicos do roteiro (diálogos, cenas ou ações) que justificam a análise."),
-    score: z.number().min(1).max(5).describe("Pontuação de 1 (muito fraco) a 5 (excelente) para o critério."),
+    score: z.number().min(0).max(10).describe("Pontuação de 0 (muito fraco) a 10 (excelente) para o critério."),
+    suggestions: z.string().optional().describe("Sugestões de melhoria se a pontuação for 7 ou menos."),
 });
 export type TchekhovCriterion = z.infer<typeof TchekhovCriterionSchema>;
 
 const AnalyzeScriptTchekhovOutputSchema = z.object({
   criteria: z.array(TchekhovCriterionSchema).length(8).describe("Uma lista com a análise dos 8 pontos do Checklist de Tchekhov, na ordem correta."),
-  overallSummary: z.string().describe("Um resumo geral que consolida a análise, destaca a pontuação média e sugere os próximos passos."),
-  averageScore: z.number().min(1).max(5).describe("A pontuação média de todos os 8 critérios."),
+  overallSummary: z.string().describe("Um resumo geral que consolida a análise, destaca la pontuação média e sugere os próximos passos."),
+  averageScore: z.number().min(0).max(10).describe("A pontuação média de todos os 8 critérios."),
 });
 export type AnalyzeScriptTchekhovOutput = z.infer<
   typeof AnalyzeScriptTchekhovOutputSchema
 >;
+
+const AnalysisOnlySchema = z.object({
+    criteria: z.array(TchekhovCriterionSchema.omit({ suggestions: true })).length(8),
+    overallSummary: z.string(),
+    averageScore: z.number().min(0).max(10),
+});
+
+const SuggestionsOnlySchema = z.object({
+    criteriaSuggestions: z.array(z.string().optional()).describe('Uma lista de sugestões para cada critério, correspondendo à ordem. Será preenchida apenas se a nota do critério for <= 7.')
+});
+
 
 export async function analyzeScriptTchekhov(
   input: AnalyzeScriptTchekhovInput
@@ -44,17 +56,18 @@ export async function analyzeScriptTchekhov(
   return analyzeScriptTchekhovFlow(input);
 }
 
-const analyzeScriptTchekhovPrompt = ai.definePrompt({
-  name: 'analyzeScriptTchekhovPrompt',
+const analysisPrompt = ai.definePrompt({
+  name: 'analyzeTchekhovAnalysisPrompt',
   input: {schema: AnalyzeScriptTchekhovInputSchema},
-  output: {schema: AnalyzeScriptTchekhovOutputSchema},
-  prompt: `Você é um dramaturgo especialista e analista de roteiros. Sua tarefa é avaliar o roteiro fornecido usando o "Checklist de Tchekhov", uma metodologia para verificar a funcionalidade e o propósito de cada elemento narrativo. Sua análise deve ser objetiva e construtiva. Responda inteiramente em português.
+  output: {schema: AnalysisOnlySchema},
+  config: { temperature: 0.2 },
+  prompt: `Você é um dramaturgo especialista e analista de roteiros. Sua tarefa é avaliar o roteiro fornecido usando o "Checklist de Tchekhov". Sua análise deve ser objetiva, técnica e **NÃO gerar sugestões de melhoria**. Responda inteiramente em português.
 
 **Sua Tarefa:**
 Avalie o roteiro em CADA UM dos 8 pontos do checklist a seguir. Para cada ponto, forneça:
 a) 'analysis': Uma análise qualitativa que explique se o critério é cumprido.
-b) 'examples': Exemplos específicos do roteiro (diálogos, cenas, ações) que justifiquem sua análise.
-c) 'score': Uma pontuação de 1 (muito fraco) a 5 (excelente).
+b) 'examples': Exemplos específicos do roteiro que justifiquem sua análise.
+c) 'score': Uma pontuação rigorosa de 0 (muito fraco) a 10 (excelente).
 
 **Os 8 Pontos do Checklist de Tchekhov:**
 
@@ -70,11 +83,32 @@ c) 'score': Uma pontuação de 1 (muito fraco) a 5 (excelente).
 **Instruções Finais:**
 - Preencha a lista 'criteria' com exatamente 8 itens, na ordem acima.
 - Calcule a média das 8 pontuações e preencha o campo 'averageScore'.
-- Escreva um 'overallSummary' que consolide a análise, apresente a pontuação média e sugira as áreas que mais necessitam de revisão.
+- Escreva um 'overallSummary' que consolide a análise e apresente a pontuação média.
 
 Roteiro para Análise:
 {{{scriptContent}}}`,
 });
+
+const suggestionsPrompt = ai.definePrompt({
+    name: 'generateTchekhovSuggestionsPrompt',
+    input: { schema: AnalysisOnlySchema },
+    output: { schema: SuggestionsOnlySchema },
+    config: { temperature: 0.8 },
+    prompt: `Você é um roteirista criativo. Com base na análise técnica do Checklist de Tchekhov, gere sugestões de melhoria criativas e acionáveis para cada critério com nota igual ou inferior a 7.
+
+**Regra para Sugestões:**
+Seja específico. Use elementos do roteiro para propor soluções.
+- **Exemplo Ruim:** "Melhore o clímax."
+- **Exemplo Bom:** "Para tornar o clímax mais intenso, considere fazer o protagonista confrontar não apenas o vilão, mas também sua própria falha que ele tentou evitar durante toda a história."
+
+**Análise Técnica para Referência:**
+\`\`\`json
+{{{json this}}}
+\`\`\`
+
+Para 'criteriaSuggestions', gere uma sugestão para cada um dos 8 critérios cuja nota seja menor ou igual a 7. Mantenha a ordem dos critérios. Se a nota for maior que 7, a sugestão deve ser uma string vazia ou nula.`
+});
+
 
 const analyzeScriptTchekhovFlow = ai.defineFlow(
   {
@@ -83,16 +117,28 @@ const analyzeScriptTchekhovFlow = ai.defineFlow(
     outputSchema: AnalyzeScriptTchekhovOutputSchema,
   },
   async input => {
-    const {output} = await analyzeScriptTchekhovPrompt(input);
+    const { output: analysis } = await analysisPrompt(input);
+    if (!analysis) {
+      throw new Error("A análise de Tchekhov (fase 1) não retornou um resultado válido.");
+    }
     
-    if (!output) {
-      throw new Error("A análise de Tchekhov não retornou um resultado válido.");
+    const { output: suggestions } = await suggestionsPrompt(analysis);
+    if (!suggestions) {
+        throw new Error("A geração de sugestões de Tchekhov (fase 2) falhou.");
     }
 
     // Recalcular a média para garantir precisão, caso a IA erre.
-    const calculatedAverage = output.criteria.reduce((sum, item) => sum + item.score, 0) / output.criteria.length;
-    output.averageScore = parseFloat(calculatedAverage.toFixed(2));
+    const calculatedAverage = analysis.criteria.reduce((sum, item) => sum + item.score, 0) / analysis.criteria.length;
+    analysis.averageScore = parseFloat(calculatedAverage.toFixed(2));
 
-    return output;
+    const finalResult: AnalyzeScriptTchekhovOutput = {
+      ...analysis,
+      criteria: analysis.criteria.map((criterion, index) => ({
+        ...criterion,
+        suggestions: suggestions.criteriaSuggestions?.[index] || undefined,
+      })),
+    };
+
+    return finalResult;
   }
 );

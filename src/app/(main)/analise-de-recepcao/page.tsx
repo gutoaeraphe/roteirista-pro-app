@@ -16,18 +16,24 @@ import type { AnalyzeReceptionAndEngagementOutput, AnalysisCriterion } from "@/a
 
 const CriterionItem = ({ criterion }: { criterion: AnalysisCriterion }) => (
     <div className="border-t pt-4">
-        <div className="flex justify-between items-center mb-1">
+        <div className="flex justify-between items-start mb-1">
             <h4 className="font-semibold text-sm">{criterion.parameterName}</h4>
             <div className="flex items-center gap-1 text-base font-bold">
                 <span className={cn(
-                    criterion.score < 3 ? "text-amber-500" : "text-green-500"
+                    criterion.score <= 7 ? "text-amber-500" : "text-green-500"
                 )}>
                     {criterion.score}
                 </span>
-                <span className="text-muted-foreground">/ 5</span>
+                <span className="text-muted-foreground">/ 10</span>
             </div>
         </div>
         <p className="text-sm text-muted-foreground">{criterion.analysis}</p>
+        {criterion.score <= 7 && criterion.suggestions && (
+            <div className="mt-3 text-sm border-l-2 border-amber-500 pl-3">
+                <p className="font-semibold text-amber-600 dark:text-amber-500 flex items-center gap-1"><Lightbulb className="w-4 h-4" /> Sugestão para Melhorar:</p>
+                <p className="text-amber-600/90 dark:text-amber-500/90">{criterion.suggestions}</p>
+            </div>
+        )}
     </div>
 );
 
@@ -94,8 +100,12 @@ export default function AnaliseDeRecepcaoPage() {
     const formatModule = (module: AnalyzeReceptionAndEngagementOutput['receptionAnalysis']) => {
         let text = `# ${module.moduleName}\n\n`;
         module.criteria.forEach(item => {
-            text += `## ${item.parameterName} (Nota: ${item.score}/5)\n`;
-            text += `${item.analysis}\n\n`;
+            text += `## ${item.parameterName} (Nota: ${item.score}/10)\n`;
+            text += `${item.analysis}\n`;
+            if (item.suggestions) {
+                text += `Sugestão: ${item.suggestions}\n`;
+            }
+            text += `\n`;
         });
         return text;
     };
