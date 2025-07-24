@@ -243,7 +243,7 @@ ${formatCharacterProfileToText(analysisResult.antagonistAnalysis)}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {analysisResult.characterRelationshipMap.map((rel, index) => (
+                                {analysisResult.characterRelationshipMap && analysisResult.characterRelationshipMap.map((rel, index) => (
                                     <TableRow key={index}>
                                         <TableCell className="font-medium">{rel.characterA} &harr; {rel.characterB}</TableCell>
                                         <TableCell>
@@ -276,3 +276,5 @@ ${formatCharacterProfileToText(analysisResult.antagonistAnalysis)}
     </div>
   );
 }
+
+    
