@@ -67,10 +67,6 @@ const faqItems = [
     {
         question: "Como funciona o Teste de Público?",
         answer: "Esta ferramenta permite que você simule a reação de um espectador ao seu roteiro. Primeiro, você descreve seu público-alvo. Com base nisso, a IA cria uma persona fictícia detalhada. Em seguida, essa persona 'lê' seu roteiro ativo e fornece uma análise crítica do ponto de vista dela, avaliando a trama, os personagens e os diálogos."
-    },
-    {
-        question: "O que é a Masterclass?",
-        answer: "É uma página que exibe uma curadoria de vídeos de um canal parceiro sobre roteiro e cinema, diretamente na plataforma, para que você possa aprimorar seus conhecimentos sem sair do ambiente de trabalho."
     }
 ];
 

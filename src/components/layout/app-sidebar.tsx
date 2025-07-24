@@ -155,11 +155,6 @@ const navItems = [
 ];
 
 const learnMoreItems = [
-     {
-      title: "Masterclass",
-      href: "/masterclass",
-      icon: Video,
-    },
     {
       title: "Ajuda",
       href: "/ajuda",
