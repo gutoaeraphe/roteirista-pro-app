@@ -4,15 +4,17 @@
 import { useState } from "react";
 import { useScript } from "@/context/script-context";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptCharacters } from "@/ai/flows/analyze-script-characters";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb, UserCheck, AlertTriangle, Users, Download } from "lucide-react";
+import { Sparkles, User, Bot, BrainCircuit, Orbit, Target, TrendingUp, TrendingDown, Lightbulb, UserCheck, AlertTriangle, Users, Download, GitMerge } from "lucide-react";
 import type { AnalyzeScriptCharactersOutput, CharacterProfile } from "@/ai/flows/analyze-script-characters";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 const CharacterAnalysisCard = ({ title, content, icon: Icon, className }: { title: string; content: string; icon: React.ElementType, className?: string }) => (
   <Card className={className}>
@@ -28,6 +30,7 @@ const CharacterAnalysisCard = ({ title, content, icon: Icon, className }: { titl
 const CharacterAnalysisSkeleton = () => (
     <div className="space-y-4">
         <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-64 w-full" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             {[...Array(8)].map((_, i) => (
                 <Card key={i}>
@@ -108,7 +111,7 @@ ${profile.improvementSuggestions}
   const handleDownload = () => {
     if (!analysisResult || !activeScript) return;
     
-    const content = `
+    let content = `
 Análise de Personagens para: ${activeScript.name}
 ==================================================
 
@@ -116,6 +119,20 @@ Relação Protagonista vs. Antagonista
 --------------------------------------------------
 ${analysisResult.protagonistAntagonistRelationship}
 
+==================================================
+Mapa de Relações
+==================================================
+`;
+    
+    analysisResult.characterRelationshipMap.forEach(rel => {
+        content += `
+- ${rel.characterA} e ${rel.characterB}
+  Tipo: ${rel.relationshipType}
+  Descrição: ${rel.description}
+`;
+    });
+
+    content += `
 
 ==================================================
 Análise do Protagonista
@@ -209,6 +226,38 @@ ${formatCharacterProfileToText(analysisResult.antagonistAnalysis)}
                 icon={Users}
                 className="bg-muted/50"
             />
+            
+             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><GitMerge /> Mapa de Relações</CardTitle>
+                    <CardDescription>Visualização das interações chave entre os personagens.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="border rounded-lg">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Personagens</TableHead>
+                                    <TableHead>Tipo de Relação</TableHead>
+                                    <TableHead>Descrição</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {analysisResult.characterRelationshipMap.map((rel, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell className="font-medium">{rel.characterA} &harr; {rel.characterB}</TableCell>
+                                        <TableCell>
+                                            <Badge variant="secondary">{rel.relationshipType}</Badge>
+                                        </TableCell>
+                                        <TableCell className="text-sm text-muted-foreground">{rel.description}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
+
             <Tabs defaultValue="protagonist" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="protagonist"><User className="mr-2 h-4 w-4"/> Protagonista</TabsTrigger>

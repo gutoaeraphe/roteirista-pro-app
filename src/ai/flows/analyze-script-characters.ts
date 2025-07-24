@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview Analisa os perfis psicológicos, motivações e arcos do protagonista e antagonista em um roteiro, fornecendo sugestões de melhoria.
+ * @fileOverview Analisa os perfis psicológicos, motivações e arcos do protagonista e antagonista, e mapeia as relações entre os personagens em um roteiro.
  *
  * - analyzeScriptCharacters - Uma função que lida com o processo de análise de personagens.
  * - AnalyzeScriptCharactersInput - O tipo de entrada para a função analyzeScriptCharacters.
@@ -54,8 +54,16 @@ const CharacterProfileSchema = z.object({
     ),
 });
 
+const RelationshipSchema = z.object({
+    characterA: z.string().describe("O nome do primeiro personagem na relação."),
+    characterB: z.string().describe("O nome do segundo personagem na relação."),
+    relationshipType: z.enum(["Conflito", "Aliança", "Romance", "Revelação", "Transformação"]).describe("O tipo de relação entre os personagens."),
+    description: z.string().describe("Uma breve descrição de como essa relação se manifesta no roteiro, citando cenas ou eventos chave."),
+});
+
 const AnalyzeScriptCharactersOutputSchema = z.object({
   protagonistAntagonistRelationship: z.string().describe('Uma análise da dinâmica, conflito e evolução da relação entre o protagonista e o antagonista, explicando como essa interação move a trama.'),
+  characterRelationshipMap: z.array(RelationshipSchema).describe("Um mapa das principais relações (positivas e negativas) entre todos os personagens relevantes do roteiro."),
   protagonistAnalysis: CharacterProfileSchema,
   antagonistAnalysis: CharacterProfileSchema,
 });
@@ -65,6 +73,7 @@ export type AnalyzeScriptCharactersOutput = z.infer<
 
 const AnalysisOnlySchema = AnalyzeScriptCharactersOutputSchema.deepPartial().extend({
     protagonistAntagonistRelationship: z.string(),
+    characterRelationshipMap: z.array(RelationshipSchema),
     protagonistAnalysis: CharacterProfileSchema.omit({ improvementSuggestions: true }),
     antagonistAnalysis: CharacterProfileSchema.omit({ improvementSuggestions: true }),
 });
@@ -88,17 +97,28 @@ const analysisPrompt = ai.definePrompt({
   config: { temperature: 0.2 },
   prompt: `Você é um consultor de roteiros e especialista em desenvolvimento de personagens. Sua análise deve ser profunda e crítica. **NÃO GERE SUGESTÕES DE MELHORIA**. Apenas faça a análise. Responda inteiramente em português.
 
-**Primeiro e mais importante: Analise a Relação Protagonista vs. Antagonista.**
-Descreva a dinâmica central entre eles. Como o conflito evolui? Essa relação é o motor da trama?
+**Tarefas de Análise (SEM SUGESTÕES):**
 
-**Em seguida, para cada personagem principal (protagonista e antagonista), forneça a seguinte análise crítica (SEM SUGESTÕES):**
-1.  **Análise Geral**: Resuma o papel do personagem.
-2.  **Perfil Psicológico**: Analise as contradições e complexidades.
-3.  **Forças**: Liste as qualidades do personagem.
-4.  **Fraquezas**: Identifique as vulnerabilidades e falhas.
-5.  **Motivações Internas**: Avalie a clareza e a força das motivações.
-6.  **Motivações Externas**: Analise os fatores externos.
-7.  **Arco de Personagem**: Descreva a jornada de transformação.
+1.  **Mapa de Relações (characterRelationshipMap):**
+    Identifique as relações mais importantes entre os personagens (principais e secundários). Para cada relação, especifique:
+    *   **characterA** e **characterB**: Os nomes dos personagens.
+    *   **relationshipType**: Categorize como "Conflito", "Aliança", "Romance", "Revelação" ou "Transformação".
+        *   **Revelação**: Um personagem revela algo crucial para o outro.
+        *   **Transformação**: A influência de um personagem causa uma mudança fundamental no outro.
+    *   **description**: Descreva como essa relação se manifesta no roteiro.
+
+2.  **Relação Protagonista vs. Antagonista (protagonistAntagonistRelationship):**
+    Descreva a dinâmica central entre eles. Como o conflito evolui? Essa relação é o motor da trama?
+
+3.  **Análise Individual (protagonistAnalysis e antagonistAnalysis):**
+    Para o protagonista e antagonista, forneça a seguinte análise crítica:
+    *   **Análise Geral**: Resuma o papel do personagem.
+    *   **Perfil Psicológico**: Analise as contradições e complexidades.
+    *   **Forças**: Liste as qualidades do personagem.
+    *   **Fraquezas**: Identifique as vulnerabilidades e falhas.
+    *   **Motivações Internas**: Avalie a clareza e a força das motivações.
+    *   **Motivações Externas**: Analise os fatores externos.
+    *   **Arco de Personagem**: Descreva a jornada de transformação.
 
 Conteúdo do Roteiro:
 {{{scriptContent}}}
@@ -148,6 +168,7 @@ const analyzeScriptCharactersFlow = ai.defineFlow(
     // 3. Combinar resultados
     const finalResult: AnalyzeScriptCharactersOutput = {
       protagonistAntagonistRelationship: analysis.protagonistAntagonistRelationship,
+      characterRelationshipMap: analysis.characterRelationshipMap || [],
       protagonistAnalysis: {
         ...analysis.protagonistAnalysis,
         improvementSuggestions: suggestions.protagonist,
