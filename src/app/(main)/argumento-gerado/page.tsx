@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { FileText, Milestone, Users, Copy, FileUp } from "lucide-react";
+import { FileText, Milestone, Users, Copy, FileUp, Save } from "lucide-react";
 import { useScript } from "@/context/script-context";
 
 type FinalArgument = {
@@ -20,6 +20,32 @@ type FinalArgument = {
     antagonistPresentation: string;
     detailedArgument: string;
 };
+
+// Helper function to parse the structured text
+const parseArgumentText = (text: string): FinalArgument => {
+    const sections = {
+        logline: '## Logline',
+        synopsis: '## Sinopse',
+        protagonist: '### Protagonista',
+        antagonist: '### Antagonista',
+        detailed: '## Argumento Detalhado'
+    };
+
+    const extractContent = (startTag: string, endTag: string) => {
+        const startIndex = text.indexOf(startTag) + startTag.length;
+        const endIndex = text.indexOf(endTag, startIndex);
+        return text.substring(startIndex, endIndex !== -1 ? endIndex : undefined).trim();
+    };
+
+    return {
+        logline: extractContent(sections.logline, sections.synopsis),
+        synopsis: extractContent(sections.synopsis, '## Personagens'),
+        protagonistPresentation: extractContent(sections.protagonist, sections.antagonist),
+        antagonistPresentation: extractContent(sections.antagonist, sections.detailed),
+        detailedArgument: extractContent(sections.detailed, 'EOF'), // Use a dummy end tag
+    };
+};
+
 
 const EditableSection = ({ title, value, onChange, icon: Icon, isTextarea = false, rows = 3 }: { title: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void; icon: React.ElementType; isTextarea?: boolean; rows?: number }) => (
     <Card>
@@ -55,16 +81,32 @@ const InfoCardSkeleton = () => (
     </Card>
 );
 
-
-export default function ArgumentoGeradoPage() {
+function ArgumentEditorCore() {
     const [argument, setArgument] = useState<FinalArgument | null>(null);
+    const [isEditingExisting, setIsEditingExisting] = useState(false);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
     const router = useRouter();
-    const { addScript } = useScript();
+    const searchParams = useSearchParams();
+    const { addScript, updateScript, getScriptById } = useScript();
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
+        const scriptId = searchParams.get('id');
+        if (scriptId) {
+            // Editing an existing argument
+            setIsEditingExisting(true);
+            const script = getScriptById(scriptId);
+            if (script && script.format === 'Argumento') {
+                const parsedArgument = parseArgumentText(script.content);
+                setArgument(parsedArgument);
+            } else {
+                 toast({ title: "Argumento não encontrado", description: "Não foi possível carregar o argumento para edição.", variant: "destructive" });
+                 router.push('/painel-de-roteiros');
+            }
+            setLoading(false);
+        } else {
+            // Creating a new argument from localStorage
+            setIsEditingExisting(false);
             const storedArgument = localStorage.getItem('generatedArgument');
             if (storedArgument) {
                 setArgument(JSON.parse(storedArgument));
@@ -74,7 +116,7 @@ export default function ArgumentoGeradoPage() {
             }
             setLoading(false);
         }
-    }, [router, toast]);
+    }, [searchParams, getScriptById, router, toast]);
     
     const handleInputChange = (field: keyof FinalArgument) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (argument) {
@@ -114,9 +156,23 @@ ${argument.detailedArgument}
         }
     }
     
-    const handleSaveAsScript = () => {
-        if (argument) {
-            const scriptContent = createPlainTextDocument();
+    const handleSaveOrUpdate = () => {
+        if (!argument) return;
+        const scriptContent = createPlainTextDocument();
+        const scriptId = searchParams.get('id');
+
+        if (isEditingExisting && scriptId) {
+            // Update existing script
+            const existingScript = getScriptById(scriptId);
+            if (existingScript) {
+                updateScript({
+                    ...existingScript,
+                    content: scriptContent,
+                });
+                toast({ title: "Argumento Atualizado!", description: "Suas alterações foram salvas no painel." });
+            }
+        } else {
+            // Save as new script
             addScript({
                 name: `Argumento: ${argument.logline.substring(0, 30)}...`,
                 format: "Argumento",
@@ -124,9 +180,9 @@ ${argument.detailedArgument}
                 content: scriptContent,
             });
             toast({ title: "Argumento Salvo!", description: "O argumento foi salvo como um novo roteiro no seu painel." });
-            localStorage.removeItem('generatedArgument'); // Limpa para evitar re-salvar
-            router.push('/painel-de-roteiros');
+            localStorage.removeItem('generatedArgument'); // Clean up after saving
         }
+        router.push('/painel-de-roteiros');
     }
 
     if (loading) {
@@ -155,7 +211,7 @@ ${argument.detailedArgument}
     }
 
     if (!argument) {
-        return null; // ou um placeholder/mensagem de erro
+        return null;
     }
 
 
@@ -164,14 +220,15 @@ ${argument.detailedArgument}
             <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-headline font-bold">Editor de Argumento</h1>
-                    <p className="text-muted-foreground">Refine o argumento gerado pela IA. Suas alterações são salvas automaticamente.</p>
+                    <p className="text-muted-foreground">Refine o argumento abaixo. Suas alterações podem ser salvas.</p>
                 </div>
                 <div className="flex gap-2">
                     <Button onClick={handleCopy} variant="outline">
                         <Copy className="mr-2 h-4 w-4" /> Copiar Texto
                     </Button>
-                    <Button onClick={handleSaveAsScript}>
-                        <FileUp className="mr-2 h-4 w-4" /> Salvar como Roteiro
+                    <Button onClick={handleSaveOrUpdate}>
+                        {isEditingExisting ? <Save className="mr-2 h-4 w-4" /> : <FileUp className="mr-2 h-4 w-4" />}
+                        {isEditingExisting ? 'Atualizar Roteiro' : 'Salvar como Roteiro'}
                     </Button>
                 </div>
             </header>
@@ -186,5 +243,13 @@ ${argument.detailedArgument}
                 <EditableSection title="Argumento Detalhado" value={argument.detailedArgument} onChange={handleInputChange('detailedArgument')} icon={FileText} isTextarea rows={15} />
             </div>
         </div>
+    )
+}
+
+export default function ArgumentoGeradoPage() {
+    return (
+        <Suspense fallback={<div>Carregando...</div>}>
+            <ArgumentEditorCore />
+        </Suspense>
     )
 }

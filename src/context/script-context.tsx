@@ -15,6 +15,7 @@ type ScriptContextType = {
   addScript: (script: Omit<Script, 'id' | 'analysis'>) => void;
   updateScript: (script: Script) => void;
   deleteScript: (scriptId: string) => void;
+  getScriptById: (scriptId: string) => Script | undefined;
   loading: boolean;
 };
 
@@ -142,9 +143,13 @@ export const ScriptProvider = ({ children }: { children: ReactNode }) => {
     setActiveScriptState(script);
     setActiveScriptIdInLocalStorage(script?.id || null);
   };
+  
+  const getScriptById = useCallback((scriptId: string) => {
+      return scripts.find(s => s.id === scriptId);
+  }, [scripts]);
 
   return (
-    <ScriptContext.Provider value={{ scripts, activeScript, setActiveScript, addScript, updateScript, deleteScript, loading }}>
+    <ScriptContext.Provider value={{ scripts, activeScript, setActiveScript, addScript, updateScript, deleteScript, getScriptById, loading }}>
       {children}
     </ScriptContext.Provider>
   );

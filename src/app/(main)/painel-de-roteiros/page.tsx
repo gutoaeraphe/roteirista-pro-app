@@ -11,10 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { FilePlus2, Trash2, CheckCircle, Upload, ShieldAlert } from "lucide-react";
+import { FilePlus2, Trash2, CheckCircle, Upload, ShieldAlert, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useRouter } from "next/navigation";
 
 const scriptSchema = z.object({
   name: z.string().min(1, "O nome do roteiro é obrigatório."),
@@ -28,6 +29,7 @@ type ScriptFormData = z.infer<typeof scriptSchema>;
 export default function PainelDeRoteirosPage() {
   const { scripts, addScript, activeScript, setActiveScript, deleteScript, loading } = useScript();
   const { toast } = useToast();
+  const router = useRouter();
   const [fileName, setFileName] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -39,6 +41,13 @@ export default function PainelDeRoteirosPage() {
       genre: "",
     },
   });
+
+  const handleRowClick = (script: (typeof scripts)[0]) => {
+      setActiveScript(script);
+      if (script.format === 'Argumento') {
+          router.push(`/argumento-gerado?id=${script.id}`);
+      }
+  };
 
   const onSubmit = async (data: ScriptFormData) => {
     try {
@@ -171,7 +180,7 @@ export default function PainelDeRoteirosPage() {
                 <h4 className="font-semibold text-foreground/90">3. Necessidade de Revisão Humana:</h4>
                 <p>É imprescindível que todo e qualquer conteúdo, resposta ou interação gerada pela IA seja tratado como preliminar e sujeito a uma rigorosa revisão humana. Antes de tomar qualquer decisão ou ação com base nas informações fornecidas, o usuário deve validá-las de forma independente.</p>
                 <h4 className="font-semibold text-foreground/90">4. Isenção de Responsabilidade:</h4>
-                <p>Ao utilizar as funcionalidades de IA desta plataforma, o usuário reconhece e concorda que o faz por sua conta e risco. Isentamo-nos de qualquer responsabilidade por danos diretos ou indiretos, perdas ou inconvenientes que possam surgir do uso de informações geradas pela IA que não tenham sido devidamente verificadas por um humano. A responsabilidade final pelo uso do conteúdo gerado é integralmente do usuário.</p>
+                <p>Ao utilizar as funcionalidades de IA desta plataforma, o USUÁRIO reconhece e concorda que o faz por sua conta e risco. Isentamo-nos de qualquer responsabilidade por danos diretos ou indiretos, perdas ou inconvenientes que possam surgir do uso de informações geradas pela IA que não tenham sido devidamente verificadas por um humano. A responsabilidade final pelo uso do conteúdo gerado é integralmente do usuário.</p>
                 <h4 className="font-semibold text-foreground/90">5. Conformidade e Legislação:</h4>
                 <p>Este aviso está em conformidade com os princípios de transparência e informação, em linha com as discussões atuais sobre a regulamentação da Inteligência Artificial no Brasil e com o Código de Defesa do Consumidor, que preza pela clareza na prestação de serviços.</p>
             </AccordionContent>
@@ -182,7 +191,7 @@ export default function PainelDeRoteirosPage() {
           <CardHeader>
               <CardTitle>Seus Roteiros</CardTitle>
               <CardDescription>
-                  Selecione um roteiro para torná-lo ativo para análise ou exclua os que não são mais necessários.
+                  Selecione um roteiro para torná-lo ativo para análise. Roteiros do tipo "Argumento" serão abertos no editor.
               </CardDescription>
           </CardHeader>
           <CardContent>
@@ -203,16 +212,21 @@ export default function PainelDeRoteirosPage() {
                       {scripts.map((script) => (
                           <TableRow 
                               key={script.id} 
-                              className={`cursor-pointer ${activeScript?.id === script.id ? 'bg-primary/10' : ''}`}
-                              onClick={() => setActiveScript(script)}
+                              className={`cursor-pointer ${activeScript?.id === script.id && script.format !== 'Argumento' ? 'bg-primary/10' : ''}`}
+                              onClick={() => handleRowClick(script)}
                           >
                           <TableCell className="font-medium flex items-center gap-2">
-                              {activeScript?.id === script.id && <CheckCircle className="w-4 h-4 text-green-500" />}
+                              {activeScript?.id === script.id && script.format !== 'Argumento' && <CheckCircle className="w-4 h-4 text-green-500" />}
                               {script.name}
                           </TableCell>
                           <TableCell>{script.format}</TableCell>
                           <TableCell>{script.genre}</TableCell>
                           <TableCell className="text-right">
+                              {script.format === 'Argumento' && (
+                                <Button variant="ghost" size="icon">
+                                    <Edit className="h-4 w-4" />
+                                </Button>
+                              )}
                               <Button
                               variant="ghost"
                               size="icon"
