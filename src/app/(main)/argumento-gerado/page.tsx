@@ -7,8 +7,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { FileText, Milestone, Users, Copy, FileUp } from "lucide-react";
-import ReactMarkdown from 'react-markdown';
 import { useScript } from "@/context/script-context";
 
 type FinalArgument = {
@@ -19,16 +21,30 @@ type FinalArgument = {
     detailedArgument: string;
 };
 
-const InfoCard = ({ title, content, icon: Icon, className }: { title: string; content: string; icon: React.ElementType; className?: string }) => (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg"><Icon className="w-5 h-5 text-primary"/> {title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-muted-foreground">
-            <ReactMarkdown>{content}</ReactMarkdown>
-        </div>
-      </CardContent>
+const EditableSection = ({ title, value, onChange, icon: Icon, isTextarea = false, rows = 3 }: { title: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void; icon: React.ElementType; isTextarea?: boolean; rows?: number }) => (
+    <Card>
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg"><Icon className="w-5 h-5 text-primary"/> {title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <Label htmlFor={title.toLowerCase().replace(' ', '-')} className="sr-only">{title}</Label>
+            {isTextarea ? (
+                 <Textarea
+                    id={title.toLowerCase().replace(' ', '-')}
+                    value={value}
+                    onChange={onChange}
+                    rows={rows}
+                    className="w-full bg-muted/50 p-2 rounded"
+                />
+            ) : (
+                <Input
+                    id={title.toLowerCase().replace(' ', '-')}
+                    value={value}
+                    onChange={onChange}
+                    className="w-full bg-muted/50 p-2 rounded"
+                />
+            )}
+        </CardContent>
     </Card>
 );
 
@@ -60,6 +76,12 @@ export default function ArgumentoGeradoPage() {
         }
     }, [router, toast]);
     
+    const handleInputChange = (field: keyof FinalArgument) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (argument) {
+            setArgument({ ...argument, [field]: e.target.value });
+        }
+    };
+
     const createPlainTextDocument = (): string => {
         if (!argument) return "";
         return `
@@ -141,8 +163,8 @@ ${argument.detailedArgument}
         <div className="space-y-8">
             <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-headline font-bold">Argumento Gerado</h1>
-                    <p className="text-muted-foreground">Este é o resultado da sua sessão de criação. Você pode copiá-lo ou salvá-lo como um novo roteiro.</p>
+                    <h1 className="text-3xl font-headline font-bold">Editor de Argumento</h1>
+                    <p className="text-muted-foreground">Refine o argumento gerado pela IA. Suas alterações são salvas automaticamente.</p>
                 </div>
                 <div className="flex gap-2">
                     <Button onClick={handleCopy} variant="outline">
@@ -155,13 +177,13 @@ ${argument.detailedArgument}
             </header>
             
             <div className="space-y-6">
-                <InfoCard title="Logline" content={argument.logline} icon={Milestone} className="bg-primary/5 border-primary/20"/>
-                 <InfoCard title="Sinopse" content={argument.synopsis} icon={FileText} />
+                <EditableSection title="Logline" value={argument.logline} onChange={handleInputChange('logline')} icon={Milestone} />
+                <EditableSection title="Sinopse" value={argument.synopsis} onChange={handleInputChange('synopsis')} icon={FileText} isTextarea rows={5} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InfoCard title="Protagonista" content={argument.protagonistPresentation} icon={Users} />
-                    <InfoCard title="Antagonista" content={argument.antagonistPresentation} icon={Users} />
+                    <EditableSection title="Protagonista" value={argument.protagonistPresentation} onChange={handleInputChange('protagonistPresentation')} icon={Users} isTextarea rows={8}/>
+                    <EditableSection title="Antagonista" value={argument.antagonistPresentation} onChange={handleInputChange('antagonistPresentation')} icon={Users} isTextarea rows={8} />
                 </div>
-                <InfoCard title="Argumento Detalhado" content={argument.detailedArgument} icon={FileText} />
+                <EditableSection title="Argumento Detalhado" value={argument.detailedArgument} onChange={handleInputChange('detailedArgument')} icon={FileText} isTextarea rows={15} />
             </div>
         </div>
     )
