@@ -27,6 +27,9 @@ const PitchingDocumentSchema = z.object({
     theme: z.string().describe('A mensagem central e as questões universais que a obra explora.'),
     targetAudience: z.string().describe('Uma descrição do principal grupo de audiência para este filme.'),
     justification: z.string().describe('Uma explicação convincente de por que esta história é relevante e precisa ser contada agora.'),
+    contextualizacaoERelevancia: z.string().describe('Demonstra a relevância cultural e social, evidenciando como o projeto se conecta aos temas contemporâneos e às demandas do público.'),
+    contribuicoesCulturaisEArtisticas: z.string().describe('Como o projeto dialoga com o público, retrata realidades, explora temas e expande os limites das narrativas.'),
+    apeloEmocionalEVisionario: z.string().describe('A capacidade da narrativa de engajar, emocionando e conectando-se com valores humanos universais.'),
     mainCharacters: z.string().describe('Breves descrições do protagonista e do antagonista, focando em seus arcos e conflitos.'),
     toneAndStyle: z.string().describe('A atmosfera, o estilo visual e a abordagem narrativa do filme.'),
     storyArc: z.string().describe('Um resumo do desenvolvimento da trama através de seus atos principais.'),
@@ -64,11 +67,14 @@ Analise o roteiro e gere o conteúdo para cada uma das seções a seguir. Seja c
 4.  **theme**: A mensagem central e as questões universais que a obra explora.
 5.  **targetAudience**: Uma descrição do principal grupo de audiência para este filme.
 6.  **justification**: Uma explicação convincente de por que esta história é relevante e precisa ser contada agora.
-7.  **mainCharacters**: Breves descrições do protagonista e do antagonista, focando em seus arcos e conflitos.
-8.  **toneAndStyle**: A atmosfera, o estilo visual e a abordagem narrativa do filme.
-9.  **storyArc**: Um resumo do desenvolvimento da trama através de seus atos principais.
-10. **detailedArgument**: Um tratamento mais expandido da história, cobrindo os principais pontos da trama do início ao fim. Seja detalhista aqui, explicando a progressão da história de forma mais completa.
-11. **marketingPotential**: Uma análise das oportunidades de marketing e do apelo comercial do projeto.
+7.  **contextualizacaoERelevancia**: Demonstre a relevância cultural e social, evidenciando como o projeto se conecta aos temas contemporâneos e às demandas do público.
+8.  **contribuicoesCulturaisEArtisticas**: Como o projeto dialoga com o público, retrata realidades, explora temas e expande os limites das narrativas.
+9.  **apeloEmocionalEVisionario**: A capacidade da narrativa de engajar, emocionando e conectando-se com valores humanos universais.
+10. **mainCharacters**: Breves descrições do protagonista e do antagonista, focando em seus arcos e conflitos.
+11. **toneAndStyle**: A atmosfera, o estilo visual e a abordagem narrativa do filme.
+12. **storyArc**: Um resumo do desenvolvimento da trama através de seus atos principais.
+13. **detailedArgument**: Um tratamento mais expandido da história, cobrindo os principais pontos da trama do início ao fim. Seja detalhista aqui, explicando a progressão da história de forma mais completa.
+14. **marketingPotential**: Uma análise das oportunidades de marketing e do apelo comercial do projeto.
 
 ---
 Gênero do Filme: {{{genre}}}

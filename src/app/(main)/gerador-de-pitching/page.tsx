@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { generatePitchingDocument } from "@/ai/flows/generate-pitching-document";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, Copy, FileText, Target, Milestone, Users, Palette, BarChart3, TrendingUp, Handshake, Rocket, AlertTriangle, Download } from "lucide-react";
+import { Sparkles, Copy, FileText, Target, Milestone, Users, Palette, BarChart3, TrendingUp, Handshake, Rocket, AlertTriangle, Download, Globe, Paintbrush, Heart } from "lucide-react";
 import type { GeneratePitchingDocumentOutput } from "@/ai/flows/generate-pitching-document";
 import ReactMarkdown from 'react-markdown';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -85,11 +85,17 @@ ${docData.synopsis}
 ## Tema
 ${docData.theme}
 
-## Público-Alvo
-${docData.targetAudience}
-
 ## Justificativa
 ${docData.justification}
+
+## Contextualização e Relevância
+${docData.contextualizacaoERelevancia}
+
+## Contribuições Culturais e Artísticas
+${docData.contribuicoesCulturaisEArtisticas}
+
+## Apelo Emocional e Visionário
+${docData.apeloEmocionalEVisionario}
 
 ## Personagens Principais
 ${docData.mainCharacters}
@@ -186,10 +192,13 @@ ${docData.marketingPotential}
                 <InfoCard title="Tema" content={currentDocument.pitchingDocument.theme} icon={Handshake} />
                 <InfoCard title="Público-Alvo" content={currentDocument.pitchingDocument.targetAudience} icon={Target} />
                 <InfoCard title="Justificativa" content={currentDocument.pitchingDocument.justification} icon={TrendingUp} />
+                <InfoCard title="Contextualização e Relevância" content={currentDocument.pitchingDocument.contextualizacaoERelevancia} icon={Globe} />
+                <InfoCard title="Contribuições Culturais e Artísticas" content={currentDocument.pitchingDocument.contribuicoesCulturaisEArtisticas} icon={Paintbrush} />
+                <InfoCard title="Apelo Emocional e Visionário" content={currentDocument.pitchingDocument.apeloEmocionalEVisionario} icon={Heart} />
                 <InfoCard title="Personagens Principais" content={currentDocument.pitchingDocument.mainCharacters} icon={Users} />
                 <InfoCard title="Tom e Estilo" content={currentDocument.pitchingDocument.toneAndStyle} icon={Palette} />
-                <InfoCard title="Arco da História" content={currentDocument.pitchingDocument.storyArc} icon={BarChart3} />
             </div>
+            <InfoCard title="Arco da História" content={currentDocument.pitchingDocument.storyArc} icon={BarChart3} />
             <InfoCard title="Argumento Detalhado" content={currentDocument.pitchingDocument.detailedArgument} icon={FileText} />
             <InfoCard title="Potencial de Marketing" content={currentDocument.pitchingDocument.marketingPotential} icon={TrendingUp} />
         </div>
