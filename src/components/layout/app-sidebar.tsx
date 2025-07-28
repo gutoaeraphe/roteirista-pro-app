@@ -121,11 +121,6 @@ const navItems = [
         href: "/gerador-de-pitching",
         icon: Presentation,
       },
-      {
-        title: "Identificador de Persona",
-        href: "/identificador-de-persona",
-        icon: Search,
-      },
     ],
   },
   {

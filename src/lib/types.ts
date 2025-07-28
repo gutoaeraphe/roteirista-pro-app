@@ -44,9 +44,6 @@ import type {
 import type {
     AnalyzeJourneyArcOutput
 } from '@/ai/flows/analyze-journey-arc';
-import type {
-    GenerateAudiencePersonasOutput
-} from '@/ai/flows/generate-audience-personas';
 
 
 export type UserProfile = {
@@ -82,7 +79,6 @@ export type Script = {
     pitchingDocument?: GeneratePitchingDocumentOutput;
     scriptDoctor?: ChatMessage[];
     journeyArc?: AnalyzeJourneyArcOutput;
-    audiencePersonas?: GenerateAudiencePersonasOutput;
   };
 };
 
