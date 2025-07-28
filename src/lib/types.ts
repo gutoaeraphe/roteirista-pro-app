@@ -41,6 +41,9 @@ import type {
 import type {
     AnalyzeScriptHighConceptOutput
 } from '@/ai/flows/analyze-script-high-concept';
+import type {
+    AnalyzeJourneyArcOutput
+} from '@/ai/flows/analyze-journey-arc';
 
 
 export type UserProfile = {
@@ -75,6 +78,7 @@ export type Script = {
     receptionAndEngagement?: AnalyzeReceptionAndEngagementOutput;
     pitchingDocument?: GeneratePitchingDocumentOutput;
     scriptDoctor?: ChatMessage[];
+    journeyArc?: AnalyzeJourneyArcOutput;
   };
 };
 

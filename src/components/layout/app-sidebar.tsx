@@ -31,7 +31,8 @@ import {
   ShoppingBag,
   Briefcase,
   Target,
-  Search
+  Search,
+  Footprints
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -84,6 +85,11 @@ const navItems = [
         title: "Mapeamento de Conflitos",
         href: "/mapeamento-de-conflitos",
         icon: Crosshair,
+      },
+      {
+        title: "Análise do Arco da Jornada",
+        href: "/analise-do-arco-da-jornada",
+        icon: Footprints,
       },
     ],
   },
@@ -233,6 +239,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
         case '/checklist-de-tchekhov':
         case '/analise-de-recepcao':
         case '/mapeamento-de-conflitos':
+        case '/analise-do-arco-da-jornada':
             return isAnalysisToolDisabled;
         case '/gerador-de-argumento':
              return false; // Sempre habilitado

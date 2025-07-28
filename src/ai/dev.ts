@@ -23,3 +23,4 @@ import '@/ai/flows/analyze-reception-engagement.ts';
 import '@/ai/flows/analyze-script-conflicts.ts';
 import '@/ai/flows/analyze-script-mcv.ts';
 import '@/ai/flows/analyze-script-high-concept.ts';
+import '@/ai/flows/analyze-journey-arc.ts';
