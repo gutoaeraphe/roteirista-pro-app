@@ -121,6 +121,11 @@ const navItems = [
         href: "/gerador-de-pitching",
         icon: Presentation,
       },
+      {
+        title: "Identificador de Persona",
+        href: "/identificador-de-persona",
+        icon: Search,
+      },
     ],
   },
   {
@@ -240,6 +245,7 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
         case '/analise-de-recepcao':
         case '/mapeamento-de-conflitos':
         case '/analise-do-arco-da-jornada':
+        case '/identificador-de-persona':
             return isAnalysisToolDisabled;
         case '/gerador-de-argumento':
              return false; // Sempre habilitado
