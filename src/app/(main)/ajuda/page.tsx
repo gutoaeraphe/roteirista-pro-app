@@ -6,71 +6,71 @@ import { HelpCircle, Mail } from "lucide-react";
 const faqItems = [
     {
         question: "Como funciona o Painel de Roteiros?",
-        answer: "No Painel de Roteiros, você pode adicionar novos roteiros fazendo o upload de arquivos de texto (.txt). A lista de roteiros permite que você selecione um como 'ativo' (clicando sobre ele) para ser usado em todas as ferramentas de análise, além de excluí-los."
+        answer: "O Painel de Roteiros é sua central de controle. Aqui, você pode adicionar todos os seus projetos fazendo o upload de arquivos de texto (.txt). Cada roteiro que você adiciona fica listado, e você pode selecionar um para torná-lo 'ativo' com um simples clique. O roteiro ativo é aquele que será usado em todas as ferramentas de análise da plataforma. Você também pode excluir roteiros que não precisa mais. Se um roteiro for um 'Argumento' criado pelo gerador, clicar nele abrirá o editor para que você possa continuar aprimorando-o."
     },
     {
         question: "O que é a Análise de Proposta de Valor (High Concept)?",
-        answer: "Esta é a primeira análise que você deve fazer. Ela avalia a força do conceito central do seu projeto em três pilares: 'The Book' (a qualidade do enredo), 'The Hook' (o gancho de marketing) e 'The Look' (o potencial visual). É uma ferramenta essencial para entender o potencial de mercado da sua ideia."
+        answer: "Esta é uma análise estratégica fundamental, ideal para o início do desenvolvimento. Ela avalia a força da sua ideia central sob a ótica do mercado, dividindo-a em três pilares: 'The Book' (a força e originalidade do enredo), 'The Hook' (o elemento que serve como 'gancho' para o marketing e atração de público) e 'The Look' (o potencial estético e visual da história). O resultado é uma pontuação clara e um diagnóstico que ajuda a entender o apelo comercial do seu projeto antes mesmo de escrever a primeira página."
     },
     {
         question: "Para que serve a Análise de Estrutura de Roteiro?",
-        answer: "Esta ferramenta realiza um diagnóstico completo do roteiro ativo. Ela fornece um resumo da trama, avalia métricas-chave como estrutura, personagens e originalidade, e identifica os elementos dramáticos centrais da sua história, oferecendo sugestões para aprimorá-los."
+        answer: "Esta ferramenta oferece um diagnóstico dramatúrgico completo do seu roteiro ativo. Ela vai além de um simples resumo, fornecendo métricas detalhadas (com pontuação e sugestões) sobre a qualidade da estrutura, o desenvolvimento dos personagens, o potencial comercial e a originalidade. Além disso, a IA identifica e analisa criticamente os elementos dramáticos fundamentais (como o evento desencadeador, o clímax e o tema), dando um feedback valioso sobre a eficácia de cada parte da sua narrativa."
     },
     {
         question: "O que é a Análise de Viabilidade (MCV)?",
-        answer: "A análise de Mínimo Conteúdo Viável (MCV) avalia a viabilidade técnica e financeira do seu roteiro. Ela identifica potenciais 'flags' de custo em áreas como logística, arte, elenco e pós-produção, dando uma noção realista da complexidade de produção do seu projeto. Lembre-se: nesta análise, notas mais baixas são melhores!"
+        answer: "A análise de Mínimo Conteúdo Viável (MCV) funciona como um 'produtor virtual'. Ela avalia seu roteiro sob uma perspectiva de produção, identificando a complexidade e os custos potenciais. A ferramenta analisa 8 áreas críticas (logística, arte, elenco, etc.) e atribui uma pontuação de 0 a 10. Atenção: nesta análise, o objetivo é ter notas baixas, pois elas indicam menor custo e complexidade. O resultado é um guia realista para entender o quão viável é produzir sua história."
     },
     {
         question: "O que a Análise da Jornada do Herói faz?",
-        answer: "Este módulo identifica os 12 passos da Jornada do Herói em seu roteiro ativo. Ele mostra quais passos foram encontrados, avalia sua eficácia e exibe um gráfico de intensidade dramática para visualizar os picos de tensão da sua narrativa."
+        answer: "Baseado na famosa estrutura de Joseph Campbell, este módulo disseca seu roteiro para encontrar os 12 passos da Jornada do Herói. Ele não apenas identifica os passos presentes, mas também avalia a eficácia de cada um com uma pontuação e fornece sugestões de melhoria. Ao final, a ferramenta também oferece uma análise concisa da estrutura de 3 atos do seu roteiro."
     },
      {
         question: "O que a Análise do Arco da Jornada faz?",
-        answer: "Esta análise oferece uma visão diferente da jornada do seu personagem, focada em 8 passos essenciais do arco dramático: Equilíbrio, Gatilho, Busca, Clímax, Escolha, Surpresa, Reviravolta e Desfecho. É uma ótima ferramenta para verificar a coesão da transformação do protagonista."
+        answer: "Enquanto a Jornada do Herói foca em uma estrutura clássica de 12 passos, esta análise se concentra na transformação interna do protagonista através de 8 momentos-chave do arco dramático: Equilíbrio, Gatilho, Busca, Clímax, Escolha, Surpresa, Reviravolta e Desfecho. É uma ferramenta complementar excelente para garantir que a jornada emocional e psicológica do seu personagem seja coesa, impactante e bem resolvida."
     },
     {
         question: "O que é a Análise de Personagens?",
-        answer: "Aqui, a IA mergulha no perfil psicológico do seu protagonista e antagonista e também mapeia a teia de relações entre todos os personagens, identificando conflitos, alianças e romances. Ela analisa motivações, arcos e fornece sugestões para tornar seus personagens mais complexos e suas interações mais dinâmicas."
+        answer: "Esta é uma das análises mais profundas. A IA não só traça perfis psicológicos detalhados para seu protagonista e antagonista (avaliando forças, fraquezas, motivações e arcos), como também constrói um 'Mapa de Relações'. Esse mapa visualiza a teia de interações entre todos os personagens importantes, identificando os tipos de relação (conflito, aliança, romance, etc.) e como elas impulsionam a trama, oferecendo um entendimento completo da dinâmica do seu elenco."
     },
     {
         question: "Como funciona a Análise SWOT?",
-        answer: "Esta ferramenta aplica a clássica matriz SWOT ao seu roteiro, oferecendo uma visão 360º. Ela identifica as Forças e Fraquezas internas da sua história (trama, personagens) e as Oportunidades e Ameaças externas (mercado, tendências, concorrência)."
+        answer: "Esta ferramenta aplica a clássica matriz de análise de negócios (SWOT) ao seu projeto, proporcionando uma visão 360º. A IA atua com uma dupla persona: um 'Mentor Criativo', que analisa os fatores internos (Forças e Fraquezas da sua história), e um 'Estrategista de Mercado', que avalia os fatores externos (Oportunidades e Ameaças do mercado). O resultado é um diagnóstico completo que une o potencial criativo e comercial do seu roteiro."
     },
     {
         question: "O que é o Mapeamento de Conflitos?",
-        answer: "Esta análise identifica e categoriza os principais conflitos (internos e externos) que o protagonista enfrenta. Ela ajuda a visualizar o motor da dramaturgia, garantindo que o personagem seja constantemente desafiado e que seu arco de transformação seja bem construído."
+        answer: "O conflito é o motor de toda boa história. Esta ferramenta identifica e categoriza todos os principais conflitos que seu protagonista enfrenta, sejam eles internos (dilemas morais, medos) ou externos (contra outros personagens, a sociedade ou a natureza). Ao final, ela fornece um resumo analítico sobre o equilíbrio e a progressão desses conflitos, ajudando você a garantir que seu personagem seja constantemente desafiado de maneira significativa."
     },
      {
         question: "O que é o Checklist de Tchekhov?",
-        answer: "Inspirada no dramaturgo Anton Tchekhov, esta análise verifica a 'economia narrativa' do seu roteiro. Ela avalia se cada elemento chave (personagem, cena, diálogo) tem um propósito claro e funcional, ajudando a eliminar o que é desnecessário e a fortalecer o impacto da história."
+        answer: "Inspirada no princípio da 'Arma de Tchekhov', esta análise avalia a economia e a eficiência da sua narrativa. Ela verifica 8 pontos cruciais para garantir que cada elemento do seu roteiro (cenas, personagens, diálogos, etc.) tenha um propósito dramático claro e funcional. É a ferramenta perfeita para 'aparar as arestas', eliminar o que é desnecessário e garantir que cada parte da sua história contribua para o todo, resultando em um roteiro mais coeso e impactante."
     },
     {
         question: "O que a Análise de Recepção e Engajamento avalia?",
-        answer: "Esta é uma análise preditiva avançada sobre como a audiência vai interpretar e sentir sua história. Ela diagnostica como o tema será percebido, os pontos de conexão cultural, o potencial de debate e a forma como o espectador se conectará emocionalmente com a narrativa e os personagens."
+        answer: "Esta é uma análise preditiva sofisticada. Em vez de avaliar a 'qualidade' do seu roteiro, ela diagnostica como diferentes públicos provavelmente irão interpretá-lo e se conectar emocionalmente com ele. A ferramenta avalia dois grandes eixos: a 'Recepção' (como a história será interpretada, seu potencial de debate e clareza temática) e a 'Espectatorialidade' (como a história será sentida, analisando a imersão, a tensão e a identificação com os personagens)."
     },
     {
         question: "Como funciona o Teste de Representatividade?",
-        answer: "Esta ferramenta avalia a diversidade e inclusão do seu roteiro usando três testes conhecidos: o Teste de Bechdel (representatividade feminina), o Teste de Vito Russo (LGBTQIA+) e o Teste de DuVernay (racial). Ele fornece um diagnóstico e a justificativa para cada critério."
+        answer: "Esta ferramenta serve como um espelho para a diversidade e inclusão em seu roteiro. Ela aplica três dos mais conhecidos testes da indústria: o Teste de Bechdel (representatividade feminina), o Teste de Vito Russo (representatividade LGBTQIA+) e o Teste de DuVernay (representatividade racial). Para cada um, a IA fornece um diagnóstico claro, critério por critério, explicando se o roteiro foi aprovado ou não e por quê. É uma ferramenta de autoavaliação para identificar oportunidades de enriquecer suas narrativas."
     },
     {
         question: "O que eu encontro na Análise de Mercado?",
-        answer: "Este dashboard oferece uma visão comercial do seu projeto. Ele analisa o público-alvo, o alinhamento com tendências de mercado, o potencial de marketing, obras de referência e os canais de distribuição mais adequados para o seu roteiro."
+        answer: "Este é o seu dashboard de negócios. A IA analisa o resumo e o gênero do seu roteiro para gerar um relatório comercial completo. Ele define o público-alvo, compara seu projeto com as tendências atuais, sugere obras de referência para posicionamento, aponta os melhores canais de distribuição e até mesmo brainstorms de produtos derivados e estratégias de marketing. É a ferramenta ideal para preparar seu projeto para o mercado."
     },
     {
         question: "Como usar o Script Doctor?",
-        answer: "O Script Doctor é um chat com uma IA consultora. Ele possui dois modos: 'Consultoria de Roteiro', para fazer perguntas específicas sobre seu roteiro ativo, e 'Brainstorming Criativo', um espaço livre para discutir ideias, criar personagens e desenvolver conceitos do zero."
+        answer: "O Script Doctor é o seu consultor de IA pessoal. Ele funciona em dois modos: 'Consultoria de Roteiro', onde você pode fazer perguntas específicas sobre o seu roteiro ativo (ex: 'Como posso melhorar esta cena?' ou 'Este diálogo soa natural?'); e 'Brainstorming Criativo', um chat livre para você desenvolver novas ideias do zero, criar perfis de personagens, explorar temas ou qualquer outra necessidade criativa, sem a necessidade de um roteiro."
     },
     {
         question: "Para que serve o Gerador de Pitching?",
-        answer: "Esta ferramenta compila as informações do seu roteiro ativo em um 'Film Design Document' profissional. Ele gera seções analíticas e com tom vendedor, como logline, sinopse, justificativa de mercado, apelo emocional e artístico, criando um documento pronto para ser apresentado a produtores e investidores."
+        answer: "Transforme seu roteiro em um documento de vendas profissional com um clique. Esta ferramenta analisa seu roteiro ativo e gera automaticamente um 'Film Design Document' completo, com tom analítico e vendedor. Ele cria seções essenciais como logline, sinopse, justificativa de mercado, análise de personagens, apelo emocional e artístico, e muito mais, deixando você com um material pronto para ser apresentado a produtores e investidores."
     },
     {
         question: "Como o Gerador de Argumento funciona?",
-        answer: "Diferente das outras ferramentas, o Gerador de Argumento não precisa de um roteiro pronto. Ele guia você passo a passo na criação de uma nova história. Ao final, ele compila suas ideias em um argumento estruturado que pode ser editado e salvo no seu painel para futuras análises."
+        answer: "Esta é a única ferramenta que não precisa de um roteiro pronto. Pelo contrário, ela ajuda você a criar um do zero. Através de um processo guiado passo a passo, você seleciona os pilares da sua história (tom, gênero, conflito, etc.) e a IA vai ajudando a refinar cada etapa. Ao final, ela compila todas as suas ideias em um argumento narrativo coeso e estruturado, que pode ser salvo no seu painel e editado posteriormente."
     },
     {
         question: "Como funciona o Teste de Público?",
-        answer: "Esta ferramenta permite que você simule a reação de um espectador ao seu roteiro. Primeiro, você descreve seu público-alvo. Com base nisso, a IA cria uma persona fictícia detalhada. Em seguida, essa persona 'lê' seu roteiro ativo e fornece uma análise crítica do ponto de vista dela, avaliando a trama, os personagens e os diálogos."
+        answer: "Esta ferramenta inovadora permite que você simule a reação de um espectador específico ao seu roteiro. O processo tem duas etapas: primeiro, você descreve em detalhes o seu público-alvo ideal; com base nisso, a IA cria uma 'persona' fictícia, com nome, perfil e comportamento. Em seguida, essa persona 'lê' seu roteiro ativo e fornece uma análise crítica completa do ponto de vista dela, avaliando a trama, os personagens, os diálogos e o impacto geral da história."
     }
 ];
 
