@@ -67,7 +67,7 @@ Analise o roteiro e gere o conteúdo para cada uma das seções a seguir. Seja c
 7.  **mainCharacters**: Breves descrições do protagonista e do antagonista, focando em seus arcos e conflitos.
 8.  **toneAndStyle**: A atmosfera, o estilo visual e a abordagem narrativa do filme.
 9.  **storyArc**: Um resumo do desenvolvimento da trama através de seus atos principais.
-10. **detailedArgument**: Um tratamento mais expandido da história, cobrindo os principais pontos da trama do início ao fim.
+10. **detailedArgument**: Um tratamento mais expandido da história, cobrindo os principais pontos da trama do início ao fim. Seja detalhista aqui, explicando a progressão da história de forma mais completa.
 11. **marketingPotential**: Uma análise das oportunidades de marketing e do apelo comercial do projeto.
 
 ---
