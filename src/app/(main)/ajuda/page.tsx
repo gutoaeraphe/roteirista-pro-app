@@ -18,15 +18,19 @@ const faqItems = [
     },
     {
         question: "O que é a Análise de Viabilidade (MCV)?",
-        answer: "A análise de Mínimo Conteúdo Viável (MCV) avalia a viabilidade técnica e financeira do seu roteiro. Ela identifica potenciais 'flags' de custo em áreas como logística, arte, elenco e pós-produção, dando uma noção realista da complexidade de produção do seu projeto."
+        answer: "A análise de Mínimo Conteúdo Viável (MCV) avalia a viabilidade técnica e financeira do seu roteiro. Ela identifica potenciais 'flags' de custo em áreas como logística, arte, elenco e pós-produção, dando uma noção realista da complexidade de produção do seu projeto. Lembre-se: nesta análise, notas mais baixas são melhores!"
     },
     {
         question: "O que a Análise da Jornada do Herói faz?",
         answer: "Este módulo identifica os 12 passos da Jornada do Herói em seu roteiro ativo. Ele mostra quais passos foram encontrados, avalia sua eficácia e exibe um gráfico de intensidade dramática para visualizar os picos de tensão da sua narrativa."
     },
+     {
+        question: "O que a Análise do Arco da Jornada faz?",
+        answer: "Esta análise oferece uma visão diferente da jornada do seu personagem, focada em 8 passos essenciais do arco dramático: Equilíbrio, Gatilho, Busca, Clímax, Escolha, Surpresa, Reviravolta e Desfecho. É uma ótima ferramenta para verificar a coesão da transformação do protagonista."
+    },
     {
         question: "O que é a Análise de Personagens?",
-        answer: "Aqui, a IA mergulha no perfil psicológico do seu protagonista e antagonista. Ela analisa suas motivações, forças, fraquezas e, mais importante, descreve o arco de transformação de cada um ao longo da história, fornecendo sugestões para torná-los mais complexos."
+        answer: "Aqui, a IA mergulha no perfil psicológico do seu protagonista e antagonista e também mapeia a teia de relações entre todos os personagens, identificando conflitos, alianças e romances. Ela analisa motivações, arcos e fornece sugestões para tornar seus personagens mais complexos e suas interações mais dinâmicas."
     },
     {
         question: "Como funciona a Análise SWOT?",
@@ -54,15 +58,15 @@ const faqItems = [
     },
     {
         question: "Como usar o Script Doctor?",
-        answer: "O Script Doctor é um chat com uma IA consultora de roteiros. Com um roteiro ativo selecionado, você pode fazer perguntas específicas sobre sua história (diálogos, cenas, estrutura) e receber feedback analítico e sugestões em tempo real."
+        answer: "O Script Doctor é um chat com uma IA consultora. Ele possui dois modos: 'Consultoria de Roteiro', para fazer perguntas específicas sobre seu roteiro ativo, e 'Brainstorming Criativo', um espaço livre para discutir ideias, criar personagens e desenvolver conceitos do zero."
     },
     {
         question: "Para que serve o Gerador de Pitching?",
-        answer: "Esta ferramenta compila as informações do seu roteiro ativo em um 'Film Design Document' profissional. Ele gera seções como logline, sinopse e justificativa, criando um documento pronto para ser apresentado a produtores e investidores."
+        answer: "Esta ferramenta compila as informações do seu roteiro ativo em um 'Film Design Document' profissional. Ele gera seções analíticas e com tom vendedor, como logline, sinopse, justificativa de mercado, apelo emocional e artístico, criando um documento pronto para ser apresentado a produtores e investidores."
     },
     {
         question: "Como o Gerador de Argumento funciona?",
-        answer: "Diferente das outras ferramentas, o Gerador de Argumento não precisa de um roteiro pronto. Ele é uma ferramenta de criação que guia você passo a passo (definindo tom, gênero, tema, personagens e narrativa) para construir a base de uma nova história do zero, compilando tudo em um argumento final."
+        answer: "Diferente das outras ferramentas, o Gerador de Argumento não precisa de um roteiro pronto. Ele guia você passo a passo na criação de uma nova história. Ao final, ele compila suas ideias em um argumento estruturado que pode ser editado e salvo no seu painel para futuras análises."
     },
     {
         question: "Como funciona o Teste de Público?",
