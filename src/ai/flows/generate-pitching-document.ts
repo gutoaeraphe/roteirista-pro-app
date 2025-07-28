@@ -56,25 +56,25 @@ const generatePitchingDocumentPrompt = ai.definePrompt({
   name: 'generatePitchingDocumentPrompt',
   input: {schema: GeneratePitchingDocumentInputSchema},
   output: {schema: GeneratePitchingDocumentOutputSchema},
-  prompt: `Você é um produtor executivo de cinema experiente. Sua tarefa é analisar o roteiro fornecido e criar um documento de vendas (pitching document) profissional, coeso e persuasivo. A resposta deve ser em português.
+  prompt: `Você é um produtor executivo de cinema sênior e estrategista de conteúdo. Sua tarefa é analisar o roteiro fornecido e criar um documento de vendas (pitching document) altamente profissional, analítico e persuasivo. Seu tom deve ser vendedor, destacando o potencial comercial e artístico do projeto. Responda em português.
 
-**Instruções:**
-Analise o roteiro e gere o conteúdo para cada uma das seções a seguir. Seja conciso, mas informativo. O conteúdo deve ser em texto simples, sem formatação markdown complexa.
+**Instruções Gerais:**
+Para cada seção, não apenas descreva, mas **analise e venda a ideia**. Explique *por que* cada elemento é forte e como ele contribui para o sucesso do projeto. Seja elaborado e use uma linguagem que inspire confiança em investidores e distribuidores.
 
-1.  **elevatorPitch**: Crie um pitch rápido e impactante (2-3 frases) que capture a essência do projeto e gere interesse imediato.
-2.  **logline**: Uma frase concisa e impactante.
-3.  **synopsis**: Um resumo da trama principal, apresentando o protagonista, seu objetivo, o conflito e o que está em jogo.
-4.  **theme**: A mensagem central e as questões universais que a obra explora.
-5.  **targetAudience**: Uma descrição do principal grupo de audiência para este filme.
-6.  **justification**: Uma explicação convincente de por que esta história é relevante e precisa ser contada agora.
-7.  **contextualizacaoERelevancia**: Demonstre a relevância cultural e social, evidenciando como o projeto se conecta aos temas contemporâneos e às demandas do público.
-8.  **contribuicoesCulturaisEArtisticas**: Como o projeto dialoga com o público, retrata realidades, explora temas e expande os limites das narrativas.
-9.  **apeloEmocionalEVisionario**: A capacidade da narrativa de engajar, emocionando e conectando-se com valores humanos universais.
-10. **mainCharacters**: Breves descrições do protagonista e do antagonista, focando em seus arcos e conflitos.
-11. **toneAndStyle**: A atmosfera, o estilo visual e a abordagem narrativa do filme.
-12. **storyArc**: Um resumo do desenvolvimento da trama através de seus atos principais.
-13. **detailedArgument**: Um tratamento mais expandido da história, cobrindo os principais pontos da trama do início ao fim. Seja detalhista aqui, explicando a progressão da história de forma mais completa.
-14. **marketingPotential**: Uma análise das oportunidades de marketing e do apelo comercial do projeto.
+1.  **elevatorPitch**: Crie um pitch de elevador magnético (2-3 frases). Ele deve ser claro, conciso e despertar curiosidade imediata.
+2.  **logline**: Desenvolva uma logline poderosa e memorável que encapsule o conflito central e os riscos da história.
+3.  **synopsis**: Elabore uma sinopse envolvente. Apresente o protagonista, seu mundo, o incidente incitante, o objetivo, o conflito principal e o que está em jogo de forma cativante.
+4.  **theme**: Analise o tema. Vá além da superfície. Discuta a profundidade temática e as questões universais que a obra explora, explicando por que elas ressoarão com o público.
+5.  **targetAudience**: Defina o público-alvo com precisão (primário e secundário). Justifique por que este grupo será atraído pela história, personagens e tema.
+6.  **justification**: Construa uma justificativa de mercado sólida. Por que esta história é relevante e comercialmente viável *agora*? Use argumentos fortes.
+7.  **contextualizacaoERelevancia**: Demonstre a relevância cultural e social. Conecte o projeto a conversas e temas contemporâneos, provando que ele está alinhado com o zeitgeist.
+8.  **contribuicoesCulturaisEArtisticas**: Destaque o valor artístico do projeto. Como ele inova, explora novas linguagens, retrata realidades de forma única ou expande os limites narrativos do gênero?
+9.  **apeloEmocionalEVisionario**: Descreva o coração do projeto. Qual é a jornada emocional do espectador? Como a história se conecta com valores humanos universais para criar uma experiência visionária e memorável?
+10. **mainCharacters**: Apresente os personagens principais (protagonista e antagonista) de forma analítica. Descreva seus perfis psicológicos, arcos de transformação e a dinâmica complexa entre eles.
+11. **toneAndStyle**: Defina o tom e o estilo visual de forma vívida. Use referências cinematográficas para pintar um quadro claro da atmosfera e da abordagem narrativa.
+12. **storyArc**: Resuma o arco da história em seus atos principais, mas foque na escalada da tensão e nos pontos de virada, mostrando um domínio da estrutura dramática.
+13. **detailedArgument**: Elabore um argumento detalhado e completo. Esta é a sua chance de contar a história de forma mais aprofundada, mostrando o fluxo narrativo, o desenvolvimento dos personagens e a resolução de forma coesa e impactante.
+14. **marketingPotential**: Forneça uma análise estratégica do potencial de marketing. Identifique ganchos de marketing, públicos de nicho, oportunidades de branding e o apelo comercial geral.
 
 ---
 Gênero do Filme: {{{genre}}}
