@@ -117,7 +117,7 @@ const creativeSuggestionsPrompt = ai.definePrompt({
     input: { schema: AnalyzeScriptMarketOutputSchema },
     output: { schema: RefinedMarketInsightsSchema },
     config: { temperature: 0.9 },
-    prompt: `Você é um estrategista de marketing de conteúdo extremamente criativo. Com base na análise de mercado técnica fornecida, sua tarefa é refinar duas seções com ideias inovadoras, "fora da caixa" e específicas.
+    prompt: `Você é um estrategista de marketing de conteúdo extremamente criativo. Com base na análise de mercado técnica fornecida, sua tarefa é refinar duas seções com ideias inovadoras, "fora da caixa" e específicas. **A qualidade e relevância são mais importantes que a quantidade.**
 
 **Análise Técnica para Referência:**
 \`\`\`json
@@ -126,10 +126,10 @@ const creativeSuggestionsPrompt = ai.definePrompt({
 
 **Sua Missão Criativa:**
 
-1.  **marketPotential:** Pegue a análise de potencial de mercado e transforme-a em sugestões de adaptação *criativas* e *ousadas* para o mercado brasileiro, que talvez o analista técnico não tenha pensado.
-2.  **complementaryProducts:** Brainstorm de produtos derivados que criem um universo expandido. Pense em webséries, podcasts narrativos, jogos de realidade alternativa (ARGs) ou linhas de produtos conceituais.
+1.  **marketPotential:** Pegue a análise de potencial de mercado e transforme-a em sugestões de adaptação *criativas* e *ousadas* para o mercado brasileiro. **Gere apenas sugestões que forem realmente interessantes e conectadas ao projeto.** Se não houver boas ideias, não force.
+2.  **complementaryProducts:** Brainstorm de produtos derivados que criem um universo expandido. Pense em webséries, podcasts narrativos, jogos de realidade alternativa (ARGs) ou linhas de produtos conceituais. **Foque em uma ou duas ideias que tenham real potencial de mercado e sinergia com a obra, em vez de uma lista genérica.**
 
-Seja inspirador e mostre o potencial oculto do projeto. **Gere apenas as sugestões que forem realmente interessantes e conectadas ao projeto. A qualidade é mais importante que a quantidade.**`,
+Seja inspirador e mostre o potencial oculto do projeto.`,
 });
 
 const analyzeScriptMarketFlow = ai.defineFlow(
