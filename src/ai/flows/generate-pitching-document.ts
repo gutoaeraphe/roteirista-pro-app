@@ -16,6 +16,7 @@ import {z} from 'genkit';
 const GeneratePitchingDocumentInputSchema = z.object({
   scriptContent: z.string().describe('O conteúdo do roteiro do filme.'),
   genre: z.string().describe('O gênero do filme.'),
+  scriptName: z.string().describe('O nome do roteiro do filme.'),
 });
 
 export type GeneratePitchingDocumentInput = z.infer<typeof GeneratePitchingDocumentInputSchema>;
@@ -78,6 +79,8 @@ Para cada seção, não apenas descreva, mas **analise e venda a ideia**. Expliq
 
 ---
 Gênero do Filme: {{{genre}}}
+---
+Nome do Roteiro: {{{scriptName}}}
 ---
 Conteúdo do Roteiro:
 {{{scriptContent}}}

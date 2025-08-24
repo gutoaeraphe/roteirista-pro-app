@@ -54,6 +54,7 @@ export default function GeradorDePitchingPage() {
       const input = {
         scriptContent: activeScript.content,
         genre: activeScript.genre,
+        scriptName: activeScript.name,
       };
       const result = await generatePitchingDocument(input);
       setDocument(result);
