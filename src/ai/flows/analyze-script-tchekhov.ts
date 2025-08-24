@@ -106,7 +106,7 @@ Seja específico. Use elementos do roteiro para propor soluções.
 {{{json this}}}
 \`\`\`
 
-Para 'criteriaSuggestions', gere uma sugestão para cada um dos 8 critérios cuja nota seja menor ou igual a 7. Mantenha a ordem dos critérios. Se a nota for maior que 7, a sugestão deve ser uma string vazia ou nula.`
+Para 'criteriaSuggestions', gere uma sugestão para cada um dos 8 critérios cuja nota seja menor ou igual a 7. Mantenha a ordem dos critérios. Se a nota for maior que 7, a sugestão deve ser uma string vazia ("").`
 });
 
 
