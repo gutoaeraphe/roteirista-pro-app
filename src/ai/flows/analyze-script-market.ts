@@ -56,11 +56,6 @@ const AnalyzeScriptMarketOutputSchema = z.object({
     .describe(
       'Sugestões de produtos derivados e oportunidades de licenciamento (séries, jogos, livros, etc.).'
     ),
-  referenceWorks: z
-    .string()
-    .describe(
-      'Identificação de obras semelhantes (nacionais e internacionais) para análise comparativa e posicionamento de mercado.'
-    ),
   distributionChannels: z
     .string()
     .describe(
@@ -106,8 +101,7 @@ Analise o projeto e gere insights estratégicos para cada um dos seguintes campo
 4.  **contentTrends**: Analise se o projeto está alinhado com as tendências atuais.
 5.  **originalityAndDifferentiation**: Avalie a originalidade e os diferenciais competitivos.
 6.  **complementaryProducts**: Sugira produtos derivados com potencial de mercado.
-7.  **referenceWorks**: Liste obras de referência e faça uma análise comparativa (benchmarking).
-8.  **distributionChannels**: Recomende os canais de distribuição mais adequados e justifique.
+7.  **distributionChannels**: Recomende os canais de distribuição mais adequados e justifique.
 
 Seu tom é o de um executivo experiente apresentando uma análise interna. A clareza e a honestidade são mais importantes que o otimismo.`,
 });

@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { analyzeScriptMarket } from "@/ai/flows/analyze-script-market";
 import { analyzeScriptStructure } from "@/ai/flows/analyze-script-structure";
 import { PagePlaceholder } from "@/components/layout/page-placeholder";
-import { Sparkles, Target, TrendingUp, Lightbulb, BookCopy, Tv, BarChartBig, Users, Briefcase, Gift, Globe, Shuffle, AlertTriangle, Download } from "lucide-react";
+import { Sparkles, Target, TrendingUp, Lightbulb, Tv, BarChartBig, Users, Gift, Globe, AlertTriangle, Download } from "lucide-react";
 import type { AnalyzeScriptMarketOutput } from "@/ai/flows/analyze-script-market";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -110,10 +110,6 @@ Produtos Complementares
 --------------------------------------------------
 ${rest.complementaryProducts}
 
-Obras de Referência
---------------------------------------------------
-${rest.referenceWorks}
-
 Canais de Distribuição
 --------------------------------------------------
 ${rest.distributionChannels}
@@ -196,7 +192,6 @@ ${rest.distributionChannels}
                 <InfoCard title="Tendências de Conteúdo" content={analysisResult.contentTrends} icon={TrendingUp} />
                 <InfoCard title="Originalidade e Diferenciação" content={analysisResult.originalityAndDifferentiation} icon={Lightbulb} />
                 <InfoCard title="Produtos Complementares" content={analysisResult.complementaryProducts} icon={Gift} />
-                <InfoCard title="Obras de Referência" content={analysisResult.referenceWorks} icon={BookCopy} />
                 <InfoCard title="Canais de Distribuição" content={analysisResult.distributionChannels} icon={Tv} />
             </div>
         </div>
