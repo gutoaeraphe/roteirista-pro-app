@@ -102,7 +102,7 @@ const navItems = [
         icon: Swords,
       },
       {
-        title: "Viabilidade (MCV)",
+        title: "Análise de Viabilidade",
         href: "/analise-de-viabilidade",
         icon: DollarSign,
       },
