@@ -56,12 +56,12 @@ export default function AnaliseDeMercadoPage() {
 
         if (!summary) {
             toast({ title: "Gerando Resumo", description: "É necessário um resumo da trama para a análise de mercado..." });
-            const structureResult = await analyzeScriptStructure({ scriptContent: activeScript.content });
+            const structureResult = await analyzeScriptStructure({ scriptContent: activeScript.content, scriptName: activeScript.name });
             summary = structureResult.plotSummary;
             scriptToUpdate.analysis.structure = structureResult; // Salva a análise de estrutura também
         }
 
-        const result = await analyzeScriptMarket({ scriptSummary: summary, genre: activeScript.genre });
+        const result = await analyzeScriptMarket({ scriptSummary: summary, genre: activeScript.genre, scriptName: activeScript.name });
         setAnalysisResult(result);
         
         scriptToUpdate.analysis.market = result;
@@ -105,10 +105,6 @@ ${rest.contentTrends}
 Originalidade e Diferenciação
 --------------------------------------------------
 ${rest.originalityAndDifferentiation}
-
-Potencial de Marketing e Venda
---------------------------------------------------
-${rest.marketingAndSalesPotential}
 
 Produtos Complementares
 --------------------------------------------------
@@ -199,7 +195,6 @@ ${rest.distributionChannels}
                 <InfoCard title="Potencial de Mercado (Brasil)" content={analysisResult.marketPotential} icon={Globe} />
                 <InfoCard title="Tendências de Conteúdo" content={analysisResult.contentTrends} icon={TrendingUp} />
                 <InfoCard title="Originalidade e Diferenciação" content={analysisResult.originalityAndDifferentiation} icon={Lightbulb} />
-                <InfoCard title="Potencial de Marketing e Venda" content={analysisResult.marketingAndSalesPotential} icon={Briefcase} />
                 <InfoCard title="Produtos Complementares" content={analysisResult.complementaryProducts} icon={Gift} />
                 <InfoCard title="Obras de Referência" content={analysisResult.referenceWorks} icon={BookCopy} />
                 <InfoCard title="Canais de Distribuição" content={analysisResult.distributionChannels} icon={Tv} />

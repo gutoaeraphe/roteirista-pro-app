@@ -18,6 +18,7 @@ const AnalyzeScriptMarketInputSchema = z.object({
     .string()
     .describe('Um resumo do roteiro a ser analisado para insights de mercado.'),
   genre: z.string().describe('O gênero do roteiro.'),
+  scriptName: z.string().describe('O nome do roteiro.'),
 });
 export type AnalyzeScriptMarketInput = z.infer<
   typeof AnalyzeScriptMarketInputSchema
@@ -50,11 +51,6 @@ const AnalyzeScriptMarketOutputSchema = z.object({
     .describe(
       'Avaliação do grau de originalidade da premissa, destacando elementos únicos e diferenciais competitivos.'
     ),
-  marketingAndSalesPotential: z
-    .string()
-    .describe(
-      'Análise de como marcas e patrocinadores poderiam ser inseridos no contexto do filme (product placement).'
-    ),
   complementaryProducts: z
     .string()
     .describe(
@@ -81,7 +77,6 @@ export type AnalyzeScriptMarketOutput = z.infer<
 
 const RefinedMarketInsightsSchema = z.object({
     marketPotential: z.string().describe('Sugestões REFINADAS e CRIATIVAS de adaptações para o mercado local.'),
-    marketingAndSalesPotential: z.string().describe('Ideias CRIATIVAS e específicas para marketing e product placement.'),
     complementaryProducts: z.string().describe('Sugestões CRIATIVAS e com real potencial de mercado para produtos derivados.'),
 });
 
@@ -98,6 +93,7 @@ const analysisPrompt = ai.definePrompt({
   config: { temperature: 0.2 },
   prompt: `Você é um analista de mercado e estrategista de conteúdo para um grande estúdio de cinema, com foco especial no mercado audiovisual brasileiro. Sua análise deve ser pragmática, técnica e orientada a negócios. A meta é avaliar a viabilidade comercial do projeto de forma direta. Responda inteiramente em português.
 
+**Título do Roteiro:** {{{scriptName}}}
 **Gênero:** {{{genre}}}
 **Resumo do Roteiro:** {{{scriptSummary}}}
 
@@ -109,10 +105,9 @@ Analise o projeto e gere insights estratégicos para cada um dos seguintes campo
 3.  **marketPotential**: Avalie o potencial no mercado brasileiro e as barreiras culturais.
 4.  **contentTrends**: Analise se o projeto está alinhado com as tendências atuais.
 5.  **originalityAndDifferentiation**: Avalie a originalidade e os diferenciais competitivos.
-6.  **marketingAndSalesPotential**: Descreva oportunidades de marketing e product placement de forma técnica.
-7.  **complementaryProducts**: Sugira produtos derivados com potencial de mercado.
-8.  **referenceWorks**: Liste obras de referência e faça uma análise comparativa (benchmarking).
-9.  **distributionChannels**: Recomende os canais de distribuição mais adequados e justifique.
+6.  **complementaryProducts**: Sugira produtos derivados com potencial de mercado.
+7.  **referenceWorks**: Liste obras de referência e faça uma análise comparativa (benchmarking).
+8.  **distributionChannels**: Recomende os canais de distribuição mais adequados e justifique.
 
 Seu tom é o de um executivo experiente apresentando uma análise interna. A clareza e a honestidade são mais importantes que o otimismo.`,
 });
@@ -132,10 +127,9 @@ const creativeSuggestionsPrompt = ai.definePrompt({
 **Sua Missão Criativa:**
 
 1.  **marketPotential:** Pegue a análise de potencial de mercado e transforme-a em sugestões de adaptação *criativas* e *ousadas* para o mercado brasileiro, que talvez o analista técnico não tenha pensado.
-2.  **marketingAndSalesPotential:** Vá além do óbvio. Pense em campanhas virais, parcerias inusitadas e formas de product placement que sejam sutis e inteligentes, elevando a história.
-3.  **complementaryProducts:** Brainstorm de produtos derivados que criem um universo expandido. Pense em webséries, podcasts narrativos, jogos de realidade alternativa (ARGs) ou linhas de produtos conceituais.
+2.  **complementaryProducts:** Brainstorm de produtos derivados que criem um universo expandido. Pense em webséries, podcasts narrativos, jogos de realidade alternativa (ARGs) ou linhas de produtos conceituais.
 
-Seja inspirador e mostre o potencial oculto do projeto.`
+Seja inspirador e mostre o potencial oculto do projeto. Gere apenas sugestões que sejam realmente interessantes e conectadas ao projeto. A qualidade é mais importante que a quantidade.`,
 });
 
 const analyzeScriptMarketFlow = ai.defineFlow(
@@ -161,7 +155,6 @@ const analyzeScriptMarketFlow = ai.defineFlow(
     const finalResult: AnalyzeScriptMarketOutput = {
       ...analysis,
       marketPotential: suggestions.marketPotential,
-      marketingAndSalesPotential: suggestions.marketingAndSalesPotential,
       complementaryProducts: suggestions.complementaryProducts,
     };
 
