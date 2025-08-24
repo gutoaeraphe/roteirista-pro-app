@@ -86,7 +86,7 @@ export default function ChecklistDeTchekhovPage() {
     setLoading(true);
     setAnalysisResult(undefined);
     try {
-      const result = await analyzeScriptTchekhov({ scriptContent: activeScript.content });
+      const result = await analyzeScriptTchekhov({ scriptContent: activeScript.content, scriptName: activeScript.name });
       setAnalysisResult(result);
       updateScript({ ...activeScript, analysis: { ...activeScript.analysis, tchekhov: result } });
       

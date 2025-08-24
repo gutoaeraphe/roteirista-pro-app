@@ -16,6 +16,7 @@ const AnalyzeScriptTchekhovInputSchema = z.object({
   scriptContent: z
     .string()
     .describe('O conteúdo do roteiro a ser analisado.'),
+  scriptName: z.string().describe('O nome do roteiro, para referência na análise.'),
 });
 export type AnalyzeScriptTchekhovInput = z.infer<
   typeof AnalyzeScriptTchekhovInputSchema
@@ -32,7 +33,7 @@ export type TchekhovCriterion = z.infer<typeof TchekhovCriterionSchema>;
 
 const AnalyzeScriptTchekhovOutputSchema = z.object({
   criteria: z.array(TchekhovCriterionSchema).length(8).describe("Uma lista com a análise dos 8 pontos do Checklist de Tchekhov, na ordem correta."),
-  overallSummary: z.string().describe("Um resumo geral que consolida a análise, destaca la pontuação média e sugere os próximos passos."),
+  overallSummary: z.string().describe("Um resumo geral que consolida a análise e sugere os próximos passos, SEM mencionar a pontuação."),
   averageScore: z.number().min(0).max(10).describe("A pontuação média de todos os 8 critérios."),
 });
 export type AnalyzeScriptTchekhovOutput = z.infer<
@@ -42,7 +43,6 @@ export type AnalyzeScriptTchekhovOutput = z.infer<
 const AnalysisOnlySchema = z.object({
     criteria: z.array(TchekhovCriterionSchema.omit({ suggestions: true })).length(8),
     overallSummary: z.string(),
-    averageScore: z.number().min(0).max(10),
 });
 
 const SuggestionsOnlySchema = z.object({
@@ -82,11 +82,11 @@ c) 'score': Uma pontuação rigorosa de 0 (muito fraco) a 10 (excelente).
 
 **Instruções Finais:**
 - Preencha a lista 'criteria' com exatamente 8 itens, na ordem acima.
-- Calcule a média das 8 pontuações e preencha o campo 'averageScore'.
-- Escreva um 'overallSummary' que consolide a análise e apresente a pontuação média.
+- Escreva um 'overallSummary' que consolide a análise **sem mencionar a pontuação média.** Foque nos pontos fortes e fracos principais.
 
 Roteiro para Análise:
-{{{scriptContent}}}`,
+Título: {{{scriptName}}}
+Conteúdo: {{{scriptContent}}}`,
 });
 
 const suggestionsPrompt = ai.definePrompt({
@@ -127,12 +127,12 @@ const analyzeScriptTchekhovFlow = ai.defineFlow(
         throw new Error("A geração de sugestões de Tchekhov (fase 2) falhou.");
     }
 
-    // Recalcular a média para garantir precisão, caso a IA erre.
+    // Calcular a média de forma confiável no código
     const calculatedAverage = analysis.criteria.reduce((sum, item) => sum + item.score, 0) / analysis.criteria.length;
-    analysis.averageScore = parseFloat(calculatedAverage.toFixed(2));
 
     const finalResult: AnalyzeScriptTchekhovOutput = {
-      ...analysis,
+      overallSummary: analysis.overallSummary,
+      averageScore: parseFloat(calculatedAverage.toFixed(2)),
       criteria: analysis.criteria.map((criterion, index) => ({
         ...criterion,
         suggestions: suggestions.criteriaSuggestions?.[index] || undefined,
