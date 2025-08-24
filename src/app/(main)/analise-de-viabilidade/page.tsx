@@ -66,7 +66,7 @@ export default function AnaliseDeViabilidadePage() {
     setLoading(true);
     setAnalysisResult(undefined);
     try {
-      const result = await analyzeScriptMCV({ scriptContent: activeScript.content });
+      const result = await analyzeScriptMCV({ scriptContent: activeScript.content, scriptName: activeScript.name });
       setAnalysisResult(result);
       updateScript({ ...activeScript, analysis: { ...activeScript.analysis, mcv: result } });
       
@@ -82,7 +82,7 @@ export default function AnaliseDeViabilidadePage() {
   const createPlainTextDocument = () => {
     if (!analysisResult || !activeScript) return "";
 
-    let content = `Análise de Viabilidade (MCV) para: ${activeScript.name}\n`;
+    let content = `Análise de Viabilidade para: ${activeScript.name}\n`;
     content += "==================================================\n\n";
 
     content += `DIAGNÓSTICO FINAL\n`;
@@ -126,7 +126,7 @@ export default function AnaliseDeViabilidadePage() {
     <div className="space-y-8">
       <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-headline font-bold">Análise de Viabilidade (MCV)</h1>
+          <h1 className="text-3xl font-headline font-bold">Análise de Viabilidade</h1>
           <p className="text-muted-foreground">Avalie o roteiro em busca de flags de custo e complexidade de produção.</p>
         </div>
         <div className="flex gap-2">

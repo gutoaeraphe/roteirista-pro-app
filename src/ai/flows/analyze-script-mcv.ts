@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview Realiza uma análise de viabilidade técnica e financeira de um roteiro (Conteúdo Mínimo Viável).
+ * @fileOverview Realiza uma análise de viabilidade técnica e financeira de um roteiro.
  *
  * - analyzeScriptMCV - Inicia a análise de viabilidade.
  * - AnalyzeScriptMCVInput - O tipo de entrada para a função.
@@ -16,6 +16,7 @@ const AnalyzeScriptMCVInputSchema = z.object({
   scriptContent: z
     .string()
     .describe('O conteúdo do roteiro a ser analisado.'),
+  scriptName: z.string().describe('O nome do roteiro, para referência na análise.'),
 });
 export type AnalyzeScriptMCVInput = z.infer<
   typeof AnalyzeScriptMCVInputSchema
@@ -47,7 +48,7 @@ const analyzeScriptMCVPrompt = ai.definePrompt({
   name: 'analyzeScriptMCVPrompt',
   input: {schema: AnalyzeScriptMCVInputSchema},
   output: {schema: AnalyzeScriptMCVOutputSchema},
-  prompt: `Você é um produtor de cinema experiente, especialista em orçamentos e logística de produção. Sua tarefa é realizar uma análise de "Conteúdo Mínimo Viável" (MCV), avaliando a viabilidade técnica e financeira de um roteiro. Responda inteiramente em português.
+  prompt: `Você é um produtor de cinema experiente, especialista em orçamentos e logística de produção. Sua tarefa é realizar uma análise de viabilidade técnica e financeira do roteiro fornecido. Responda inteiramente em português.
 
 **Sua Tarefa:**
 
@@ -77,7 +78,8 @@ const analyzeScriptMCVPrompt = ai.definePrompt({
 ---
 
 **Roteiro para Análise:**
-{{{scriptContent}}}
+Título: {{{scriptName}}}
+Conteúdo: {{{scriptContent}}}
 `,
 });
 
@@ -91,7 +93,7 @@ const analyzeScriptMCVFlow = ai.defineFlow(
     const {output} = await analyzeScriptMCVPrompt(input);
     
     if (!output) {
-      throw new Error("A análise de viabilidade (MCV) não retornou um resultado válido.");
+      throw new Error("A análise de viabilidade não retornou um resultado válido.");
     }
     
     // Recalcular a média para garantir precisão, caso a IA erre.
