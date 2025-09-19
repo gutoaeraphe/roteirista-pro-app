@@ -38,7 +38,7 @@ const InfoCardSkeleton = () => (
 export default function GeradorDePitchingPage() {
   const { activeScript, updateScript } = useScript();
   const [loading, setLoading] = useState(false);
-  const [document, setDocument] = useState<GeneratePitchingDocumentOutput | undefined>(
+  const [documentResult, setDocumentResult] = useState<GeneratePitchingDocumentOutput | undefined>(
     activeScript?.analysis.pitchingDocument
   );
   const { toast } = useToast();
@@ -49,7 +49,7 @@ export default function GeradorDePitchingPage() {
       return;
     }
     setLoading(true);
-    setDocument(undefined);
+    setDocumentResult(undefined);
     try {
       const input = {
         scriptContent: activeScript.content,
@@ -57,7 +57,7 @@ export default function GeradorDePitchingPage() {
         scriptName: activeScript.name,
       };
       const result = await generatePitchingDocument(input);
-      setDocument(result);
+      setDocumentResult(result);
       updateScript({ ...activeScript, analysis: { ...activeScript.analysis, pitchingDocument: result } });
       
       toast({ title: "Documento Gerado", description: "Seu documento de pitching está pronto." });
@@ -69,8 +69,11 @@ export default function GeradorDePitchingPage() {
     }
   };
 
-  const createPlainTextDocument = (doc: GeneratePitchingDocumentOutput): string => {
-    const docData = doc.pitchingDocument;
+  const createPlainTextDocument = () => {
+    const docToFormat = documentResult || activeScript?.analysis.pitchingDocument;
+    if (!docToFormat) return "";
+
+    const docData = docToFormat.pitchingDocument;
     return `
 # Documento de Pitching: ${activeScript?.name || 'Projeto'}
 
@@ -116,9 +119,8 @@ ${docData.marketingPotential}
   }
 
   const handleDownload = () => {
-    const docToCopy = document || activeScript?.analysis.pitchingDocument;
-    if (docToCopy && activeScript) {
-        const plainText = createPlainTextDocument(docToCopy);
+    const plainText = createPlainTextDocument();
+    if (plainText && activeScript) {
         const blob = new Blob([plainText], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -132,21 +134,19 @@ ${docData.marketingPotential}
   }
 
   const handleCopy = () => {
-    const docToCopy = document || activeScript?.analysis.pitchingDocument;
-    if (docToCopy) {
-        const plainText = createPlainTextDocument(docToCopy);
+    const plainText = createPlainTextDocument();
+    if (plainText) {
         navigator.clipboard.writeText(plainText);
         toast({ title: "Copiado!", description: "O documento foi copiado para a área de transferência." });
     }
   }
 
-  const hasBeenGenerated = !!document || !!activeScript?.analysis.pitchingDocument;
+  const currentDocument = documentResult || activeScript?.analysis.pitchingDocument;
+  const hasBeenGenerated = !!currentDocument;
 
   if (!activeScript) {
     return <PagePlaceholder title="Gerador de Pitching" description="Para criar um documento de pitching, primeiro selecione um roteiro ativo." />;
   }
-
-  const currentDocument = document || activeScript?.analysis.pitchingDocument;
 
   return (
     <div className="space-y-8">
