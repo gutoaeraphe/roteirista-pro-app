@@ -46,7 +46,6 @@ const DramaticElementCard = ({ element }: { element: DramaticElement }) => (
             <CardTitle className="text-base font-semibold">{element.name}</CardTitle>
         </CardHeader>
         <CardContent>
-            <p className="text-sm text-muted-foreground italic border-l-2 pl-3 mb-3">"{element.identifiedExcerpt}"</p>
             <p className="text-sm text-foreground/90">{element.effectivenessAnalysis}</p>
         </CardContent>
     </Card>
@@ -69,7 +68,7 @@ export default function EstruturaDeRoteiroPage() {
     setLoading(true);
     setAnalysisResult(undefined);
     try {
-      const result = await analyzeScriptStructure({ scriptContent: activeScript.content });
+      const result = await analyzeScriptStructure({ scriptContent: activeScript.content, scriptName: activeScript.name });
       setAnalysisResult(result);
       updateScript({ ...activeScript, analysis: { ...activeScript.analysis, structure: result } });
       
@@ -109,7 +108,6 @@ export default function EstruturaDeRoteiroPage() {
     content += "Elementos Dramáticos Centrais\n========================================\n";
     analysisResult.dramaticElements.forEach(el => {
       content += `${el.name}\n`;
-      content += `Trecho: "${el.identifiedExcerpt}"\n`;
       content += `Análise: ${el.effectivenessAnalysis}\n\n`;
     });
 

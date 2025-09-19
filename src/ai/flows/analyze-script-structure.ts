@@ -17,6 +17,7 @@ const AnalyzeScriptStructureInputSchema = z.object({
   scriptContent: z
     .string()
     .describe('O conteúdo do roteiro a ser analisado.'),
+  scriptName: z.string().describe('O nome do roteiro do filme.'),
 });
 export type AnalyzeScriptStructureInput = z.infer<
   typeof AnalyzeScriptStructureInputSchema
@@ -31,8 +32,7 @@ export type Metric = z.infer<typeof MetricSchema>;
 
 const DramaticElementSchema = z.object({
     name: z.string().describe('O nome do elemento dramático (ex: "Evento Desencadeador").'),
-    identifiedExcerpt: z.string().describe('O trecho do roteiro que representa este elemento.'),
-    effectivenessAnalysis: z.string().describe('Uma crítica da função e do impacto deste elemento.'),
+    effectivenessAnalysis: z.string().describe('Uma crítica da função e do impacto deste elemento, descrevendo a cena ou evento correspondente sem citar o trecho do roteiro.'),
 });
 export type DramaticElement = z.infer<typeof DramaticElementSchema>;
 
@@ -105,6 +105,8 @@ const analysisPrompt = ai.definePrompt({
   config: { temperature: 0.2 },
   prompt: `Você é um consultor de roteiros sênior, um "script doctor" com um olhar crítico e analítico. Sua tarefa é analisar o roteiro fornecido com rigor técnico, como se estivesse preparando um relatório para um estúdio. Seja objetivo, direto e **NÃO gere sugestões de melhoria**. Apenas faça a análise e atribua as pontuações. Responda inteiramente em português.
 
+**Título do Roteiro:** {{{scriptName}}}
+
 **Instruções Precisas:**
 1.  **Resumo da Trama**: Escreva um resumo conciso e neutro da trama.
 2.  **Métricas Principais**: Para cada item, seja rigoroso na pontuação (1-10) e forneça uma análise crítica. **NÃO CRIE SUGESTÕES.**
@@ -112,7 +114,7 @@ const analysisPrompt = ai.definePrompt({
     - **Desenvolvimento de Personagens**: Profundidade, falhas, motivações e arco dos personagens principais.
     - **Potencial Comercial**: Análise fria baseada em gênero, apelo de público e tendências de mercado.
     - **Originalidade**: Avalie a premissa e a execução em relação a clichês e obras existentes.
-3.  **Elementos Dramáticos**: Para cada elemento, identifique o trecho correspondente do roteiro e forneça uma análise crítica de sua eficácia. Ele funciona? É impactante? Poderia ser mais forte?
+3.  **Elementos Dramáticos**: Para cada elemento, forneça uma análise crítica de sua eficácia, descrevendo a cena ou evento correspondente sem citar o trecho do roteiro. Ele funciona? É impactante? Poderia ser mais forte?
     - Evento Desencadeador, Questão Dramática, Objetivo do Protagonista, Obstáculos, Clímax, Resolução, Tema Central.
 4.  **Critérios de Estrutura**: Para cada critério, seja exigente. Forneça uma pontuação (1-10) e uma análise que justifique a nota (apontando falhas e acertos). **NÃO CRIE SUGESTÕES.**
     - **Equilíbrio**: A distribuição de tempo e desenvolvimento entre os atos e personagens é eficaz?
