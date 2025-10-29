@@ -33,6 +33,10 @@ const faqItems = [
         answer: "Esta é uma das análises mais profundas. A IA não só traça perfis psicológicos detalhados para seu protagonista e antagonista (avaliando forças, fraquezas, motivações e arcos), como também constrói um 'Mapa de Relações'. Esse mapa visualiza a teia de interações entre todos os personagens importantes, identificando os tipos de relação (conflito, aliança, romance, etc.) e como elas impulsionam a trama, oferecendo um entendimento completo da dinâmica do seu elenco."
     },
     {
+        question: "O que é a Análise de Beat Sheet?",
+        answer: "Esta ferramenta mapeia a espinha dorsal da sua narrativa. A IA analisa seu roteiro ativo e identifica os 15 'beats' ou pontos de virada essenciais da estrutura de roteiro, como a Imagem de Abertura, o Catalisador, o Ponto Médio e o Final. Para cada 'beat', a análise indica a página onde ele ocorre e explica como aquele evento se manifesta na sua história. É ideal para verificar o ritmo, a coesão e garantir que todos os momentos cruciais da sua trama estão no lugar certo e funcionando como deveriam."
+    },
+    {
         question: "Como funciona a Análise SWOT?",
         answer: "Esta ferramenta aplica a clássica matriz de análise de negócios (SWOT) ao seu projeto, proporcionando uma visão 360º. A IA atua com uma dupla persona: um 'Mentor Criativo', que analisa os fatores internos (Forças e Fraquezas da sua história), e um 'Estrategista de Mercado', que avalia os fatores externos (Oportunidades e Ameaças do mercado). O resultado é um diagnóstico completo que une o potencial criativo e comercial do seu roteiro."
     },
