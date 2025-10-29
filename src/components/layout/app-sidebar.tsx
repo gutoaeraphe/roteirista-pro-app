@@ -32,7 +32,8 @@ import {
   Briefcase,
   Target,
   Search,
-  Footprints
+  Footprints,
+  ClipboardList,
 } from "lucide-react";
 import { useScript } from "@/context/script-context";
 import { useAuth } from "@/context/auth-context";
@@ -70,6 +71,11 @@ const navItems = [
         title: "Estrutura de Roteiro",
         href: "/estrutura-de-roteiro",
         icon: BarChart3,
+      },
+      {
+        title: "Beat Sheet",
+        href: "/beat-sheet",
+        icon: ClipboardList,
       },
       {
         title: "Jornada do Herói",
@@ -224,29 +230,35 @@ export function AppSidebar({ isMobile = false }: { isMobile?: boolean }) {
   const isAnalysisToolDisabled = !activeScript;
 
   const getIsDisabled = (href: string) => {
-    switch(href) {
-        case '/analise-de-proposta-de-valor':
-        case '/estrutura-de-roteiro':
-        case '/analise-de-viabilidade':
-        case '/jornada-do-heroi':
-        case '/analise-de-personagens':
-        case '/teste-de-representatividade':
-        case '/analise-de-mercado':
-        case '/script-doctor':
-        case '/gerador-de-pitching':
-        case '/teste-de-publico':
-        case '/analise-swot':
-        case '/checklist-de-tchekhov':
-        case '/analise-de-recepcao':
-        case '/mapeamento-de-conflitos':
-        case '/analise-do-arco-da-jornada':
-        case '/identificador-de-persona':
-            return isAnalysisToolDisabled;
-        case '/gerador-de-argumento':
-             return false; // Sempre habilitado
-        default:
-            return false;
+    const analysisPages = [
+        '/analise-de-proposta-de-valor',
+        '/estrutura-de-roteiro',
+        '/analise-de-viabilidade',
+        '/jornada-do-heroi',
+        '/analise-de-personagens',
+        '/teste-de-representatividade',
+        '/analise-de-mercado',
+        '/script-doctor',
+        '/gerador-de-pitching',
+        '/teste-de-publico',
+        '/analise-swot',
+        '/checklist-de-tchekhov',
+        '/analise-de-recepcao',
+        '/mapeamento-de-conflitos',
+        '/analise-do-arco-da-jornada',
+        '/beat-sheet',
+        '/identificador-de-persona',
+    ];
+
+    if (analysisPages.includes(href)) {
+        return isAnalysisToolDisabled;
     }
+    
+    if (href === '/gerador-de-argumento') {
+        return false; // Always enabled
+    }
+
+    return false;
   }
 
 

@@ -44,6 +44,9 @@ import type {
 import type {
     AnalyzeJourneyArcOutput
 } from '@/ai/flows/analyze-journey-arc';
+import type {
+    AnalyzeScriptBeatSheetOutput
+} from '@/ai/flows/analyze-script-beat-sheet';
 
 
 export type UserProfile = {
@@ -79,6 +82,7 @@ export type Script = {
     pitchingDocument?: GeneratePitchingDocumentOutput;
     scriptDoctor?: ChatMessage[];
     journeyArc?: AnalyzeJourneyArcOutput;
+    beatSheet?: AnalyzeScriptBeatSheetOutput;
   };
 };
 
